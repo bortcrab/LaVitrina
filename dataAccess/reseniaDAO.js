@@ -28,9 +28,9 @@ class ReseniaDAO {
         }
     }
 
-    async obtenerReseniaPorId(id) {
+    async obtenerReseniaPorId(idResenia) {
         try {
-            const resenia = await Resenia.findByPk(id);
+            const resenia = await Resenia.findByPk(idResenia);
             return resenia;
         } catch (error) {
             throw error;
@@ -50,11 +50,11 @@ class ReseniaDAO {
         }
     }
 
-    async eliminarResenia(id) {
+    async eliminarResenia(idResenia) {
         try {
-            const resenia = await Resenia.findByPk(id);
+            const resenia = await Resenia.findByPk(idResenia);
             if (!resenia) {
-                throw new Error(`Resenia con id: ${id} no encontrada`);
+                throw new Error(`Resenia con id: ${idResenia} no encontrada`);
             }
             await resenia.destroy();
             return 'Resenia eliminada con éxito.';

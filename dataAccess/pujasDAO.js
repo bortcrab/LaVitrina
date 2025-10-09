@@ -26,9 +26,9 @@ class PujaDAO {
         }
     }
 
-    async obtenerPujaPorId(id) {
+    async obtenerPujaPorId(idPuja) {
         try {
-            const puja = await Puja.findByPk(id);
+            const puja = await Puja.findByPk(idPuja);
             return puja;
         } catch (error) {
             throw error;
@@ -48,11 +48,11 @@ class PujaDAO {
         }
     }
 
-    async eliminarPuja(id) {
+    async eliminarPuja(idPuja) {
         try {
-            const puja = await Puja.findByPk(id);
+            const puja = await Puja.findByPk(idPuja);
             if (!puja) {
-                throw new Error(`Puja con id: ${id} no encontrada`);
+                throw new Error(`Puja con id: ${idPuja} no encontrada`);
             }
             await puja.destroy();
             return 'Puja eliminada con éxito.';
