@@ -1,0 +1,26 @@
+{
+  "name": "lavitrina",
+  "version": "1.0.0",
+  "description": "Proyecto final de Temas Emergentes de Aplicaciones Web. Plataforma web para comprar, vender o subastar productos y servicios, con chat y actualizaciones en tiempo real.",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bortcrab/LaVitrina.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bortcrab/LaVitrina/issues"
+  },
+  "homepage": "https://github.com/bortcrab/LaVitrina#readme",
+  "dependencies": {
+    "mysql2": "^3.15.2",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.3"
+  }
+}
