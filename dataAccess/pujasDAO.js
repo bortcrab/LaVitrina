@@ -3,13 +3,13 @@ const { Puja } = require('../models');
 class PujaDAO {
     constructor() { }
 
-    async crearPuja(idUsuario, idSubasta, monto, fechaPuja) {
+    async crearPuja(monto, fechaPuja, idUsuario, idSubasta) {
         try {
             const puja = await Puja.create({
-                idUsuario,
-                idSubasta,
                 monto,
-                fechaPuja
+                fechaPuja,
+                idUsuario,
+                idSubasta
             });
             return puja;
         } catch (error) {
@@ -35,10 +35,10 @@ class PujaDAO {
         }
     }
 
-    async actualizarPuja(idPuja, idUsuario, idSubasta, monto, fechaPuja) {
+    async actualizarPuja(idPuja, monto, fechaPuja, idUsuario, idSubasta) {
         try {
             await Puja.update(
-                { idUsuario, idSubasta, monto, fechaPuja },
+                { monto, fechaPuja, idUsuario, idSubasta },
                 { where: { idPuja } }
             );
             const pujaActualizada = await Puja.findByPk(id);

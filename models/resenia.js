@@ -10,14 +10,17 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Resenia.belongsTo(models.Usuario, { foreignKey: 'idUsuario' });
+      Resenia.belongsTo(models.Usuario, { foreignKey: 'idUsuarioReseniado' });
+      Resenia.belongsTo(models.Usuario, { foreignKey: 'idUsuarioCreador' });
     }
   }
   Resenia.init({
     titulo: DataTypes.STRING,
     descripcion: DataTypes.STRING,
     calificacion: DataTypes.INTEGER,
-    fechaResenia: DataTypes.DATE
+    fechaResenia: DataTypes.DATE,
+    idUsuarioReseniado: DataTypes.INTEGER,
+    idUsuarioCreador: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Resenia',
