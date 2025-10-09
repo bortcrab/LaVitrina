@@ -15,6 +15,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Puja.init({
+    idUsuario: DataTypes.INTEGER,
+    idSubasta: DataTypes.INTEGER,
     monto: DataTypes.DECIMAL,
     fechaPuja: DataTypes.DATE
   }, {
