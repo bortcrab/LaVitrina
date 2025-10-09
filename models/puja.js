@@ -15,10 +15,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Puja.init({
-    idUsuario: DataTypes.INTEGER,
-    idSubasta: DataTypes.INTEGER,
     monto: DataTypes.DECIMAL,
-    fechaPuja: DataTypes.DATE
+    fechaPuja: DataTypes.DATE,
+    idUsuario: DataTypes.INTEGER,
+    idSubasta: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Puja',

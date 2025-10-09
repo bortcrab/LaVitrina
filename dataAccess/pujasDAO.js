@@ -3,13 +3,13 @@ const { Puja } = require('../models');
 class PujaDAO {
     constructor() { }
 
-    async crearPuja(idUsuario, idSubasta, monto, fechaPuja) {
+    async crearPuja(monto, fechaPuja, idUsuario, idSubasta) {
         try {
             const puja = await Puja.create({
-                idUsuario,
-                idSubasta,
                 monto,
-                fechaPuja
+                fechaPuja,
+                idUsuario,
+                idSubasta
             });
             return puja;
         } catch (error) {
@@ -26,19 +26,19 @@ class PujaDAO {
         }
     }
 
-    async obtenerPujaPorId(id) {
+    async obtenerPujaPorId(idPuja) {
         try {
-            const puja = await Puja.findByPk(id);
+            const puja = await Puja.findByPk(idPuja);
             return puja;
         } catch (error) {
             throw error;
         }
     }
 
-    async actualizarPuja(idPuja, idUsuario, idSubasta, monto, fechaPuja) {
+    async actualizarPuja(idPuja, monto, fechaPuja, idUsuario, idSubasta) {
         try {
             await Puja.update(
-                { idUsuario, idSubasta, monto, fechaPuja },
+                { monto, fechaPuja, idUsuario, idSubasta },
                 { where: { idPuja } }
             );
             const pujaActualizada = await Puja.findByPk(id);
@@ -48,11 +48,11 @@ class PujaDAO {
         }
     }
 
-    async eliminarPuja(id) {
+    async eliminarPuja(idPuja) {
         try {
-            const puja = await Puja.findByPk(id);
+            const puja = await Puja.findByPk(idPuja);
             if (!puja) {
-                throw new Error(`Puja con id: ${id} no encontrada`);
+                throw new Error(`Puja con id: ${idPuja} no encontrada`);
             }
             await puja.destroy();
             return 'Puja eliminada con éxito.';
