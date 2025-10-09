@@ -12,8 +12,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Usuario.hasMany(models.Mensaje, { foreignKey: 'idUsuario' });
       Usuario.hasMany(models.Publicacion, { foreignKey: 'idUsuario' });
-      //Usuario.hasMany(models.Puja, { foreignKey: 'usuarioId' });
-      //Usuario.hasMany(models.Resenia, { foreignKey: 'usuarioId' });
+      Usuario.hasMany(models.Puja, { foreignKey: 'usuarioId' });
+      Usuario.hasMany(models.Resenia, { foreignKey: 'usuarioId' });
       Usuario.hasMany(models.Chat, { foreignKey: 'idUsuario' });
     }
   }
@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Usuario',
+    tableName: 'Usuarios'
   });
   return Usuario;
 };
