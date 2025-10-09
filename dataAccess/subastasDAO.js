@@ -4,7 +4,7 @@ class SubastasDAO {
 
     constructor() { }
 
-    async crearSubasta(titulo, descripcion, fechaPublicacion, precio, estado, idCategoria, etiquetas, imagenes) {
+    async crearSubasta(/*Usar publicacionesDAO*/) {
         try {
             const publicacionCreada = await Producto.create({ titulo, descripcion, fechaPublicacion, precio, estado, idCategoria });
             ImagenesPublicacion.create()
