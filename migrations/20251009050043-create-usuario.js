@@ -10,30 +10,41 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       nombres: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       apellidoPaterno: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       apellidoMaterno: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       fechaNacimiento: {
+        allowNull: false,
         type: Sequelize.DATEONLY
       },
       ciudad: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       correo: {
-        type: Sequelize.STRING
+        allowNull: false,
+        type: Sequelize.STRING,
+        unique: true
       },
       contrasenia: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       telefono: {
-        type: Sequelize.STRING
+        allowNull: false,
+        type: Sequelize.STRING,
+        unique: true
       },
       fotoPerfil: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       createdAt: {
