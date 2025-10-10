@@ -61,4 +61,8 @@ class PublicacionesDAO {
             throw error;
         }
     }
+
+    
 }
+
+module.exports = new PublicacionesDAO();
