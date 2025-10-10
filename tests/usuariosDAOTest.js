@@ -1,6 +1,6 @@
-const { sequelize } = require('./models'); // Asegúrate de que Categoria esté disponible
-const { UsuarioDAO } = require('./dataAccess/usuariosDAO');
-const usuariosDAO = require('./dataAccess/usuariosDAO');
+const { sequelize } = require('../models'); // Asegúrate de que Categoria esté disponible
+const { UsuarioDAO } = require('../dataAccess/usuariosDAO');
+const usuariosDAO = require('../dataAccess/usuariosDAO');
 
 async function realizarTransacciones() {
   try {
@@ -61,7 +61,7 @@ async function realizarTransacciones() {
       ciudad: "Hermosillo",
       telefono: "5555555555"
     };
-    const usuarioActualizado = await usuariosDAO.actualizarUsuario(5, datosActualizados);
+    const usuarioActualizado = await usuariosDAO.actualizarUsuario(idUsuario, datosActualizados);
     console.log('Usuario Actualizado:', usuarioActualizado.toJSON());
 
     // 9. Prueba de obtenerUsuarios
@@ -73,9 +73,9 @@ async function realizarTransacciones() {
 
     // 10. Prueba de eliminarUsuario
     console.log('\n--- Probando eliminarUsuario ---');
-    const resultadoEliminar = await usuariosDAO.eliminarUsuario(5);
+    const resultadoEliminar = await usuariosDAO.eliminarUsuario(idUsuario);
     console.log('Resultado de la eliminación:', resultadoEliminar);
-    const usuarioEliminado = await usuariosDAO.obtenerUsuarioPorId(5);
+    const usuarioEliminado = await usuariosDAO.obtenerUsuarioPorId(idUsuario);
     console.log('¿Usuario eliminado existe?:', usuarioEliminado ? 'No' : 'Sí, fue eliminado');
 
   } catch (error) {
