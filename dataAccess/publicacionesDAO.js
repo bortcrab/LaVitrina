@@ -187,7 +187,7 @@ class PublicacionesDAO {
      */
     async actualizarPublicacion(idPublicacion, titulo, descripcion, precio, estado, idCategoria, etiquetas, imagenes) {
         try {
-            const publicacion = await thisobtenerPublicacionPorId(idPublicacion);
+            const publicacion = await this.obtenerPublicacionPorId(idPublicacion);
 
             if (!publicacion) {
                 throw new Error('La publicacion no existe.');
