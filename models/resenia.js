@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Resenia.belongsTo(models.Usuario, { foreignKey: 'idUsuarioReseniado' });
-      Resenia.belongsTo(models.Usuario, { foreignKey: 'idUsuarioCreador' });
+      Resenia.belongsTo(models.Usuario, { foreignKey: 'idUsuarioReseniado', as: 'UsuarioReseniado' });
+      Resenia.belongsTo(models.Usuario, { foreignKey: 'idUsuarioCreador', as: 'UsuarioCreador' });
     }
   }
   Resenia.init({
