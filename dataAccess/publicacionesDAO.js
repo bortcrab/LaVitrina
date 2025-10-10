@@ -34,7 +34,7 @@ class PublicacionesDAO {
      */
     async crearPublicacion(titulo, descripcion, fechaPublicacion, precio, estado, etiquetas, imagenes, idCategoria, idUsuario) {
         try {
-            const publicacionCreada = await Producto.create({ titulo, descripcion, fechaPublicacion, precio, estado, idCategoria, idUsuario });
+            const publicacionCreada = await Publicacion.create({ titulo, descripcion, fechaPublicacion, precio, estado, idCategoria, idUsuario });
             ImagenesPublicacion.create()
             for (let i = 0; i < imagenes.length; i++) {
                 ImagenesPublicacion.create({ url: imagenes[i], idPublicacion: publicacionCreada.id });
