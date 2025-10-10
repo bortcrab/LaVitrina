@@ -96,7 +96,7 @@ class PublicacionesDAO {
             const publicacionesObtenidas = await Publicacion.findAll({
                 where: {
                     titulo: {
-                        [Op.like]: `%${titulo}%`
+                        [Op.like]: `%${titulo}%` //Se usa el operador like para los titulos que coincidan con el mandado en el parámetro
                     }
                 }, limit: 20
             });
@@ -138,7 +138,7 @@ class PublicacionesDAO {
                 include: [{
                     model: EtiquetasPublicacion, where: {
                         etiqueta: {
-                            [Op.in]: etiquetas
+                            [Op.in]: etiquetas //Se usa el operador in para las etiquetas que coincidan con las mandadas en el parámetro
                         }
                     }
                 }], limit: 20
@@ -162,7 +162,7 @@ class PublicacionesDAO {
             const publicacionesObtenidas = await Publicacion.findAll({
                 where: {
                     fechaPublicacion: {
-                        [Op.between]: [fechaInicio, fechaFin]
+                        [Op.between]: [fechaInicio, fechaFin] //Se usa el operador between para las fechas que están dentro del periodo
                     }
                 }, limit: 20
             });
@@ -245,4 +245,5 @@ class PublicacionesDAO {
 
 }
 
+//Se exporta la clase PublicacionesDAO
 module.exports = new PublicacionesDAO();
