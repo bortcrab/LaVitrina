@@ -19,7 +19,7 @@ class PujaDAO {
 
     async obtenerPujas() {
         try {
-            const pujas = await Pujas.findAll();
+            const pujas = await Puja.findAll();
             return pujas;
         } catch (error) {
             throw error;
