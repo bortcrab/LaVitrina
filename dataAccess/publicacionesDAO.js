@@ -4,6 +4,8 @@ const { Publicacion } = require('../models');
 const { ImagenesPublicacion } = require('../models')
 // Importa el modelo de etiquetas asociadas a publicaciones
 const { EtiquetasPublicacion } = require('../models')
+// Importa operadores de consulta de Sequelize para búsquedas avanzadas
+const { Op } = require('sequelize');
 
 /**
  * Clase para gestionar operaciones relacionadas con publicaciones, incluyendo creación,
@@ -35,12 +37,11 @@ class PublicacionesDAO {
     async crearPublicacion(titulo, descripcion, fechaPublicacion, precio, estado, etiquetas, imagenes, idCategoria, idUsuario) {
         try {
             const publicacionCreada = await Publicacion.create({ titulo, descripcion, fechaPublicacion, precio, estado, idCategoria, idUsuario });
-            ImagenesPublicacion.create()
             for (let i = 0; i < imagenes.length; i++) {
-                ImagenesPublicacion.create({ url: imagenes[i], idPublicacion: publicacionCreada.id });
+                await ImagenesPublicacion.create({ url: imagenes[i], idPublicacion: publicacionCreada.id });
             }
             for (let i = 0; i < etiquetas.length; i++) {
-                EtiquetasPublicacion.create({ etiqueta: etiquetas[i], idPublicacion: publicacionCreada.id });
+                await EtiquetasPublicacion.create({ etiqueta: etiquetas[i], idPublicacion: publicacionCreada.id });
             }
             return publicacionCreada;
         } catch (error) {
@@ -77,7 +78,7 @@ class PublicacionesDAO {
                     idUsuario: idUsuario
                 }
             });
-            return publicacionEncontrada;
+            return publicacionObtenida;
         } catch (error) {
             throw error;
         }
@@ -187,13 +188,16 @@ class PublicacionesDAO {
      */
     async actualizarPublicacion(idPublicacion, titulo, descripcion, precio, estado, idCategoria, etiquetas, imagenes) {
         try {
-            const publicacion = await this.obtenerPublicacionPorId(idPublicacion);
+            //Busca la publicación para actualizarla
+            const publicacionObtenida = await Publicacion.findByPk(idPublicacion);
 
-            if (!publicacion) {
+            //Si la publicación no existe, tira una excepción
+            if (!publicacionObtenida) {
                 throw new Error('La publicacion no existe.');
             }
 
-            const publicacionActualizada = await publicacion.update({ titulo, descripcion, precio, estado, idCategoria, etiquetas, imagenes }, { new: true });
+            //Actualiza la publicación con los datos mandados en los parámetros
+            const publicacionActualizada = await publicacionObtenida.update({ titulo, descripcion, precio, estado, idCategoria, etiquetas, imagenes }, { new: true });
             return publicacionActualizada;
         } catch (error) {
             throw error;
@@ -209,14 +213,30 @@ class PublicacionesDAO {
      */
     async eliminarPublicacion(idPublicacion) {
         try {
-            const publicacionObtenida = await this.obtenerPublicacionPorId(idPublicacion);
+            //Busca la publicación para eliminarla
+            const publicacionObtenida = await Publicacion.findByPk(idPublicacion);
 
+            //Si la publicación no existe, tira una excepción
             if (!publicacionObtenida) {
                 throw new Error('La publicacion no existe.');
             }
 
-            publicacionObtenida.destroy();
+            //Elimina las etiquetas asociadas a la publicación
+            await EtiquetasPublicacion.destroy({
+                where: {
+                    idPublicacion: idPublicacion
+                }
+            });
 
+            //Elimina las imágenes asociadas a la publicación
+            await ImagenesPublicacion.destroy({
+                where: {
+                    idPublicacion: idPublicacion
+                }
+            });
+
+            //Elimina la publicación
+            await publicacionObtenida.destroy();
             return 'Publicacion eliminada con exito.';
         } catch (error) {
             throw error;
