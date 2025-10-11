@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
       Usuario.hasMany(models.Puja, { foreignKey: 'idUsuario' });
       Usuario.hasMany(models.Resenia, { foreignKey: 'idUsuarioReseniado', as: 'reseniasRecibidas' });
       Usuario.hasMany(models.Resenia, { foreignKey: 'idUsuarioCreador', as: 'reseniasCreadas' });
-      Usuario.hasMany(models.Chat, { foreignKey: 'idUsuario' });
+      //Usuario.hasMany(models.Chat, { foreignKey: 'idUsuario' });
+      Usuario.belongsToMany(models.Chat, { through: models.UsuarioChat, foreignKey: 'idUsuario' });
     }
   }
   Usuario.init({
