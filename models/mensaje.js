@@ -14,9 +14,9 @@ module.exports = (sequelize, DataTypes) => {
 
       this.belongsTo(models.Usuario, { foreignKey: 'idUsuario' });
 
-      this.hasOne(models.MensajeTexto, { foreignKey: 'id' });
+      this.hasOne(models.MensajeTexto, { foreignKey: 'id', onDelete: 'CASCADE' });
 
-      this.hasOne(models.MensajeImagen, { foreignKey: 'id' });
+      this.hasOne(models.MensajeImagen, { foreignKey: 'id', onDelete: 'CASCADE' });
     }
   }
   Mensaje.init({
