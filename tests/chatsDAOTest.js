@@ -1,58 +1,58 @@
 const { sequelize } = require('../models');
-const usuariosDAO = require('../dataAccess/usuariosDAO');
-const chatsDAO = require('../dataAccess/chatsDAO');
+const usuariosDAO = require('../dataAccess/usuariosDAO.js');
+const chatsDAO = require('../dataAccess/chatsDAO.js');
+const mensajesDAO = require('../dataAccess/mensajesDAO.js');
+const usuarioChatsDAO = require('../dataAccess/usuarioChatsDAO.js');
 
-async function probarChatsDAO() {
-    let chatCreado;
-
+async function chatsDAOTest() {
     try {
         await sequelize.sync({ force: true });
 
-        const usuario1 = await usuariosDAO.crearUsuario({
-            nombres: "Juan", correo: "juan@gmail.com", contrasenia: "1234",
-            apellidoPaterno: "Gómez", apellidoMaterno: "Pérez", fechaNacimiento: "1998-01-15",
-            ciudad: "Guasave", telefono: "6871741035"
+        // Contexto de la prueba
+        console.log('\n--- Creando contexto de prueba (usuario) ---');
+        const testUser = await usuariosDAO.crearUsuario({
+            nombres: "Victoria",
+            correo: "victoriavegabe@gmail.com",
+            contrasenia: "12345",
+            apellidoPaterno: "Vega",
+            apellidoMaterno: "Bernal",
+            fechaNacimiento: "2004-09-02",
+            ciudad: "Guasave",
+            telefono: "6871741035"
         });
 
-        const usuario2 = await usuariosDAO.crearUsuario({
-            nombres: "María", correo: "maria@gmail.com", contrasenia: "1234",
-            apellidoPaterno: "Martinez", apellidoMaterno: "López", fechaNacimiento: "2004-09-02",
-            ciudad: "Guasave", telefono: "6871933193"
-        });
+        // Prueba crear chat
+        console.log('\n--- Probando crearChat ---');
+        const testChat = await chatsDAO.crearChat('Victoria + Abel - Teclado gamer', new Date());
+        console.log('Chat creado:', testChat.toJSON());
 
-        chatCreado = await chatsDAO.crearChat('Juan + María - Teclado Gamer', new Date());
-        console.log(`Chat creado con éxito, id: ${chatCreado.id}, nombre: ${chatCreado.nombre}`);
+        // Prueba obtener chat por id
+        console.log('\n--- Probando obtenerChatPorId ---');
+        const chatEncontrado = await chatsDAO.obtenerChatPorId(testChat.id);
+        console.log('Chat encontrado:', chatEncontrado.toJSON());
 
-        const chatObtenido = await chatsDAO.obtenerChatPorId(chatCreado.id);
-        console.log('\n[Paso 4: Probando obtenerChatsPorUsuario...]');
+        // Prueba obtener chats por usuario
+        console.log('\n--- Probando obtenerChatsPorUsuario ---');
+        await usuarioChatsDAO.agregarUsuarioAChat(testUser.id, testChat.id);
+        await mensajesDAO.crearMensaje(testChat.id, testUser.id, { texto: 'Último mensaje de prueba' });
 
-        await UsuarioChat.bulkCreate([
-            { idChat: chatCreado.id, idUsuario: usuario1.id },
-            { idChat: chatCreado.id, idUsuario: usuario2.id }
-        ]);
+        const chatsDelUsuario = await chatsDAO.obtenerChatsPorUsuario(testUser.id);
 
-        const mensaje = await Mensaje.create({ idChat: chatCreado.id, idUsuario: usuario1.id, fechaEnviado: new Date() });
-        await MensajeTexto.create({ id: mensaje.id, texto: 'Este es el último mensaje' });
-        console.log('...Contexto para la prueba de obtenerChatsPorUsuario preparado.');
+        console.log(`Se encontraron ${chatsDelUsuario.length} chats del usuario.`);
+        console.log('Chats encontrados:', JSON.stringify(chatsDelUsuario, null, 2));
 
-        const chatsDeJuan = await chatsDAO.obtenerChatsPorUsuario(usuario1.id);
-        console.log('📱 Chats de Juan:');
-        console.log(JSON.stringify(chatsDeJuan, null, 2));
-        console.log('✅ El chat de prueba fue recuperado correctamente.');
-
-        // --- PASO 5: PROBAR eliminarChat ---
-        console.log('\n[Paso 5: Probando eliminarChat...]');
-        const mensajeEliminacion = await chatsDAO.eliminarChat(chatCreado.id);
-        console.log(`🗑️  ${mensajeEliminacion}`);
-        const chatVerificacion = await chatsDAO.obtenerChatPorId(chatCreado.id);
-        console.log(`¿El chat de prueba todavía existe? ${chatVerificacion ? 'Sí' : 'No, se eliminó correctamente.'}`);
+        // Prueba eliminar chat
+        console.log('\n--- Probando eliminarChat ---');
+        const resultadoEliminar = await chatsDAO.eliminarChat(testChat.id);
+        console.log('Resultado de la eliminación:', resultadoEliminar);
+        const chatVerificacion = await chatsDAO.obtenerChatPorId(testChat.id);
 
     } catch (error) {
-        console.error('\n--- ❌ ERROR DURANTE EL TEST ❌ ---');
-        console.error(error);
+        console.error('Error:', error);
     } finally {
         await sequelize.close();
-        console.log('\n--- ✅ TEST FINALIZADO ✅ ---');
-        console.log('Conexión con la base de datos cerrada.');
+        console.log('Conexión cerrada.');
     }
 }
+
+chatsDAOTest();
