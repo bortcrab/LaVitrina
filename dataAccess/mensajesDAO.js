@@ -25,13 +25,13 @@ class MensajesDAO {
             } else if(tipo.imagen) {
                 await MensajeImagen.create({
                     id: mensajeNuevo.id,
-                    texto: tipo.imagen
+                    imagen: tipo.imagen
                 })
             } else {
                 throw new Error('El contenido del mensaje no es válido.')
             }
 
-            return mensajeNuevo;
+            return this.obtenerMensajePorId(mensajeNuevo.id);
         } catch (error) {
             throw error;
         }
@@ -41,6 +41,7 @@ class MensajesDAO {
         try {
             const mensaje = await Mensaje.findByPk(id, {
                 include: [
+                    { model: Usuario, attributes: ['id', 'nombres', 'fotoPerfil'] },
                     { model: MensajeTexto, attributes: ['texto'] },
                     { model: MensajeImagen, attributes: ['imagen'] }
                 ]
