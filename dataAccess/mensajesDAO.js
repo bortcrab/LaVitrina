@@ -28,7 +28,7 @@ class MensajesDAO {
                     imagen: tipo.imagen
                 })
             } else {
-                throw new Error('El contenido del mensaje no es válido.')
+                throw new Error('El tipo de mensaje no es válido.')
             }
 
             return this.obtenerMensajePorId(mensajeNuevo.id);

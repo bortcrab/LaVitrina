@@ -11,11 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Chat, { foreignKey: 'idChat' });
-
       this.belongsTo(models.Usuario, { foreignKey: 'idUsuario' });
-
       this.hasOne(models.MensajeTexto, { foreignKey: 'id', onDelete: 'CASCADE' });
-
       this.hasOne(models.MensajeImagen, { foreignKey: 'id', onDelete: 'CASCADE' });
     }
   }
