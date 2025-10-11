@@ -12,8 +12,8 @@ class UsuarioChatsDAO {
         try {
             const nuevaRelacion = await UsuarioChat.create({ idUsuario, idChat });
             return nuevaRelacion;
+            
         } catch (error) {
-            console.error("Error al agregar usuario al chat:", error);
             throw error;
         }
     }
@@ -28,9 +28,11 @@ class UsuarioChatsDAO {
             
             await relacion.destroy();
             return 'Usuario eliminado del chat con éxito.';
+
         } catch (error) {
-            console.error("Error al eliminar el usuario del chat:", error);
             throw error;
         }
     }
 }
+
+module.exports = new UsuarioChatsDAO();

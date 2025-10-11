@@ -1,8 +1,8 @@
 const { Chat } = require('../models');
-const { UsuarioChat } = require('../models');
-const { Publicacion } = require('../models');
 const { Mensaje } = require('../models');
 const { Usuario } = require('../models');
+const { MensajeTexto } = require('../models');
+const { MensajeImagen } = require('../models');
 
 class ChatsDAO {
 
@@ -35,47 +35,21 @@ class ChatsDAO {
                     model: Chat,
                     include: [{
                         model: Mensaje,
-                        include: [{
-                            model: MensajeTexto,
-                            attributes: ['texto'],
-                        }],
+                        include: [
+                            { model: MensajeTexto, attributes: ['texto'] },
+                            { model: MensajeImagen, attributes: ['imagen'] }
+                        ],
                         limit: 1,
                         order: [['fechaEnviado', 'DESC']]
                     }]
                 }]
             });
 
-            if (!usuario || !usuario.Chats) {
+            if(usuario) {
+                return usuario.Chats;
+            } else {
                 return [];
             }
-
-            const chats = usuario.Chats;
-
-            chats.sort((a, b) => {
-                const ultimoMensajeA = a.Mensajes[0];
-                const ultimoMensajeB = b.Mensajes[0];
-
-                if (!ultimoMensajeA) return 1;
-                if (!ultimoMensajeB) return -1;
-
-                return new Date(ultimoMensajeB.fechaEnviado) - new Date(ultimoMensajeA.fechaEnviado);
-            });
-
-            const chatsFormateados = chats.map(chat => {
-                const ultimoMensaje = chat.Mensajes[0];
-                const textoMensaje = ultimoMensaje && ultimoMensaje.MensajeTexto
-                    ? ultimoMensaje.MensajeTexto.texto
-                    : ' ';
-
-                return {
-                    id: chat.id,
-                    nombre: chat.nombre,
-                    ultimoMensaje: textoMensaje,
-                    horaUltimoMensaje: ultimoMensaje ? ultimoMensaje.fechaEnviado : null
-                };
-            });
-
-            return chatsFormateados;
 
         } catch (error) {
             throw error;
@@ -85,8 +59,8 @@ class ChatsDAO {
     async eliminarChat(id) {
         try {
             const chatObtenido = await Chat.findByPk(id);
-    
-            if(!chatObtenido) {
+
+            if (!chatObtenido) {
                 throw new Error('Chat no encontrado o no existe.');
             }
             await chatObtenido.destroy();
