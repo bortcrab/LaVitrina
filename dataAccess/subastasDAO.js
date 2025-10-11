@@ -1,50 +1,29 @@
-// Importa el modelo de Subasta (con su relación hacia Publicacion)
-const { Subasta, Publicacion, EtiquetasPublicacion, ImagenesPublicacion } = require('../models');
-// Operadores de Sequelize para consultas avanzadas
+const { Subasta, Publicacion } = require('../models');
 const { Op } = require('sequelize');
-// Importa el DAO de publicaciones para reutilizar su creación
-const publicacionesDAO = require('./publicacionesDAO');
+const { obtenerUsuarioPorId } = require('./usuariosDAO');
 
-/**
- * Clase para gestionar operaciones relacionadas con subastas, incluyendo creación,
- * obtención, actualización y eliminación de subastas junto con su publicación asociada.
- */
 class SubastasDAO {
+    constructor() { }
 
     /**
-     * Crea una nueva subasta en la base de datos, junto con su publicación base, imágenes y etiquetas.
+     * Crea una nueva subasta junto con su publicación asociada.
      * 
-     * @param {Object} datosSubasta - Objeto con la información de la subasta y la publicación base.
-     * @param {string} datosSubasta.titulo - Título de la publicación.
-     * @param {string} datosSubasta.descripcion - Descripción de la publicación.
-     * @param {Date} datosSubasta.fechaPublicacion - Fecha de publicación.
-     * @param {number} datosSubasta.precio - Precio inicial de la subasta.
-     * @param {string} datosSubasta.estado - Estado de la publicación.
-     * @param {string[]} datosSubasta.etiquetas - Lista de etiquetas asociadas.
-     * @param {string[]} datosSubasta.imagenes - Lista de URLs de imágenes asociadas.
-     * @param {number} datosSubasta.idCategoria - ID de la categoría.
-     * @param {number} datosSubasta.idUsuario - ID del usuario que crea la subasta.
-     * @param {Date} datosSubasta.fechaInicio - Fecha de inicio de la subasta.
-     * @param {Date} datosSubasta.fechaFin - Fecha de finalización de la subasta.
-     * @returns {Promise<Object>} La subasta creada junto con su publicación.
+     * @param {Object} datosSubasta - Datos de la subasta y de la publicación.
+     * @returns {Promise<Object>} La subasta creada con los datos de la publicación.
      * @throws {Error} Si ocurre un error al crear la subasta.
      */
     async crearSubasta(datosSubasta) {
         try {
-            // Primero crea la publicación base
-            const publicacionCreada = await publicacionesDAO.crearPublicacion(
-                datosSubasta.titulo,
-                datosSubasta.descripcion,
-                datosSubasta.fechaPublicacion,
-                datosSubasta.precio,
-                datosSubasta.estado,
-                datosSubasta.etiquetas,
-                datosSubasta.imagenes,
-                datosSubasta.idCategoria,
-                datosSubasta.idUsuario
-            );
+            const publicacionCreada = await Publicacion.create({
+                titulo: datosSubasta.titulo,
+                descripcion: datosSubasta.descripcion,
+                fechaPublicacion: datosSubasta.fechaPublicacion,
+                precio: datosSubasta.precio,
+                estado: datosSubasta.estado,
+                idCategoria: datosSubasta.idCategoria,
+                idUsuario: datosSubasta.idUsuario
+            });
 
-            // Luego crea la subasta asociada usando el mismo ID
             const subastaCreada = await Subasta.create({
                 id: publicacionCreada.id,
                 fechaInicio: datosSubasta.fechaInicio,
@@ -66,11 +45,7 @@ class SubastasDAO {
     async obtenerSubastas() {
         try {
             const subastasObtenidas = await Subasta.findAll({
-                include: [{
-                    model: Publicacion,
-                    as: 'publicacion',
-                    include: ['Categoria', 'Usuario', 'ImagenesPublicacion', 'EtiquetasPublicacion']
-                }],
+                include: [{ model: Publicacion }],
                 limit: 20
             });
             return subastasObtenidas;
@@ -91,12 +66,28 @@ class SubastasDAO {
             const subastasObtenidas = await Subasta.findAll({
                 include: [{
                     model: Publicacion,
-                    as: 'publicacion',
-                    where: { idUsuario },
-                    include: ['Categoria', 'ImagenesPublicacion']
+                    where: { idUsuario }
                 }]
             });
             return subastasObtenidas;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    /**
+     * Obtiene una subasta dado un ID.
+     * 
+     * @param {number} idSubastas - ID de la subasta a buscar.
+     * @returns {Promise<Subasta>} Subasta encontrada.
+     * @throws {Error} Si ocurre un error al obtener la subastas.
+     */
+    async obtenerSubastaPorId(idSubasta) {
+        try {
+            const subastaObtenida = await Subasta.findByPk(idSubasta, {
+                include: [{ model: Publicacion }]
+            });
+            return subastaObtenida;
         } catch (error) {
             throw error;
         }
@@ -114,10 +105,7 @@ class SubastasDAO {
             const subastasObtenidas = await Subasta.findAll({
                 include: [{
                     model: Publicacion,
-                    as: 'publicacion',
-                    where: {
-                        titulo: { [Op.like]: `%${titulo}%` }
-                    }
+                    where: { titulo: { [Op.like]: `%${titulo}%` } }
                 }],
                 limit: 20
             });
@@ -139,34 +127,7 @@ class SubastasDAO {
             const subastasObtenidas = await Subasta.findAll({
                 include: [{
                     model: Publicacion,
-                    as: 'publicacion',
                     where: { idCategoria }
-                }],
-                limit: 20
-            });
-            return subastasObtenidas;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    /**
-     * Obtiene una lista de subastas que contienen alguna de las etiquetas especificadas.
-     * 
-     * @param {string[]} etiquetas - Lista de etiquetas por las que se filtran las subastas.
-     * @returns {Promise<Subasta[]>} Lista de subastas encontradas.
-     * @throws {Error} Si ocurre un error al obtener las subastas.
-     */
-    async obtenerSubastasPorEtiquetas(etiquetas) {
-        try {
-            const subastasObtenidas = await Subasta.findAll({
-                include: [{
-                    model: Publicacion,
-                    as: 'publicacion',
-                    include: [{
-                        model: EtiquetasPublicacion,
-                        where: { etiqueta: { [Op.in]: etiquetas } }
-                    }]
                 }],
                 limit: 20
             });
@@ -189,10 +150,7 @@ class SubastasDAO {
             const subastasObtenidas = await Subasta.findAll({
                 include: [{
                     model: Publicacion,
-                    as: 'publicacion',
-                    where: {
-                        fechaPublicacion: { [Op.between]: [fechaInicio, fechaFin] }
-                    }
+                    where: { fechaPublicacion: { [Op.between]: [fechaInicio, fechaFin] } }
                 }],
                 limit: 20
             });
@@ -213,15 +171,15 @@ class SubastasDAO {
     async actualizarSubasta(idSubasta, datosActualizados) {
         try {
             const subasta = await Subasta.findByPk(idSubasta, {
-                include: [{ model: Publicacion, as: 'publicacion' }]
+                include: [{ model: Publicacion }]
             });
 
-            if (!subasta || !subasta.publicacion) {
+            if (!subasta || !subasta.Publicacion) {
                 throw new Error('La subasta o su publicación asociada no existen.');
             }
 
-            await subasta.publicacion.update(datosActualizados);
-            return subasta.publicacion;
+            await subasta.Publicacion.update(datosActualizados);
+            return subasta.Publicacion;
         } catch (error) {
             throw error;
         }
@@ -236,28 +194,20 @@ class SubastasDAO {
      */
     async eliminarSubasta(idSubasta) {
         try {
-            const subasta = await Subasta.findByPk(idSubasta, {
-                include: [{ model: Publicacion, as: 'publicacion' }]
-            });
+            const subasta = await this.obtenerSubastaPorId(idSubasta);
 
-            if (!subasta || !subasta.publicacion) {
+            if (!subasta || !subasta.Publicacion) {
                 throw new Error('La subasta no existe.');
             }
 
-            // Elimina etiquetas e imágenes asociadas
-            await EtiquetasPublicacion.destroy({ where: { idPublicacion: idSubasta } });
-            await ImagenesPublicacion.destroy({ where: { idPublicacion: idSubasta } });
-
-            // Elimina publicación y subasta
-            await subasta.publicacion.destroy();
             await subasta.destroy();
+            await subasta.Publicacion.destroy();
 
             return 'Subasta eliminada con éxito.';
         } catch (error) {
             throw error;
         }
     }
-
 }
 
 module.exports = new SubastasDAO();

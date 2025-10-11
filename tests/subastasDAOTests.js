@@ -1,115 +1,140 @@
+const { execSync } = require('child_process');
+
+// Importamos la conexión y los DAOs necesarios
 const { sequelize } = require('../models');
 const usuariosDAO = require('../dataAccess/usuariosDAO');
-const subastasDAO = require('../dataAccess/subastasDAO');
 const categoriasDAO = require('../dataAccess/categoriasDAO');
+const subastasDAO = require('../dataAccess/subastasDAO');
 
-async function subastasDAOTests() {
+// Función principal que ejecuta todas las pruebas de las subastas
+async function subastasDAOTest() {
   try {
-    // Sincronizar los modelos con la base de datos.
-    await sequelize.sync();
+    // Sincroniza los modelos con la base de datos
+    // (solo crea las tablas si no existen)
+    //await sequelize.sync();
 
-    // Primero creamos un usuario.
+    // =====================================================
+    // 1. CREACIÓN DE DATOS BASE: USUARIO Y CATEGORÍA
+    // =====================================================
+    console.log('\n--- Creando usuario y categoría base ---');
+
+    // Datos de ejemplo para un usuario creador de subastas
     const datosUsuario = {
-      nombres: "Diego",
-      apellidoPaterno: "Valenzuela",
-      apellidoMaterno: "Parra",
-      fechaNacimiento: "2004-06-03",
-      ciudad: "Ciudad Obregón",
-      correo: "diegovalenzuela@gmail.com",
-      contrasenia: "diego123",
-      telefono: "6448975623",
-      fotoPerfil: "url/diego.jpg"
+      nombres: "Carlos",
+      apellidoPaterno: "Ramírez",
+      apellidoMaterno: "López",
+      fechaNacimiento: "2000-01-15",
+      ciudad: "Hermosillo",
+      correo: "carlosramirez@gmail.com",
+      contrasenia: "carlos123",
+      telefono: "6621234567",
+      fotoPerfil: "url/carlos.jpg"
     };
+
+    // Creamos el usuario usando el DAO
     const usuario = await usuariosDAO.crearUsuario(datosUsuario);
+    console.log('Usuario creador creado:', usuario.toJSON());
 
-    const categoria1 = await categoriasDAO.crearCategoria('Electrónica');
-    const categoria2 = await categoriasDAO.crearCategoria('Ropa');
+    // Creamos una categoría base
+    const categoria = await categoriasDAO.crearCategoria('Coleccionables');
+    console.log('Categoría creada:', categoria.toJSON());
 
-    // Ahora creamos las subastas.
+    // ========================================
+    // 2. CREAR UNA SUBASTA COMPLETA
+    // ========================================
     console.log('\n--- Probando crearSubasta ---');
-    const datosSubasta1 = {
-      titulo: 'Iphone 17',
-      descripcion: 'Reacondicionado con poco uso.',
-      fechaPublicacion: new Date(),
-      precio: 30000.00,
-      estado: 'disponible',
-      etiquetas: ['apple', 'celular'],
-      imagenes: ['url/imagen1.jpg', 'url/imagen2.jpg'],
-      idCategoria: usuario.id,
-      idUsuario: categoria1.id,
-      fechaInicio: new Date(),
-      fechaFin: new Date()
-    };
-    const subastaCreada1 = await subastasDAO.crearSubasta(datosSubasta1);
-    console.log('Subasta creada:', subastaCreada1.toJSON());
 
-    const datosSubasta2 = {
-      titulo: 'Chanclas Balenciaga',
-      descripcion: 'Están manchadas de popó de perro y tienen la suela lisa.',
+    const datosSubasta = {
+      titulo: "Figura edición limitada de Star Wars",
+      descripcion: "Figura original de Luke Skywalker con sable de luz azul.",
       fechaPublicacion: new Date(),
-      precio: 1000.00,
-      estado: 'disponible',
-      etiquetas: ['balenciaga', 'calzado'],
-      imagenes: ['url/imagen1.jpg', 'url/imagen2.jpg'],
-      idCategoria: usuario.id,
-      idUsuario: categoria2.id,
+      precio: 1500.00,
+      estado: "Activa",
+      etiquetas: ["figura", "coleccionable", "star wars"],
+      imagenes: ["url/figura1.jpg", "url/figura2.jpg"],
+      idCategoria: categoria.id,
+      idUsuario: usuario.id,
       fechaInicio: new Date(),
-      fechaFin: new Date()
+      fechaFin: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // +7 días
     };
-    const subastaCreada2 = await subastasDAO.crearSubasta(datosSubasta2);
-    console.log('Subasta creada:', subastaCreada2.toJSON());
 
-    // 2. Prueba de obtenerSubastas
+    // Creamos la subasta con su publicación interna
+    const subastaCreada = await subastasDAO.crearSubasta(datosSubasta);
+    console.log('Subasta creada:\n', JSON.stringify(subastaCreada, null, 2));
+
+    // ========================================
+    // 3. OBTENER TODAS LAS SUBASTAS
+    // ========================================
     console.log('\n--- Probando obtenerSubastas ---');
     const subastas = await subastasDAO.obtenerSubastas();
-    console.log('Todas las subastas:\n', JSON.stringify(subastas, null, 2));
+    console.log('Subastas encontradas:\n', JSON.stringify(subastas, null, 2));
 
-    // 3. Prueba de obtenerSubastasPorUsuario
+    // ========================================
+    // 4. OBTENER SUBASTAS POR USUARIO
+    // ========================================
     console.log('\n--- Probando obtenerSubastasPorUsuario ---');
-    const subastasPorUsuario = await publicacionesDAO.obtenerSubastasPorUsuario(usuario.id);
-    console.log(`El usuario ${usuario.id} tiene ${subastasPorUsuario.length} subastas.`);
+    const subastasPorUsuario = await subastasDAO.obtenerSubastasPorUsuario(usuario.id);
+    console.log(`Subastas creadas por ${usuario.nombres}:\n`, JSON.stringify(subastasPorUsuario, null, 2));
 
-    // 4. Prueba de obtenerSubastasPorTitulo
+    // ========================================
+    // 5. BUSCAR SUBASTAS POR TÍTULO
+    // ========================================
     console.log('\n--- Probando obtenerSubastasPorTitulo ---');
-    const subastasPorTitulo = await publicacionesDAO.obtenerSubastasPorTitulo('iphone');
-    console.log(`Se encontraron ${subastasPorTitulo.length} subastas con "iphone" en el título.`);
+    const subastasPorTitulo = await subastasDAO.obtenerSubastasPorTitulo("Star Wars");
+    console.log('Subastas encontradas con "Star Wars" en el título:\n', JSON.stringify(subastasPorTitulo, null, 2));
 
-    // 5. Prueba de obtenerPublicacionesPorCategoria
-    console.log('\n--- Probando obtenerPublicacionesPorCategoria ---');
-    const pubsPorCategoria = await publicacionesDAO.obtenerPublicacionesPorCategoria(idPublicacion);
-    console.log(`Se encontraron ${pubsPorCategoria.length} publicaciones en la categoría ${idPublicacion}.`);
+    // ========================================
+    // 6. BUSCAR SUBASTAS POR CATEGORÍA
+    // ========================================
+    console.log('\n--- Probando obtenerSubastasPorCategoria ---');
+    const subastasPorCategoria = await subastasDAO.obtenerSubastasPorCategoria(categoria.id);
+    console.log(`Subastas en categoría "${categoria.nombre}":\n`, JSON.stringify(subastasPorCategoria, null, 2));
 
+    // ========================================
+    // 7. ACTUALIZAR UNA SUBASTA
+    // ========================================
+    console.log('\n--- Probando actualizarSubasta ---');
 
-    // 6. Prueba de obtenerPublicacionesPorEtiquetas
-    console.log('\n--- Probando obtenerPublicacionesPorEtiquetas (["laptop"]) ---');
-    const pubsPorEtiqueta = await publicacionesDAO.obtenerPublicacionesPorEtiquetas(['laptop']);
-    console.log(`Se encontraron ${pubsPorEtiqueta.length} publicaciones con la etiqueta "laptop".`);
+    const datosSubastaActualizada = {
+      titulo: "Figura de colección de Luke Skywalker (actualizada)",
+      descripcion: "Edición limitada 2025, con sable de luz LED real.",
+      precio: 1800.00,
+      estado: "Activa",
+      idCategoria: categoria.id,
+      etiquetas: ["figura", "coleccionable", "star wars", "edición especial"],
+      imagenes: ["url/figura1_new.jpg", "url/figura2_new.jpg"]
+    };
 
-    // 7. Prueba de actualizarPublicacion
-    console.log('\n--- Probando actualizarPublicacion ---');
-    const publicacionActualizada = await publicacionesDAO.actualizarPublicacion(
-      idPublicacion,
-      'Laptop Gamer Seminueva',
-      'Laptop con RTX 4090, 32GB RAM. Solo 3 meses de uso.',
-      42000,
-      'vendido',
-      1,
-      [],
-      []
-    );
-    console.log('Publicación Actualizada:', publicacionActualizada.toJSON());
+    // Actualizamos la subasta usando su ID
+    const subastaActualizada = await subastasDAO.actualizarSubasta(subastaCreada.id, datosSubastaActualizada);
+    console.log('Subasta actualizada:', subastaActualizada.toJSON());
 
-    // 8. Prueba de eliminarPublicacion
-    console.log('\n--- Probando eliminarPublicacion ---');
-    const resultadoEliminar = await publicacionesDAO.eliminarPublicacion(idPublicacion);
-    console.log('Resultado de la eliminación:', resultadoEliminar);
+    // ========================================
+    // 8. ELIMINAR SUBASTA Y VERIFICAR
+    // ========================================
+    console.log('\n--- Probando eliminarSubasta ---');
+
+    const resultadoEliminar = await subastasDAO.eliminarSubasta(subastaCreada.id);
+    console.log('Resultado de eliminación:', resultadoEliminar);
+
+    // Intentamos buscarla de nuevo para confirmar
+    const subastaEliminada = await subastasDAO.obtenerSubastaPorId(subastaCreada.id);
+    console.log('¿Subasta aún existe?:', subastaEliminada ? 'Sí, no se eliminó.' : 'No, fue eliminada correctamente.');
 
   } catch (error) {
-    console.error('Error:', error);
+    // Si algo falla, mostramos el error
+    console.error('Error durante las pruebas:', error);
   } finally {
+    console.log('Limpiando y reconstruyendo base de datos...');
+    execSync('npx sequelize db:drop', { stdio: 'inherit' });
+    execSync('npx sequelize db:create', { stdio: 'inherit' });
+    execSync('npx sequelize db:migrate', { stdio: 'inherit' });
+    console.log('Base de datos restaurada correctamente.');
+    // Cerramos la conexión a la base de datos
     await sequelize.close();
     console.log('Conexión cerrada.');
   }
 }
 
-subastasDAOTests();
+// Ejecutamos la función principal
+subastasDAOTest();
