@@ -10,7 +10,7 @@ async function chatsDAOTest() {
 
         // Contexto de la prueba
         console.log('\n--- Creando contexto de prueba (usuario) ---');
-        const testUser = await usuariosDAO.crearUsuario({
+        const usuarioPrueba = await usuariosDAO.crearUsuario({
             nombres: "Victoria",
             correo: "victoriavegabe@gmail.com",
             contrasenia: "12345",
@@ -23,29 +23,28 @@ async function chatsDAOTest() {
 
         // Prueba crear chat
         console.log('\n--- Probando crearChat ---');
-        const testChat = await chatsDAO.crearChat('Victoria + Abel - Teclado gamer', new Date());
-        console.log('Chat creado:', testChat.toJSON());
+        const chatPrueba = await chatsDAO.crearChat('Victoria + Abel - Teclado gamer', new Date());
+        console.log('Chat creado:', chatPrueba.toJSON());
 
         // Prueba obtener chat por id
         console.log('\n--- Probando obtenerChatPorId ---');
-        const chatEncontrado = await chatsDAO.obtenerChatPorId(testChat.id);
+        const chatEncontrado = await chatsDAO.obtenerChatPorId(chatPrueba.id);
         console.log('Chat encontrado:', chatEncontrado.toJSON());
 
         // Prueba obtener chats por usuario
         console.log('\n--- Probando obtenerChatsPorUsuario ---');
-        await usuarioChatsDAO.agregarUsuarioAChat(testUser.id, testChat.id);
-        await mensajesDAO.crearMensaje(testChat.id, testUser.id, { texto: 'Último mensaje de prueba' });
+        await usuarioChatsDAO.agregarUsuarioAChat(usuarioPrueba.id, chatPrueba.id);
+        await mensajesDAO.crearMensaje(chatPrueba.id, usuarioPrueba.id, { texto: 'Hola me interesa el teclado gamer' });
 
-        const chatsDelUsuario = await chatsDAO.obtenerChatsPorUsuario(testUser.id);
+        const chatsDelUsuario = await chatsDAO.obtenerChatsPorUsuario(usuarioPrueba.id);
 
         console.log(`Se encontraron ${chatsDelUsuario.length} chats del usuario.`);
         console.log('Chats encontrados:', JSON.stringify(chatsDelUsuario, null, 2));
 
         // Prueba eliminar chat
         console.log('\n--- Probando eliminarChat ---');
-        const resultadoEliminar = await chatsDAO.eliminarChat(testChat.id);
+        const resultadoEliminar = await chatsDAO.eliminarChat(chatPrueba.id);
         console.log('Resultado de la eliminación:', resultadoEliminar);
-        const chatVerificacion = await chatsDAO.obtenerChatPorId(testChat.id);
 
     } catch (error) {
         console.error('Error:', error);
