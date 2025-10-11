@@ -4,6 +4,7 @@ const chatsDAO = require('../dataAccess/chatsDAO.js');
 const mensajesDAO = require('../dataAccess/mensajesDAO.js');
 const usuarioChatsDAO = require('../dataAccess/usuarioChatsDAO.js');
 
+// Función para probar todas las funciones de la clase chatsDAO
 async function chatsDAOTest() {
     try {
         await sequelize.sync({ force: true });
