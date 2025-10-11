@@ -3,11 +3,12 @@ const usuarioChatsDAO = require('../dataAccess/usuarioChatsDAO');
 const usuariosDAO = require('../dataAccess/usuariosDAO');
 const chatsDAO = require('../dataAccess/chatsDAO');
 
+// Función para probar todas las funciones de la clase chatsDAO
 async function usuariochatsDAOTest() {
     try {
         await sequelize.sync({ force: true });
 
-        // Contexto
+        // Contexto de la prueba
         console.log('\n--- Creando contexto de prueba (usuarios y chat) ---');
         const usuario = await usuariosDAO.crearUsuario({
             nombres: "Victoria",
