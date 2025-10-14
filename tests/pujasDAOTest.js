@@ -108,21 +108,6 @@ async function pujasDAOTest() {
         console.log('\n--- Probando obtenerPujaMasAlta ---');
         const pujaAlta = await pujasDAO.obtenerPujaMasAlta(subasta.id);
         console.log('Puja más alta encontrada:', pujaAlta.toJSON());
-
-        // =====================================================
-        // 7. ACTUALIZAR UNA PUJA
-        // =====================================================
-        console.log('\n--- Probando actualizarPuja ---');
-        const pujaActualizada = await pujasDAO.actualizarPuja(puja1.id, { monto: 23000 });
-        console.log('Puja actualizada:', pujaActualizada.toJSON());
-
-        // =====================================================
-        // 8. ELIMINAR UNA PUJA
-        // =====================================================
-        console.log('\n--- Probando eliminarPuja ---');
-        const resultadoEliminar = await pujasDAO.eliminarPuja(puja2.id);
-        console.log('Resultado de eliminación de la segunda puja:', resultadoEliminar);
-
     } catch (error) {
         // Si algo falla, mostramos el error
         console.error('Error durante las pruebas de pujas:', error);
