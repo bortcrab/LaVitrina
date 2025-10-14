@@ -79,40 +79,6 @@ class PujasDAO {
             throw error;
         }
     }
-
-    /**
-     * Actualiza una puja existente.
-     * @param {number} idPuja - ID de la puja a actualizar.
-     * @param {Object} datosPuja - Datos nuevos para la puja.
-     * @returns {Promise<Object>} - La puja actualizada.
-     */
-    async actualizarPuja(idPuja, datosPuja) {
-        try {
-            await Puja.update(datosPuja, { where: { id: idPuja } });
-            const pujaActualizada = await Puja.findByPk(idPuja);
-            return pujaActualizada;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    /**
-     * Elimina una puja por su ID.
-     * @param {number} idPuja - ID de la puja a eliminar.
-     * @returns {Promise<string>} - Mensaje de confirmación.
-     */
-    async eliminarPuja(idPuja) {
-        try {
-            const puja = await Puja.findByPk(idPuja);
-            if (!puja) {
-                throw new Error(`Puja con id: ${idPuja} no encontrada`);
-            }
-            await puja.destroy();
-            return 'Puja eliminada con éxito.';
-        } catch (error) {
-            throw error;
-        }
-    }
 }
 
 module.exports = new PujasDAO();
