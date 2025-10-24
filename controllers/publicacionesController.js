@@ -9,21 +9,18 @@ class PublicacionesController {
         try {
             const { titulo, descripcion, precio, etiquetas, imagenes, idCategoria, idUsuario } = req.body;
 
-            console.log(req.body);
-
             if (!titulo || !descripcion || precio < 1) {
-                next(new AppError('Los campos título, descripción y precio son obligatorios.'));
+                next(new AppError('Los campos título, descripción y precio son obligatorios.'), 400);
             } else if (!idCategoria) {
-                next(new AppError('Se debe elegir una categoría para la publicación.'));
+                next(new AppError('Se debe elegir una categoría para la publicación.'), 400);
             } else if (!idUsuario) {
-                next(new AppError('Se debe iniciar sesión para crear publicaciones.'));
+                next(new AppError('Se debe iniciar sesión para crear publicaciones.'), 400);
             }
 
             const publicacion = await publicacionesDAO.crearPublicacion(titulo, descripcion, precio, etiquetas, imagenes, idCategoria, idUsuario);
 
             res.status(200).json(publicacion);
         } catch (error) {
-            console.log(error.message);
             next(new AppError('Ocurrió un error al crear la publicación.', 500));
         }
     }
