@@ -1,4 +1,4 @@
-import winston from 'winston';
+const winston = require('winston');
 
 const logger = winston.createLogger({
     level: 'error',
@@ -32,7 +32,7 @@ const globalErrorHandler = (err, req, res, next) => {
     });
 }
 
-export {
+module.exports = {
     AppError,
     globalErrorHandler,
 }
