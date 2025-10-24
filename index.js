@@ -14,7 +14,6 @@ app.use(morgan('combined'));
 
 app.use('/api/publicaciones', publicacionesRouter);
 app.use('/api/chats', chatsRouter)
-
 app.use('/api/usuarios', usauriosRouter);
 
 app.use((req, res, next) => {
