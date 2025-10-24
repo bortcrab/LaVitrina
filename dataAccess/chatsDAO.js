@@ -23,9 +23,9 @@ class ChatsDAO {
      * @returns {Promise<Chat>} Chat creado
      * @throws {Error} Por si hay un error al crear el chat
      */
-    async crearChat(nombre, fechaCreacion) {
+    async crearChat(nombre, fechaCreacion, idPublicacion) {
         try {
-            const chatCreado = await Chat.create({ nombre, fechaCreacion });
+            const chatCreado = await Chat.create({ nombre, fechaCreacion, idPublicacion });
             return chatCreado;
         } catch (error) {
             throw error;
@@ -55,11 +55,13 @@ class ChatsDAO {
      * @returns {Promise<Chat[]>} Array de chats del usuario, incluye el último mensaje de cada chat
      * @throws {Error} Por si hay un error al obtener los chats
      */
-    async obtenerChatsPorUsuario(idUsuario) {
+    async obtenerChatsPorUsuario(idUsuario, limit = 20, offset = 0) {
         try {
             const usuario = await Usuario.findByPk(idUsuario, {
                 include: [{
                     model: Chat,
+                    limit: limit,
+                    offset: offset,
                     include: [{
                         model: Mensaje,
                         include: [
