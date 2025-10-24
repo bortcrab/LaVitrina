@@ -55,11 +55,13 @@ class ChatsDAO {
      * @returns {Promise<Chat[]>} Array de chats del usuario, incluye el último mensaje de cada chat
      * @throws {Error} Por si hay un error al obtener los chats
      */
-    async obtenerChatsPorUsuario(idUsuario) {
+    async obtenerChatsPorUsuario(idUsuario, limit = 20, offset = 0) {
         try {
             const usuario = await Usuario.findByPk(idUsuario, {
                 include: [{
                     model: Chat,
+                    limit: limit,
+                    offset: offset,
                     include: [{
                         model: Mensaje,
                         include: [
