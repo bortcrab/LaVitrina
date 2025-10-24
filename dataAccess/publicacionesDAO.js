@@ -157,7 +157,7 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion[]>} Lista de publicaciones encontradas en el periodo.
      * @throws {Error} Si ocurre un error al obtener las publicaciones.
      */
-    async obtenerPublicacionesPorPerido(fechaInicio, fechaFin) {
+    async obtenerPublicacionesPorPeriodo(fechaInicio, fechaFin) {
         try {
             const publicacionesObtenidas = await Publicacion.findAll({
                 where: {
