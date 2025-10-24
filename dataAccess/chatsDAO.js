@@ -23,9 +23,9 @@ class ChatsDAO {
      * @returns {Promise<Chat>} Chat creado
      * @throws {Error} Por si hay un error al crear el chat
      */
-    async crearChat(nombre, fechaCreacion) {
+    async crearChat(nombre, fechaCreacion, idPublicacion) {
         try {
-            const chatCreado = await Chat.create({ nombre, fechaCreacion });
+            const chatCreado = await Chat.create({ nombre, fechaCreacion, idPublicacion });
             return chatCreado;
         } catch (error) {
             throw error;
