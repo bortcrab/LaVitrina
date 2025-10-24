@@ -24,9 +24,7 @@ class PublicacionesDAO {
      * 
      * @param {string} titulo - Título de la publicación.
      * @param {string} descripcion - Descripción de la publicación.
-     * @param {Date} fechaPublicacion - Fecha de publicación.
      * @param {number} precio - Precio de la publicación.
-     * @param {string} estado - Estado de la publicación.
      * @param {string[]} etiquetas - Lista de etiquetas asociadas.
      * @param {string[]} imagenes - Lista de URLs de imágenes asociadas.
      * @param {number} idCategoria - ID de la categoría asociada.
@@ -34,8 +32,11 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion>} La publicación creada.
      * @throws {Error} Si ocurre un error al crear la publicación.
      */
-    async crearPublicacion(titulo, descripcion, fechaPublicacion, precio, estado, etiquetas, imagenes, idCategoria, idUsuario) {
+    async crearPublicacion(titulo, descripcion, precio, etiquetas, imagenes, idCategoria, idUsuario) {
         try {
+            const fechaPublicacion = new Date();
+            const estado = 'Disponible';
+
             const publicacionCreada = await Publicacion.create({ titulo, descripcion, fechaPublicacion, precio, estado, idCategoria, idUsuario });
             for (let i = 0; i < imagenes.length; i++) {
                 await ImagenesPublicacion.create({ url: imagenes[i], idPublicacion: publicacionCreada.id });
