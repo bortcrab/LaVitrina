@@ -4,16 +4,17 @@ const { AppError } = require('../utils/appError.js');
 class ChatController {
     static async crearChat(req, res, next) {
         try {
-            const { nombre, fechaCreacion } = req.body;
+            const { nombre, fechaCreacion, idPublicacion } = req.body;
 
-            if(!nombre || !fechaCreacion) {
+            if(!nombre || !fechaCreacion || !idPublicacion) {
                 return next(new AppError('Los campos nombre y fecha creación son requeridos.', 400))
             }
 
-            const chat = await ChatDAO.crearChat(nombre, fechaCreacion);
+            const chat = await ChatDAO.crearChat(nombre, fechaCreacion, idPublicacion);
             res.status(201).json(chat);
 
         } catch (error) {
+            console.error(error);
             next(new AppError('Ocurrió un error al crear el chat.', 500))
         }
     }
