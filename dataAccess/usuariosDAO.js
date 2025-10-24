@@ -154,14 +154,14 @@ class UsuarioDAO {
             throw error;
         }
     }
-        /**
-         * Cambia la contraseña de un usuario, verificando primero la contraseña actual.
-         * @param {string} correo - Correo del usuario cuya contraseña se cambiará.
-         * @param {string} contraseniaActual - Contraseña actual del usuario para verificación.
-         * @param {string} nuevaContrasenia - Nueva contraseña a establecer.
-         * @returns {Promise<boolean>} Retorna `true` si el cambio fue exitoso, `false` si la contraseña actual es incorrecta.
-         * @throws {Error} Si el usuario no se encuentra o si ocurre un error en la base de datos.
-         */
+    /**
+     * Cambia la contraseña de un usuario, verificando primero la contraseña actual.
+     * @param {string} correo - Correo del usuario cuya contraseña se cambiará.
+     * @param {string} contraseniaActual - Contraseña actual del usuario para verificación.
+     * @param {string} nuevaContrasenia - Nueva contraseña a establecer.
+     * @returns {Promise<boolean>} Retorna `true` si el cambio fue exitoso, `false` si la contraseña actual es incorrecta.
+     * @throws {Error} Si el usuario no se encuentra o si ocurre un error en la base de datos.
+     */
     async cambiarContrasenia(correo, contraseniaActual, nuevaContrasenia) {
         try {
             const usuario = await this.obtenerUsuarioPorCorreo(correo);
