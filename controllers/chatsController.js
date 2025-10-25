@@ -37,12 +37,7 @@ class ChatController {
 
     static async obtenerChatsPorUsuario(req, res, next) {
         try {
-            if(!req.usuario || !req.usuario.id) {
-                return next(new AppError('No hay un usuario con sesión iniciada.', 401))
-            }
-
-            //const idUsuario = req.usuario.id;
-            const idUsuario = 1;
+            const idUsuario = req.usuario.userId || req.usuario.id;
             const limit = parseInt(req.query.limit, 10) || 20;
             const page = parseInt(req.query.page, 10) || 1;
             const offset = (page - 1) * limit;
