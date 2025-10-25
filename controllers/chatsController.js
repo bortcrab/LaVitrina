@@ -47,6 +47,7 @@ class ChatController {
             res.status(200).json(chats);
 
         } catch (error) {
+            console.error(error);
             next(new AppError('Ocurrió un error al obtener los chats por usuario.', 500))
         }
     }
