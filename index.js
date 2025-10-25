@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+dotenv.config();
 const jwt = require('jsonwebtoken');
 const validateJWT = require('./utils/validateJWT.js');
 const corsConfig = require('./utils/validateCORS.js');
@@ -9,8 +10,6 @@ const usuariosRouter = require('./routes/usuariosRouter.js');
 const chatsRouter = require('./routes/chatsRouter.js')
 const reseniasRouter = require('./routes/reseniasRouter.js');
 const { AppError, globalErrorHandler } = require('./utils/appError.js');
-
-dotenv.config();
 
 const app = express();
 
@@ -41,7 +40,7 @@ app.post('/api/users/login', (req, res, next) => {
 
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api/publicaciones', publicacionesRouter);
-app.use('/api/usuarios', usauriosRouter);
+app.use('/api/usuarios', usuariosRouter);
 app.use('/api/resenias', reseniasRouter);
 app.use('/api/chats', validateJWT, chatsRouter)
 

@@ -57,12 +57,17 @@ class ChatsDAO {
      */
     async obtenerChatsPorUsuario(idUsuario, limit = 20, offset = 0) {
         try {
-            const usuario = await Usuario.findByPk(idUsuario, {
-                include: [{
-                    model: Chat,
-                    limit: limit,
-                    offset: offset,
-                    include: [{
+            const chats = await Chat.findAll({
+                limit: limit,
+                offset: offset,
+                include: [
+                    {
+                        model: Usuario,
+                        where: { id: idUsuario },
+                        attributes: [],
+                        through: { attributes: [] }
+                    },
+                    {
                         model: Mensaje,
                         include: [
                             { model: MensajeTexto, attributes: ['texto'] },
@@ -70,15 +75,12 @@ class ChatsDAO {
                         ],
                         limit: 1,
                         order: [['fechaEnviado', 'DESC']]
-                    }]
-                }]
+                    }
+                ],
+                order: [['updatedAt', 'DESC']],
+                subQuery: false 
             });
-
-            if(usuario) {
-                return usuario.Chats;
-            } else {
-                return [];
-            }
+            return chats;
 
         } catch (error) {
             throw error;
