@@ -17,28 +17,7 @@ app.use(corsConfig);
 app.use(express.json());
 app.use(morgan('combined'));
 
-app.post('/api/users/login', (req, res, next) => {
-    const { username, password } = req.body;
 
-    if(username === 'admin' && password === 'password') {
-        const payload = {
-            userId: 1,
-            username: 'admin',
-            role: 'admin'
-        };
-        
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '1h'});
-
-        res.json({
-            msg: 'Se inició sesión con éxito.',
-            token
-        })
-    } else {
-        next (new AppError('Usuario o contraseña inválidos.', 401));
-    }
-})
-
-app.use('/api/usuarios', usuariosRouter);
 app.use('/api/publicaciones', publicacionesRouter);
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api/resenias', reseniasRouter);

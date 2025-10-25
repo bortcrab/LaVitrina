@@ -108,7 +108,19 @@ class ReseniasController {
         }
     }
 
-
+    static async eliminarResenia(req, res, next) {  
+        try {
+            const id = req.params.id;
+            const reseniaExistente = await ReseniaDAO.obtenerReseniaPorId(id);
+            if (!reseniaExistente) {
+                return next(new AppError('Reseña no encontrada', 404));
+            }
+            await ReseniaDAO.eliminarResenia(id);
+            res.status(200).json({ message: 'Reseña eliminada correctamente' });
+        } catch (error) {
+            next(new AppError('Ocurrió un error al eliminar la reseña', 500));
+        }   
+    }
 }
 
 module.exports = ReseniasController;
