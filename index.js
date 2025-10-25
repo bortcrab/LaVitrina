@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const publicacionesRouter = require('./routes/publicacionesRouter.js');
 const usauriosRouter = require('./routes/usuariosRouter.js');
 const chatsRouter = require('./routes/chatsRouter.js')
+const reseniasRouter = require('./routes/reseniasRouter.js');
 const { AppError, globalErrorHandler } = require('./utils/appError.js');
 
 
@@ -15,6 +16,7 @@ app.use(morgan('combined'));
 app.use('/api/publicaciones', publicacionesRouter);
 app.use('/api/chats', chatsRouter)
 app.use('/api/usuarios', usauriosRouter);
+app.use('/api/resenias', reseniasRouter);
 
 app.use((req, res, next) => {
     const error = new AppError(`No se ha podido acceder a ${req.originalUrl} en el servidor`, 404);
