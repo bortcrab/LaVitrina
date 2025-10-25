@@ -135,7 +135,7 @@ class UsuarioDAO {
             const usuario = await Usuario.findOne({ where: { correo } });
 
             if (!usuario) {
-                console.log("Intento de inicio de sesión fallido: correo no encotnrado");
+                console.log("Intento de inicio de sesión fallido: correo no encontrado");
                 return null;
             }
             const esConstraseniaValida = bcrypt.compareSync(contrasenia, usuario.contrasenia);
