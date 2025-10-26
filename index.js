@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(morgan('combined'));
 
 
-app.use('/api/publicaciones', publicacionesRouter);
+app.use('/api/publicaciones', validateJWT, publicacionesRouter);
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api/resenias', reseniasRouter);
 app.use('/api/chats', validateJWT, chatsRouter)
