@@ -17,6 +17,12 @@ module.exports = (sequelize, DataTypes) => {
       Usuario.hasMany(models.Resenia, { foreignKey: 'idUsuarioCreador', as: 'reseniasCreadas' });
       Usuario.belongsToMany(models.Chat, { through: models.UsuarioChat, foreignKey: 'idUsuario' });
     }
+
+    toJSON() {
+      const attributes = { ...this.get() };
+      delete attributes.contrasenia; 
+      return attributes;
+    }
   }
   Usuario.init({
     nombres: DataTypes.STRING,

@@ -12,7 +12,11 @@ class UsuariosController {
 
             const existeCorreo = await UsuarioDAO.obtenerUsuarioPorCorreo(correo);
             if (existeCorreo) {
-                return next(new AppError('El correo electrónico ya está registrado', 409)); // 409 Conflict
+                return next(new AppError('El correo electrónico ya está registrado', 409));
+            }
+            const existeTelefono = await UsuarioDAO.obtenerUsuarioPorTelefono(telefono);
+            if (existeTelefono) {
+                return next(new AppError('El número de teléfono ya está registrado', 409)); 
             }
 
             const usuarioData = {
@@ -105,15 +109,21 @@ class UsuariosController {
 
     static async eliminarUsuario(req, res, next) {
         try {
-            const id = req.params.id;
-            const usuarioExists = await UsuarioDAO.obtenerUsuarioPorId(id);
+        const idUsuarioABorrar = req.params.id;
 
-            if (!usuarioExists) {
-                next(new AppError('Usuario no encontrado', 404));
-            }
+        const idUsuarioDelToken = req.usuario.id;
 
-            await UsuarioDAO.eliminarUsuario(id);
-            res.status(200).json({ message: 'Usuario eliminado correctamente' });
+        if (idUsuarioABorrar !== idUsuarioDelToken) {
+            return next(new AppError('No tienes permiso para realizar esta acción', 403)); 
+        }
+
+        const usuarioExists = await UsuarioDAO.obtenerUsuarioPorId(idUsuarioABorrar);
+        if (!usuarioExists) {
+            return next(new AppError('Usuario no encontrado', 404));
+        }
+
+        await UsuarioDAO.eliminarUsuario(idUsuarioABorrar);
+        res.status(200).json({ message: 'Usuario eliminado correctamente' });
 
         } catch (error) {
             next(new AppError('Ocurrió un error al eliminar el usuario', 500))
@@ -129,6 +139,26 @@ class UsuariosController {
             if (!usuario) {
                 next(new AppError('Credenciales inválidas', 401));
             }
+
+            // 1. Crea el Payload (la información que guardará el token)
+            const payload = {
+                id: usuario.id,
+                correo: usuario.correo,
+            };
+
+            // 2. Firma el token
+            const token = jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn: '1h' // El token expirará en 1 hora
+            });
+
+            // 3. Envía el token al cliente
+            res.status(200).json({
+                message: 'Usuario iniciado correctamente',
+                token: token,
+                usuario: usuario // El `toJSON` del modelo ya le quitó la contraseña
+            });
+
+
 
             res.status(200).json({ message: 'Usuario iniciado correctamente' });
 

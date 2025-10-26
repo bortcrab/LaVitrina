@@ -10,5 +10,6 @@ router.get('/usuarioReseniado/:idUsuarioReseniado', ReseniasController.obtenerRe
 router.get('/resenias-altas/:idUsuarioReseniado', ReseniasController.obtenerReseniasMasAltas);
 router.get('/resenias-bajas/:idUsuarioReseniado', ReseniasController.obtenerReseniasMasBajas);
 router.put('/:id', ReseniasController.actualizarResenia);
+router.delete('/:id', ReseniasController.eliminarResenia);
 
 module.exports = router;
