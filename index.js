@@ -23,7 +23,7 @@ app.use('/api/publicaciones', validateJWT, publicacionesRouter);
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api/resenias', reseniasRouter);
 app.use('/api/chats', validateJWT, chatsRouter)
-app.use('/api/categorias', categoriasRouter);
+app.use('/api/categorias', validateJWT, categoriasRouter);
 
 app.use((req, res, next) => {
     const error = new AppError(`No se ha podido acceder a ${req.originalUrl} en el servidor`, 404);
