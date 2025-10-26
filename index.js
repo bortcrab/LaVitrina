@@ -9,6 +9,7 @@ const publicacionesRouter = require('./routes/publicacionesRouter.js');
 const usuariosRouter = require('./routes/usuariosRouter.js');
 const chatsRouter = require('./routes/chatsRouter.js')
 const reseniasRouter = require('./routes/reseniasRouter.js');
+const categoriasRouter = require('./routes/categoriasRouter.js');
 const { AppError, globalErrorHandler } = require('./utils/appError.js');
 
 const app = express();
@@ -18,10 +19,11 @@ app.use(express.json());
 app.use(morgan('combined'));
 
 
-app.use('/api/publicaciones', publicacionesRouter);
+app.use('/api/publicaciones', validateJWT, publicacionesRouter);
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api/resenias', reseniasRouter);
 app.use('/api/chats', validateJWT, chatsRouter)
+app.use('/api/categorias', categoriasRouter);
 
 app.use((req, res, next) => {
     const error = new AppError(`No se ha podido acceder a ${req.originalUrl} en el servidor`, 404);

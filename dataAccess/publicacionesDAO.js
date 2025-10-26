@@ -56,10 +56,29 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion[]>} Lista de publicaciones obtenidas.
      * @throws {Error} Si ocurre un error al obtener las publicaciones.
      */
-    async obtenerPublicaciones() {
+    async obtenerPublicaciones(offset) {
         try {
-            const publicionesObtenidas = await Publicacion.findAll({ limit: 20 });
+            const publicionesObtenidas = await Publicacion.findAll({
+                limit: 20,
+                offset
+            });
             return publicionesObtenidas;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    /**
+     * Obtiene una publicación por su ID.
+     *
+     * @param {number} idPublicacion - ID de la publicación a buscar.
+     * @returns {Promise<Publicacion|null>} La publicación encontrada o null si no existe.
+     * @throws {Error} Si ocurre un error durante la consulta a la base de datos.
+     */
+    async obtenerPublicacionPorId(idPublicacion) {
+        try {
+            const publicacionObtenida = await Publicacion.findByPk(idPublicacion);
+            return publicacionObtenida;
         } catch (error) {
             throw error;
         }
@@ -72,14 +91,16 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion[]>} Lista de publicaciones encontradas.
      * @throws {Error} Si ocurre un error al obtener las publicaciones.
      */
-    async obtenerPublicacionPorUsuario(idUsuario) {
+    async obtenerPublicacionesPorUsuario(idUsuario, offset) {
         try {
-            const publicacionObtenida = await Publicacion.findAll({
+            const publicacionesObtenidas = await Publicacion.findAll({
                 where: {
-                    idUsuario: idUsuario
-                }
+                    idUsuario: idUsuario,
+                },
+                limit: 20,
+                offset
             });
-            return publicacionObtenida;
+            return publicacionesObtenidas;
         } catch (error) {
             throw error;
         }
@@ -92,14 +113,16 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion[]>} Lista de publicaciones encontradas.
      * @throws {Error} Si ocurre un error al obtener las publicaciones.
      */
-    async obtenerPublicacionesPorTitulo(titulo) {
+    async obtenerPublicacionesPorTitulo(titulo, offset) {
         try {
             const publicacionesObtenidas = await Publicacion.findAll({
                 where: {
                     titulo: {
                         [Op.like]: `%${titulo}%` //Se usa el operador like para los titulos que coincidan con el mandado en el parámetro
                     }
-                }, limit: 20
+                },
+                limit: 20,
+                offset
             });
             return publicacionesObtenidas;
         } catch (error) {
@@ -114,12 +137,14 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion[]>} Lista de publicaciones encontradas.
      * @throws {Error} Si ocurre un error al obtener las publicaciones.
      */
-    async obtenerPublicacionesPorCategoria(idCategoria) {
+    async obtenerPublicacionesPorCategoria(idCategoria, offset) {
         try {
             const publicacionesObtenidas = await Publicacion.findAll({
                 where: {
                     idCategoria: idCategoria
-                }, limit: 20
+                },
+                limit: 20,
+                offset
             });
             return publicacionesObtenidas;
         } catch (error) {
@@ -133,7 +158,7 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion[]>} Lista de publicaciones encontradas.
      * @throws {Error} Si ocurre un error al obtener las publicaciones.
      */
-    async obtenerPublicacionesPorEtiquetas(etiquetas) {
+    async obtenerPublicacionesPorEtiquetas(etiquetas, offset) {
         try {
             const publicacionesObtenidas = await Publicacion.findAll({
                 include: [{
@@ -142,7 +167,9 @@ class PublicacionesDAO {
                             [Op.in]: etiquetas //Se usa el operador in para las etiquetas que coincidan con las mandadas en el parámetro
                         }
                     }
-                }], limit: 20
+                }],
+                limit: 20,
+                offset
             });
             return publicacionesObtenidas;
         } catch (error) {
@@ -158,14 +185,16 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion[]>} Lista de publicaciones encontradas en el periodo.
      * @throws {Error} Si ocurre un error al obtener las publicaciones.
      */
-    async obtenerPublicacionesPorPeriodo(fechaInicio, fechaFin) {
+    async obtenerPublicacionesPorPeriodo(fechaInicio, fechaFin, offset) {
         try {
             const publicacionesObtenidas = await Publicacion.findAll({
                 where: {
                     fechaPublicacion: {
                         [Op.between]: [fechaInicio, fechaFin] //Se usa el operador between para las fechas que están dentro del periodo
                     }
-                }, limit: 20
+                },
+                limit: 20,
+                offset
             });
             return publicacionesObtenidas;
         } catch (error) {
