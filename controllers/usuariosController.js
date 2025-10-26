@@ -113,7 +113,7 @@ class UsuariosController {
 
             const idUsuarioDelToken = req.usuario.id;
 
-            if (idUsuarioABorrar !== idUsuarioDelToken) {
+            if (idUsuarioABorrar.toString() !== idUsuarioDelToken.toString()) {
                 return next(new AppError('No tienes permiso para realizar esta acción', 403));
             }
 
