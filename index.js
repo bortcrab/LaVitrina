@@ -1,7 +1,8 @@
-const express = require('express');
-const morgan = require('morgan');
 const dotenv = require('dotenv');
 dotenv.config();
+const express = require('express');
+const morgan = require('morgan');
+
 const jwt = require('jsonwebtoken');
 const validateJWT = require('./utils/validateJWT.js');
 const corsConfig = require('./utils/validateCORS.js');
@@ -10,6 +11,7 @@ const subastasRouter = require('./routes/subastasRouter.js');
 const usuariosRouter = require('./routes/usuariosRouter.js');
 const chatsRouter = require('./routes/chatsRouter.js')
 const reseniasRouter = require('./routes/reseniasRouter.js');
+const categoriasRouter = require('./routes/categoriasRouter.js');
 const { AppError, globalErrorHandler } = require('./utils/appError.js');
 
 const app = express();
@@ -24,6 +26,7 @@ app.use('/api/subastas', subastasRouter);
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api/resenias', reseniasRouter);
 app.use('/api/chats', validateJWT, chatsRouter)
+app.use('/api/categorias', validateJWT, categoriasRouter);
 
 app.use((req, res, next) => {
     const error = new AppError(`No se ha podido acceder a ${req.originalUrl} en el servidor`, 404);

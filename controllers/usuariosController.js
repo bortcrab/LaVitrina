@@ -1,6 +1,6 @@
 const UsuarioDAO = require('../dataAccess/usuariosDAO.js');
 const { AppError } = require('../utils/appError.js');
-
+const jwt = require('jsonwebtoken');
 class UsuariosController {
     static async crearUsuario(req, res, next) {
         try {
@@ -16,7 +16,7 @@ class UsuariosController {
             }
             const existeTelefono = await UsuarioDAO.obtenerUsuarioPorTelefono(telefono);
             if (existeTelefono) {
-                return next(new AppError('El número de teléfono ya está registrado', 409)); 
+                return next(new AppError('El número de teléfono ya está registrado', 409));
             }
 
             const usuarioData = {
@@ -109,21 +109,21 @@ class UsuariosController {
 
     static async eliminarUsuario(req, res, next) {
         try {
-        const idUsuarioABorrar = req.params.id;
+            const idUsuarioABorrar = req.params.id;
 
-        const idUsuarioDelToken = req.usuario.id;
+            const idUsuarioDelToken = req.usuario.id;
 
-        if (idUsuarioABorrar !== idUsuarioDelToken) {
-            return next(new AppError('No tienes permiso para realizar esta acción', 403)); 
-        }
+            if (idUsuarioABorrar !== idUsuarioDelToken) {
+                return next(new AppError('No tienes permiso para realizar esta acción', 403));
+            }
 
-        const usuarioExists = await UsuarioDAO.obtenerUsuarioPorId(idUsuarioABorrar);
-        if (!usuarioExists) {
-            return next(new AppError('Usuario no encontrado', 404));
-        }
+            const usuarioExists = await UsuarioDAO.obtenerUsuarioPorId(idUsuarioABorrar);
+            if (!usuarioExists) {
+                return next(new AppError('Usuario no encontrado', 404));
+            }
 
-        await UsuarioDAO.eliminarUsuario(idUsuarioABorrar);
-        res.status(200).json({ message: 'Usuario eliminado correctamente' });
+            await UsuarioDAO.eliminarUsuario(idUsuarioABorrar);
+            res.status(200).json({ message: 'Usuario eliminado correctamente' });
 
         } catch (error) {
             next(new AppError('Ocurrió un error al eliminar el usuario', 500))
@@ -137,7 +137,7 @@ class UsuariosController {
             const usuario = await UsuarioDAO.iniciarSesion(correo, contrasenia);
 
             if (!usuario) {
-                next(new AppError('Credenciales inválidas', 401));
+                return next(new AppError('Credenciales inválidas', 401)); // Se corrigió el return
             }
 
             // 1. Crea el Payload (la información que guardará el token)
@@ -151,20 +151,18 @@ class UsuariosController {
                 expiresIn: '1h' // El token expirará en 1 hora
             });
 
-            // 3. Envía el token al cliente
+            // 3. Envía el token al cliente (ESTA ES LA ÚNICA RESPUESTA)
             res.status(200).json({
                 message: 'Usuario iniciado correctamente',
                 token: token,
                 usuario: usuario // El `toJSON` del modelo ya le quitó la contraseña
             });
 
-
-
-            res.status(200).json({ message: 'Usuario iniciado correctamente' });
-
+            // YA NO HAY NADA AQUÍ
 
         } catch (error) {
-            next(new AppError('Ocurrión un error al iniciar sesión', 500));
+            // Si algo falla (ej. !usuario es true), el error se captura aquí
+            next(new AppError(`Error en el proceso de inicio de sesión: ${error.message}`, 500));
         }
     }
 

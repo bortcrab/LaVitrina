@@ -35,9 +35,7 @@ async function realizarTransacciones() {
         const nuevaPublicacion = await publicacionesDAO.crearPublicacion(
             'Laptop Gamer Nueva',
             'Laptop con RTX 4090, 32GB RAM.',
-            new Date(),
             45000,
-            'disponible',
             ['gamer', 'laptop', 'nvidia'],   // etiquetas
             ['url/imagen1.jpg', 'url/imagen2.jpg'], // imágenes
             categoria.id, // ID de categoría creada
