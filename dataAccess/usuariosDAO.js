@@ -19,9 +19,7 @@ class UsuarioDAO {
         try {
             const contraseniaHasheada = bcrypt.hashSync(datosUsuario.contrasenia, 10)
             const usuario = await Usuario.create({
-                // Usamos todos los datos del objeto
                 ...datosUsuario,
-                // Y reemplazamos la contraseña por la versión hasheada
                 contrasenia: contraseniaHasheada
             });
             return usuario;
@@ -78,6 +76,22 @@ class UsuarioDAO {
             return usuario;
         } catch (error) {
             console.log("Error en el proceso de Obtener usuario por correo", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Busca un usuario por su número de teléfono.
+     * @param {string} telefono - Teléfono del usuario a buscar.
+     * @returns {Promise<Object|null>} El usuario encontrado o null si no existe.
+     */
+    async obtenerUsuarioPorTelefono(telefono) {
+        try {
+            const usuario = await Usuario.findOne({ where: { telefono } });
+            // No es necesario un console.log aquí, solo devolvemos el resultado
+            return usuario;
+        } catch (error) {
+            console.log("Error en el proceso de Obtener usuario por teléfono", error);
             throw error;
         }
     }
