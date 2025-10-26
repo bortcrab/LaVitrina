@@ -49,7 +49,7 @@ class SubastasDAO {
                     ...(filtros.fechaInicio && { fechaInicio: { [Op.gte]: filtros.fechaInicio } }),
                     ...(filtros.fechaFin && { fechaFin: { [Op.lte]: filtros.fechaFin } })
                 },
-                limit: filtros.limite,
+                limit: 20, // Se mostraran 20 subastas por página.
                 offset: filtros.offset
             });
             return subastasObtenidas;

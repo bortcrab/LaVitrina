@@ -10,11 +10,11 @@ class SubastasController {
             const { titulo, descripcion, precio, etiquetas, imagenes, idCategoria, idUsuario, fechaInicio, fechaFin } = req.body;
 
             if (!titulo || !descripcion || precio < 1) {
-                next(new AppError('Los campos título, descripción y precio son obligatorios.'), 400);
+                return next(new AppError('Los campos título, descripción y precio son obligatorios.'), 400);
             } else if (!idCategoria) {
-                next(new AppError('Se debe elegir una categoría para la publicación.'), 400);
+                return next(new AppError('Se debe elegir una categoría para la publicación.'), 400);
             } else if (!idUsuario) {
-                next(new AppError('Se debe iniciar sesión para crear publicaciones.'), 400);
+                return next(new AppError('Se debe iniciar sesión para crear publicaciones.'), 400);
             }
 
             const nuevaSubasta = await subastasDAO.crearSubasta({
@@ -66,7 +66,6 @@ class SubastasController {
                 fechaInicio: req.query.fechaInicio,
                 fechaFin: req.query.fechaFin,
                 offset: ((parseInt(req.query.pagina) || 1) - 1) * 20,
-                limite: 20 // Se mostraran 20 subastas por página.
             };
 
             // Obtenemos las subastas.
@@ -109,13 +108,13 @@ class SubastasController {
             // Obtenemos el ID de la subasta de los parámetros de la solicitud.
             const idSubasta = req.params.idSubasta;
             if (!idSubasta) {
-                next(new AppError('Se debe proporcionar un ID de subasta válido.', 400));
+                return next(new AppError('Se debe proporcionar un ID de subasta válido.', 400));
             }
 
             // Obtenemos la subasta.
             const subasta = await subastasDAO.obtenerSubastaPorId(idSubasta);
             if (!subasta) {
-                next(new AppError('La subasta no existe.', 404));
+                return next(new AppError('La subasta no existe.', 404));
             }
 
             // Devolvemos la subasta obtenida.
@@ -132,16 +131,15 @@ class SubastasController {
             // Obtenemos el ID de la subasta de los parámetros de la solicitud.
             const idSubasta = req.params.idSubasta;
             if (!idSubasta) {
-                next(new AppError('Se debe proporcionar un ID de subasta válido.', 400));
+                return next(new AppError('Se debe proporcionar un ID de subasta válido.', 400));
             }
 
             if (!(await subastasDAO.obtenerSubastaPorId(idSubasta))) {
-                next(new AppError('La subasta no existe.', 404));
+                return next(new AppError('La subasta no existe.', 404));
             }
 
             if (Object.keys(req.body).length === 0) {
-                next(new AppError('No se proporcionó ningún dato para actualizar la subasta.', 400));
-                return;
+                return next(new AppError('No se proporcionó ningún dato para actualizar la subasta.', 400));
             }
 
             // Obtenemos la subasta.
@@ -161,11 +159,11 @@ class SubastasController {
             // Obtenemos el ID de la subasta de los parámetros de la solicitud.
             const idSubasta = req.params.idSubasta;
             if (!idSubasta) {
-                next(new AppError('Se debe proporcionar un ID de subasta válido.', 400));
+                return next(new AppError('Se debe proporcionar un ID de subasta válido.', 400));
             }
 
             if (!(await subastasDAO.obtenerSubastaPorId(idSubasta))) {
-                next(new AppError('La subasta no existe.', 404));
+                return next(new AppError('La subasta no existe.', 404));
             }
 
             // Obtenemos la subasta.
