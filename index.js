@@ -22,13 +22,13 @@ app.use(express.json());
 app.use(morgan('combined'));
 
 
-app.use('/api/publicaciones', publicacionesRouter);
-app.use('/api/subastas', subastasRouter);
-app.use('/api/usuarios', usuariosRouter);
-app.use('/api/resenias', reseniasRouter);
-app.use('/api/chats', validateJWT, chatsRouter)
+app.use('/api/publicaciones', validateJWT, publicacionesRouter);
+app.use('/api/subastas', validateJWT, subastasRouter);
+app.use('/api/usuarios',  usuariosRouter);
+app.use('/api/resenias', validateJWT, reseniasRouter);
+app.use('/api/chats', validateJWT, chatsRouter);
 app.use('/api/categorias', validateJWT, categoriasRouter);
-app.use('/api/pujas', pujasRouter);
+app.use('/api/pujas',validateJWT, pujasRouter);
 
 app.use((req, res, next) => {
     const error = new AppError(`No se ha podido acceder a ${req.originalUrl} en el servidor`, 404);
