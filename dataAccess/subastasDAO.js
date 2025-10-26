@@ -38,17 +38,19 @@ class SubastasDAO {
         }
     }
 
-    /**
-     * Obtiene una lista de subastas junto con su publicación asociada.
-     * 
-     * @returns {Promise<Subasta[]>} Lista de subastas obtenidas con su publicación.
-     * @throws {Error} Si ocurre un error al obtener las subastas.
-     */
-    async obtenerSubastas() {
+    async obtenerSubastas(filtros) {
         try {
             const subastasObtenidas = await Subasta.findAll({
                 include: [{ model: Publicacion }],
-                limit: 20
+                where: {
+                    ...(filtros.titulo && { '$Publicacion.titulo$': { [Op.like]: `%${filtros.titulo}%` } }),
+                    ...(filtros.categoria && { '$Publicacion.idCategoria$': { [Op.eq]: filtros.categoria } }),
+                    // Falta agregar filtros de etiquetas
+                    ...(filtros.fechaInicio && { fechaInicio: { [Op.gte]: filtros.fechaInicio } }),
+                    ...(filtros.fechaFin && { fechaFin: { [Op.lte]: filtros.fechaFin } })
+                },
+                limit: filtros.limite,
+                offset: filtros.offset
             });
             return subastasObtenidas;
         } catch (error) {
@@ -60,16 +62,19 @@ class SubastasDAO {
      * Obtiene todas las subastas asociadas a un usuario específico.
      * 
      * @param {number} idUsuario - ID del usuario cuyas subastas se desean obtener.
+     * @param {number} offset - Cantidad de registros a omitir antes de comenzar a devolver resultados.
      * @returns {Promise<Subasta[]>} Lista de subastas encontradas.
      * @throws {Error} Si ocurre un error al obtener las subastas.
      */
-    async obtenerSubastasPorUsuario(idUsuario) {
+    async obtenerSubastasPorUsuario(idUsuario, offset) {
         try {
             const subastasObtenidas = await Subasta.findAll({
                 include: [{
                     model: Publicacion,
                     where: { idUsuario }
-                }]
+                }],
+                limit: 20,
+                offset
             });
             return subastasObtenidas;
         } catch (error) {
@@ -90,73 +95,6 @@ class SubastasDAO {
                 include: [{ model: Publicacion }]
             });
             return subastaObtenida;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    /**
-     * Obtiene una lista de subastas cuyo título de la publicación coincide parcialmente con el texto proporcionado.
-     * 
-     * @param {string} titulo - Texto a buscar en los títulos de las publicaciones asociadas.
-     * @returns {Promise<Subasta[]>} Lista de subastas encontradas.
-     * @throws {Error} Si ocurre un error al obtener las subastas.
-     */
-    async obtenerSubastasPorTitulo(titulo) {
-        try {
-            const subastasObtenidas = await Subasta.findAll({
-                include: [{
-                    model: Publicacion,
-                    where: { titulo: { [Op.like]: `%${titulo}%` } }
-                }],
-                limit: 20
-            });
-            return subastasObtenidas;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    /**
-     * Obtiene una lista de subastas filtradas por categoría.
-     * 
-     * @param {number} idCategoria - ID de la categoría por la que se filtran las subastas.
-     * @returns {Promise<Subasta[]>} Lista de subastas encontradas.
-     * @throws {Error} Si ocurre un error al obtener las subastas.
-     */
-    async obtenerSubastasPorCategoria(idCategoria) {
-        try {
-            const subastasObtenidas = await Subasta.findAll({
-                include: [{
-                    model: Publicacion,
-                    where: { idCategoria }
-                }],
-                limit: 20
-            });
-            return subastasObtenidas;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    /**
-     * Obtiene una lista de subastas cuya fecha de publicación está dentro de un periodo específico.
-     * 
-     * @param {Date} fechaInicio - Fecha de inicio del periodo.
-     * @param {Date} fechaFin - Fecha de fin del periodo.
-     * @returns {Promise<Subasta[]>} Lista de subastas encontradas.
-     * @throws {Error} Si ocurre un error al obtener las subastas.
-     */
-    async obtenerSubastasPorPeriodo(fechaInicio, fechaFin) {
-        try {
-            const subastasObtenidas = await Subasta.findAll({
-                include: [{
-                    model: Publicacion,
-                    where: { fechaPublicacion: { [Op.between]: [fechaInicio, fechaFin] } }
-                }],
-                limit: 20
-            });
-            return subastasObtenidas;
         } catch (error) {
             throw error;
         }
