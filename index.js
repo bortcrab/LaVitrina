@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const validateJWT = require('./utils/validateJWT.js');
 const corsConfig = require('./utils/validateCORS.js');
 const publicacionesRouter = require('./routes/publicacionesRouter.js');
+const subastasRouter = require('./routes/subastasRouter.js');
 const usuariosRouter = require('./routes/usuariosRouter.js');
 const chatsRouter = require('./routes/chatsRouter.js')
 const reseniasRouter = require('./routes/reseniasRouter.js');
@@ -19,6 +20,7 @@ app.use(morgan('combined'));
 
 
 app.use('/api/publicaciones', publicacionesRouter);
+app.use('/api/subastas', subastasRouter);
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api/resenias', reseniasRouter);
 app.use('/api/chats', validateJWT, chatsRouter)

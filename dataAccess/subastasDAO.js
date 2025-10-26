@@ -1,6 +1,6 @@
 const { Subasta, Publicacion } = require('../models');
+const publicacionesDAO = require('./publicacionesDAO');
 const { Op } = require('sequelize');
-const { obtenerUsuarioPorId } = require('./usuariosDAO');
 
 class SubastasDAO {
     constructor() { }
@@ -14,22 +14,24 @@ class SubastasDAO {
      */
     async crearSubasta(datosSubasta) {
         try {
-            const publicacionCreada = await Publicacion.create({
-                titulo: datosSubasta.titulo,
-                descripcion: datosSubasta.descripcion,
-                fechaPublicacion: datosSubasta.fechaPublicacion,
-                precio: datosSubasta.precio,
-                estado: datosSubasta.estado,
-                idCategoria: datosSubasta.idCategoria,
-                idUsuario: datosSubasta.idUsuario
-            });
+            const publicacionCreada = await publicacionesDAO.crearPublicacion(
+                datosSubasta.titulo,
+                datosSubasta.descripcion,
+                datosSubasta.precio,
+                datosSubasta.etiquetas,
+                datosSubasta.imagenes,
+                datosSubasta.idCategoria,
+                datosSubasta.idUsuario
+            );
 
+            // Crea la subasta usando el id de la publicación creada
             const subastaCreada = await Subasta.create({
-                id: publicacionCreada.id,
+                id: publicacionCreada.id, // La subasta comparte el ID de la publicación
                 fechaInicio: datosSubasta.fechaInicio,
                 fechaFin: datosSubasta.fechaFin
             });
 
+            // Retorna un objeto combinado
             return { ...publicacionCreada.get(), ...subastaCreada.get() };
         } catch (error) {
             throw error;
@@ -201,7 +203,7 @@ class SubastasDAO {
             }
 
             await subasta.destroy();
-            await subasta.Publicacion.destroy();
+            await publicacionesDAO.eliminarPublicacion(idSubasta);
 
             return 'Subasta eliminada con éxito.';
         } catch (error) {
