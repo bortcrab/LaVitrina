@@ -2,10 +2,31 @@ const publicacionesDAO = require("../dataAccess/publicacionesDAO.js");
 const usuariosDAO = require('../dataAccess/usuariosDAO.js');
 const { AppError } = require("../utils/appError.js");
 
+/**
+ * Controlador que maneja las operaciones relacionadas con publicaciones.
+ *
+ * Cada método está diseñado para ser usado como middleware/handler de Express
+ * y utiliza los DAOs correspondientes para interactuar con la capa de datos.
+ * Los errores se pasan al middleware de manejo de errores usando `next(new AppError(...))`.
+ */
 class PublicacionesController {
 
     constructor() { }
 
+    /**
+     * Crea una nueva publicación.
+     *
+     * Validaciones principales:
+     * - `titulo`, `descripcion` y `precio` son obligatorios (precio debe ser >= 1).
+     * - `idCategoria` e `idUsuario` deben estar presentes.
+     *
+     * @param {import('express').Request} req - Request de Express. Se esperan en `req.body`:
+     *   {string} titulo, {string} descripcion, {number} precio, {string[]} etiquetas,
+     *   {string[]} imagenes, {number} idCategoria, {number} idUsuario
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y la publicación creada en caso de éxito.
+     */
     async crearPublicacion(req, res, next) {
         try {
             const { titulo, descripcion, precio, etiquetas, imagenes, idCategoria, idUsuario } = req.body;
@@ -32,6 +53,17 @@ class PublicacionesController {
         }
     }
 
+    /**
+     * Obtiene una lista paginada de publicaciones.
+     *
+     * Query params:
+     * - `pagina` (opcional): número de página (por defecto 1). Cada página usa 20 items.
+     *
+     * @param {import('express').Request} req - Request de Express. Usa `req.query.pagina`.
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y el array de publicaciones.
+     */
     async obtenerPublicaciones(req, res, next) {
         try {
             const pagina = parseInt(req.query.pagina) || 1;
@@ -44,6 +76,19 @@ class PublicacionesController {
         }
     }
 
+    /**
+     * Obtiene publicaciones de un usuario específico (paginado).
+     *
+     * Params:
+     * - `req.params.id`: ID del usuario.
+     * Query params:
+     * - `pagina` (opcional): número de página.
+     *
+     * @param {import('express').Request} req - Request de Express. Usa `req.params.id` y `req.query.pagina`.
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y el array de publicaciones del usuario.
+     */
     async obtenerPublicacionesPorUsuario(req, res, next) {
         try {
             const pagina = parseInt(req.query.pagina) || 1;
@@ -68,6 +113,18 @@ class PublicacionesController {
         }
     }
 
+    /**
+     * Busca publicaciones por título (coincidencia parcial).
+     *
+     * Query params:
+     * - `titulo` (requerido): texto para buscar en títulos.
+     * - `pagina` (opcional): número de página.
+     *
+     * @param {import('express').Request} req - Request de Express. Usa `req.query.titulo`.
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y el array de publicaciones que coinciden.
+     */
     async obtenerPublicacionesPorTitulo(req, res, next) {
         try {
             const pagina = parseInt(req.query.pagina) || 1;
@@ -86,11 +143,23 @@ class PublicacionesController {
         }
     }
 
+    /**
+     * Obtiene publicaciones filtradas por categoría (paginado).
+     *
+     * Params:
+     * - `req.params.id`: ID de la categoría.
+     *
+     * @param {import('express').Request} req - Request de Express. Usa `req.params.id`.
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y el array de publicaciones en la categoría.
+     */
     async obtenerPublicacionesPorCategoria(req, res, next) {
         try {
             const pagina = parseInt(req.query.pagina) || 1;
             const offset = (pagina - 1) * 20;
 
+            //Se valida que se haya enviado la categoria
             const idCategoria = req.params.id;
             if (!idCategoria) {
                 next(new AppError('Se debe especificar la categoría para realizar la búsqueda.', 400));
@@ -103,17 +172,35 @@ class PublicacionesController {
         }
     }
 
+    /**
+     * Obtiene publicaciones que contienen alguna de las etiquetas proporcionadas.
+     *
+     * Query params:
+     * - `etiquetas` (requerido): lista separada por comas de etiquetas.
+     * - `pagina` (opcional): número de página.
+     *
+     * @param {import('express').Request} req - Request de Express. Usa `req.query.etiquetas`.
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y el array de publicaciones que contienen las etiquetas.
+     */
     async obtenerPublicacionesPorEtiquetas(req, res, next) {
         try {
             const pagina = parseInt(req.query.pagina) || 1;
             const offset = (pagina - 1) * 20;
 
+            //Se valida que se hayan enviado etiquetas
             let etiquetas = req.query.etiquetas;
             if (!etiquetas) {
+                next(new AppError('Se deben especificar las etiquetas para la búsqueda.', 400));
+            }
+            
+            etiquetas = etiquetas.split(',').map(etiqueta => etiqueta.trim());
+            
+            //Se valida que haya al menos una etiqueta
+            if (etiquetas.length < 1) {
                 next(new AppError('Se debe incluir al menos una etiqueta para la búsqueda.', 400));
             }
-
-            etiquetas = etiquetas.split(',').map(etiqueta => etiqueta.trim());
 
             const publicaciones = await publicacionesDAO.obtenerPublicacionesPorEtiquetas(etiquetas, offset);
             res.status(200).json(publicaciones);
@@ -123,6 +210,19 @@ class PublicacionesController {
         }
     }
 
+    /**
+     * Obtiene publicaciones dentro de un periodo de fechas (paginado).
+     *
+     * Query params:
+     * - `inicio` (requerido): fecha de inicio en formato aceptado por `new Date()`.
+     * - `fin` (requerido): fecha de fin en formato aceptado por `new Date()`.
+     * - `pagina` (opcional): número de página.
+     *
+     * @param {import('express').Request} req - Request de Express. Usa `req.query.inicio` y `req.query.fin`.
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y el array de publicaciones dentro del periodo.
+     */
     async obtenerPublicacionesPorPeriodo(req, res, next) {
         try {
             const pagina = parseInt(req.query.pagina) || 1;
@@ -131,10 +231,12 @@ class PublicacionesController {
             const fechaInicio = new Date(req.query.inicio);
             const fechaFin = new Date(req.query.fin);
 
+            //Se valida que se hayan enviado las fechass correctamente
             if (isNaN(fechaInicio.getTime()) || isNaN(fechaFin.getTime())) {
                 next(new AppError('Los campos fechaInicio y fechaFin son requeridos.', 400));
             }
 
+            //Se valida que las fechas formen un periodo válido
             if (fechaInicio > fechaFin) {
                 next(new AppError('Las fechas deben crear un periodo válido.', 400));
             }
@@ -146,16 +248,26 @@ class PublicacionesController {
         }
     }
 
+    /**
+     * Actualiza una publicación existente.
+     *
+     * Params:
+     * - `req.params.id`: ID de la publicación a actualizar.
+     * Body opcionalmente contiene campos a actualizar: titulo, descripcion, precio, estado, idCategoria, etiquetas, imagenes.
+     *
+     * @param {import('express').Request} req - Request de Express. Usa `req.params.id` y `req.body`.
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y la publicación actualizada.
+     */
     async actualizarPublicacion(req, res, next) {
         try {
             const idPublicacion = req.params.id;
-            console.log('----> ID PUBLICACION:', idPublicacion)
             if (!idPublicacion) {
                 next(new AppError('Se debe especificar la publicación a actualizar.', 400));
             }
 
             const publicacionExists = await publicacionesDAO.obtenerPublicacionPorId(idPublicacion);
-            console.log('----> PUBLICACION:', publicacionExists);
             if (!publicacionExists) {
                 next(new AppError('La publicación que se desea actualizar no existe', 400));
             }
@@ -172,6 +284,17 @@ class PublicacionesController {
         }
     }
 
+    /**
+     * Elimina una publicación por su ID.
+     *
+     * Params:
+     * - `req.params.id`: ID de la publicación a eliminar.
+     *
+     * @param {import('express').Request} req - Request de Express. Usa `req.params.id`.
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y un mensaje de confirmación.
+     */
     async eliminarPublicacion(req, res, next) {
         try {
             const idPublicacion = req.params.id;
