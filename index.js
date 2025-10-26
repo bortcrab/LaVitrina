@@ -7,9 +7,12 @@ const jwt = require('jsonwebtoken');
 const validateJWT = require('./utils/validateJWT.js');
 const corsConfig = require('./utils/validateCORS.js');
 const publicacionesRouter = require('./routes/publicacionesRouter.js');
+const subastasRouter = require('./routes/subastasRouter.js');
 const usuariosRouter = require('./routes/usuariosRouter.js');
 const chatsRouter = require('./routes/chatsRouter.js')
 const reseniasRouter = require('./routes/reseniasRouter.js');
+const categoriasRouter = require('./routes/categoriasRouter.js');
+const pujasRouter = require('./routes/pujasRouter.js');
 const { AppError, globalErrorHandler } = require('./utils/appError.js');
 
 const app = express();
@@ -20,9 +23,12 @@ app.use(morgan('combined'));
 
 
 app.use('/api/publicaciones', publicacionesRouter);
+app.use('/api/subastas', subastasRouter);
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api/resenias', reseniasRouter);
 app.use('/api/chats', validateJWT, chatsRouter)
+app.use('/api/categorias', validateJWT, categoriasRouter);
+app.use('/api/pujas', pujasRouter);
 
 app.use((req, res, next) => {
     const error = new AppError(`No se ha podido acceder a ${req.originalUrl} en el servidor`, 404);
