@@ -7,7 +7,7 @@ router.post('/', publicacionesController.crearPublicacion);
 router.get('/', publicacionesController.obtenerPublicaciones);
 router.get('/usuario/:id', publicacionesController.obtenerPublicacionesPorUsuario);
 router.get('/buscar', publicacionesController.obtenerPublicacionesPorTitulo);
-router.get('/categoria/:nombre', publicacionesController.obtenerPublicacionesPorCategoria);
+router.get('/categoria/:id', publicacionesController.obtenerPublicacionesPorCategoria);
 router.get('/etiquetas', publicacionesController.obtenerPublicacionesPorEtiquetas);
 router.get('/periodo', publicacionesController.obtenerPublicacionesPorPeriodo);
 router.put('/:id', publicacionesController.actualizarPublicacion);
