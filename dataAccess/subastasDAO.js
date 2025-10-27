@@ -1,4 +1,4 @@
-const { Subasta, Publicacion } = require('../models');
+const { Subasta, Publicacion, EtiquetasPublicacion } = require('../models');
 const publicacionesDAO = require('./publicacionesDAO');
 const { Op } = require('sequelize');
 
@@ -38,22 +38,40 @@ class SubastasDAO {
         }
     }
 
+    /**
+     * Obtiene una lista de subastas.
+     * 
+     * @param {Object} filtros - Filtros para la búsqueda de subastas.
+     * @returns {Promise<Object>} Las subastas obtenidas con los datos de sus publicaciones.
+     * @throws {Error} Si ocurre un error al obtener las subastas.
+     */
     async obtenerSubastas(filtros) {
         try {
+            console.log(filtros);
             const subastasObtenidas = await Subasta.findAll({
-                include: [{ model: Publicacion }],
+                include: [{
+                    model: Publicacion,
+                    include: filtros.etiquetas && filtros.etiquetas.length > 0 ? [{
+                        model: EtiquetasPublicacion,
+                        where: {
+                            etiqueta: {
+                                [Op.in]: filtros.etiquetas // Coincide con alguna de las etiquetas enviadas
+                            }
+                        }
+                    }] : []
+                }],
                 where: {
                     ...(filtros.titulo && { '$Publicacion.titulo$': { [Op.like]: `%${filtros.titulo}%` } }),
                     ...(filtros.categoria && { '$Publicacion.idCategoria$': { [Op.eq]: filtros.categoria } }),
-                    // Falta agregar filtros de etiquetas
                     ...(filtros.fechaInicio && { fechaInicio: { [Op.gte]: filtros.fechaInicio } }),
                     ...(filtros.fechaFin && { fechaFin: { [Op.lte]: filtros.fechaFin } })
                 },
-                limit: 20, // Se mostraran 20 subastas por página.
+                limit: 20, // 20 subastas por página
                 offset: filtros.offset
             });
             return subastasObtenidas;
         } catch (error) {
+            console.log(error);
             throw error;
         }
     }
@@ -92,7 +110,13 @@ class SubastasDAO {
     async obtenerSubastaPorId(idSubasta) {
         try {
             const subastaObtenida = await Subasta.findByPk(idSubasta, {
-                include: [{ model: Publicacion }]
+                include: [{
+                    model: Publicacion,
+                    include: [{
+                        model: EtiquetasPublicacion,
+                        attributes: ['etiqueta']
+                    }]
+                }]
             });
             return subastaObtenida;
         } catch (error) {
@@ -119,7 +143,8 @@ class SubastasDAO {
             }
 
             await subasta.Publicacion.update(datosActualizados);
-            return subasta.Publicacion;
+            await subasta.update(datosActualizados);
+            return subasta.toJSON();
         } catch (error) {
             throw error;
         }

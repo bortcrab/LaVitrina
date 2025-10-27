@@ -44,13 +44,14 @@ class PujasDAO {
     /**
      * Obtiene todas las pujas realizadas por un usuario.
      * @param {number} offset - Cantidad de registros a omitir antes de comenzar a devolver resultados.
+     * @param {number} idSubasta - ID de la subasta.
      * @param {number} idUsuario - ID del usuario que hizo las pujas.
      * @returns {Promise<Array>} - Lista de pujas del usuario.
      */
-    async obtenerPujasPorUsuario(idUsuario, offset) {
+    async obtenerPujasPorUsuario(idSubasta, idUsuario, offset) {
         try {
             const pujasObtenidas = await Puja.findAll({
-                where: { idUsuario },
+                where: { idUsuario, idSubasta },
                 offset,
                 limit: 50,
                 order: [['fechaPuja', 'DESC']]
@@ -68,7 +69,6 @@ class PujasDAO {
      */
     async obtenerPujaMasAlta(idSubasta) {
         try {
-            console.log(idSubasta);
             const pujaMasAlta = await Puja.findOne({
                 where: { idSubasta },
                 order: [['monto', 'DESC']]
