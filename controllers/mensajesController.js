@@ -2,7 +2,7 @@ const MensajesDAO = require('../dataAccess/mensajesDAO.js');
 const { AppError } = require('../utils/appError.js');
 const ChatDAO = require('../dataAccess/chatsDAO.js');
 
-class mensajesController {
+class MensajesController {
     static async crearMensaje(req, res, next) {
         try {
             const { idChat } = req.params;
@@ -64,6 +64,8 @@ class mensajesController {
         try {
             const { idMensaje } = req.params;
 
+            const idUsuario = req.usuario.id || req.usuario.userId;
+
             const mensaje = await MensajesDAO.obtenerMensajePorId(idMensaje);
             if (!mensaje) {
                 return next(new AppError('Mensaje no encontrado.', 404));
@@ -81,3 +83,5 @@ class mensajesController {
         }
     }
 }
+
+module.exports = MensajesController;

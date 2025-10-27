@@ -22,7 +22,7 @@ class ChatController {
 
     static async obtenerChatPorId(req, res, next) {
         try {
-            const id = req.params.id;
+            const id = req.params.idChat;
             const chat = await ChatDAO.obtenerChatPorId(id);
 
             if (!chat) {
@@ -32,6 +32,7 @@ class ChatController {
             res.status(200).json(chat);
 
         } catch (error) {
+            console.log(error);
             next(new AppError('Ocurrió un error al obtener el chat.', 500))
         }
     }
@@ -53,7 +54,7 @@ class ChatController {
 
     static async eliminarChat(req, res, next) {
         try {
-            const id = req.params.id;
+            const id = req.params.idChat
 
             const chatExists = await ChatDAO.obtenerChatPorId(id);
 
