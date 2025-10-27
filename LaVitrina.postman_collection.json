@@ -1,0 +1,1786 @@
+{
+	"info": {
+		"_postman_id": "00df4b33-2138-411f-ae53-e2628b453883",
+		"name": "LaVitrina",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48008225",
+		"_collection_link": "https://abel2606-3a671d2a-8663677.postman.co/workspace/La-Vitrina~752e7ac6-d95c-4f45-a367-c26e0e2cc9a4/collection/48008225-00df4b33-2138-411f-ae53-e2628b453883?action=share&source=collection_link&creator=48008225"
+	},
+	"item": [
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "CrearUsuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombres\": \"Ricardo\",\r\n    \"apellidoPaterno\": \"Gutierrez\",\r\n    \"apellidoMaterno\": \"Garces\",\r\n    \"fechaNacimiento\": \"2001-12-11\",\r\n    \"ciudad\": \"Huatabampo\",\r\n    \"correo\": \"ricardo123@gmail.com\",\r\n    \"contrasenia\": \"Ricardo123\",\r\n    \"telefono\": \"64463\",\r\n    \"fotoPerfil\": \"https://url.com/foto10.png\"\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CrearUsuario2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombres\": \"Victoria\",\r\n    \"apellidoPaterno\": \"Vega\",\r\n    \"apellidoMaterno\": \"Bernal\",\r\n    \"fechaNacimiento\": \"2004-09-02\",\r\n    \"ciudad\": \"Guasave\",\r\n    \"correo\": \"victoria456@gmail.com\",\r\n    \"contrasenia\": \"Victoria456\",\r\n    \"telefono\": \"68717\",\r\n    \"fotoPerfil\": \"https://url.com/foto11.png\"\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "IniciarSesion",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();\r",
+									"\r",
+									"if (response && response.token) {\r",
+									"    pm.collectionVariables.set(\"jwt_token\", response.token);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"correo\": \"ricardo123@gmail.com\",\r\n    \"contrasenia\": \"Ricardo123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios/iniciar-sesion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios",
+								"iniciar-sesion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerUsuarios",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerUsuarioPorCorreo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombres\": \"Juan\",\r\n    \"apellidoPaterno\": \"Pérez\",\r\n    \"apellidoMaterno\": \"López\",\r\n    \"fechaNacimiento\": \"1995-10-20\",\r\n    \"ciudad\": \"Guadalajara\",\r\n    \"correo\": \"juan.perez@example.com\",\r\n    \"contrasenia\": \"password123\",\r\n    \"telefono\": \"3312345678\",\r\n    \"fotoPerfil\": \"https://url.com/foto.png\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios/correo?correo=ricardo123@gmail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios",
+								"correo"
+							],
+							"query": [
+								{
+									"key": "correo",
+									"value": "ricardo123@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerUsuarioPorId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ActualizarUsuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombres\": \"Ricardo Alan\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CambiarContrasenia",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MDUzMTksImV4cCI6MTc2MTUwODkxOX0.jjEdJ1-PUqEgU-UONw6H9i6FBrxiHzjoE7yqQO37V4I",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"correo\": \"ricardo123@gmail.com\",\r\n    \"contrasenia\": \"Ricardo123\",\r\n    \"nuevaContrasenia\": \"Ricardo1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios/cambiar-contrasenia?",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios",
+								"cambiar-contrasenia"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarUsuario",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzMsImNvcnJlbyI6ImFicmFoYW1AZ21haWwuY29tIiwiaWF0IjoxNzYxNTAwNzA4LCJleHAiOjE3NjE1MDQzMDh9.Ec-nyZ_omtNlLaSe3zES_bqcb2-qOSeOKF-ZgmTYYvE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios/33",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios",
+								"33"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resenias",
+			"item": [
+				{
+					"name": "CrearResenia",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idUsuarioCreador\": 1,\r\n    \"idUsuarioReseniado\": 2,\r\n    \"titulo\": \"Muy mal Producto\",\r\n    \"descripcion\": \"No me gustó el pantalón que me vendío, era muy mala calidad\",\r\n    \"calificacion\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/resenias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resenias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerResenias",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/resenias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resenias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerReseniasPorId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/resenias/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resenias",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerReseniasPorUsuarioReseniado",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/resenias/usuarioReseniado/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resenias",
+								"usuarioReseniado",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerReseniasAltas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/resenias/resenias-altas/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resenias",
+								"resenias-altas",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerReseniasBajas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/resenias/resenias-bajas/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resenias",
+								"resenias-bajas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ActualizarResenia",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"calificacion\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/resenias/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resenias",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarReseña",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/resenias/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"resenias",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categorias",
+			"item": [
+				{
+					"name": "CrearCategoria",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Deportes\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/categorias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categorias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerCategorias",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/categorias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categorias"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Publicaciones",
+			"item": [
+				{
+					"name": "CrearPublicacion",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titulo\": \"Publicacion de prueba 1\",\r\n    \"descripcion\": \"Descripcion de prueba 1\",\r\n    \"precio\": 20.0,\r\n    \"etiquetas\": [\r\n        \"etiqueta 1\",\r\n        \"etiqueta 2\",\r\n        \"etiqueta 3\"\r\n    ],\r\n    \"imagenes\": [\r\n        \"URL1\",\r\n        \"URL2\",\r\n        \"URL3\"\r\n    ],\r\n    \"idCategoria\": 1,\r\n    \"idUsuario\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/publicaciones",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"publicaciones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPublicaciones",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/publicaciones",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"publicaciones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPublicacionesPorUsuario",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titulo\": \"Publicacion de prueba 1\",\r\n    \"descripcion\": \"Descripcion de prueba 1\",\r\n    \"precio\": 20.0,\r\n    \"etiquetas\": [\r\n        \"etiqueta 1\",\r\n        \"etiqueta 2\",\r\n        \"etiqueta 3\"\r\n    ],\r\n    \"imagenes\": [\r\n        \"URL1\",\r\n        \"URL2\",\r\n        \"URL3\"\r\n    ],\r\n    \"idCategoria\": 1,\r\n    \"idUsuario\": 1\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/publicaciones/usuario/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"publicaciones",
+								"usuario",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPublicacionesPorTitulo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MTcwNjcsImV4cCI6MTc2MTUyMDY2N30.gld_MOujCZNNQgrUw1uP9kk4k6_bQ-54RlNHzg6e288",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/publicaciones/buscar?titulo=de",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"publicaciones",
+								"buscar"
+							],
+							"query": [
+								{
+									"key": "titulo",
+									"value": "de"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPublicacionesPorCategoria",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MjIxNzgsImV4cCI6MTc2MTUyNTc3OH0.Es96In2vD-i0rosOeMrEnQaVoEVR5_OFiMQcR322vjk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/publicaciones/categoria/1?pagina=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"publicaciones",
+								"categoria",
+								"1"
+							],
+							"query": [
+								{
+									"key": "pagina",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPublicacionesPorEtiquetas",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1Mjk0ODMsImV4cCI6MTc2MTUzMzA4M30.vwSDMsX5NXhX1keYKSlR6tBB63b0pBfKwMyqR5Rsf-A",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/publicaciones/etiquetas?etiquetas=etiqueta%201",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"publicaciones",
+								"etiquetas"
+							],
+							"query": [
+								{
+									"key": "etiquetas",
+									"value": "etiqueta%201"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPublicacionesPorPeriodo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzQ3MDIsImV4cCI6MTc2MTUzODMwMn0.wVE5GlCJl5DM_QbYryL6IcMkr77d4y7gqcvLl_MC-EM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/publicaciones/periodo?inicio=2025-01-01&fin=2025-10-27",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"publicaciones",
+								"periodo"
+							],
+							"query": [
+								{
+									"key": "inicio",
+									"value": "2025-01-01"
+								},
+								{
+									"key": "fin",
+									"value": "2025-10-27"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ActualizarPublicacion",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzQ3MDIsImV4cCI6MTc2MTUzODMwMn0.wVE5GlCJl5DM_QbYryL6IcMkr77d4y7gqcvLl_MC-EM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titulo\": \"Cambie el titulo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/publicaciones/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"publicaciones",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarPublicacion",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titulo\": \"Cambie el titulo\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/publicaciones/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"publicaciones",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Subastas",
+			"item": [
+				{
+					"name": "CrearSubasta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titulo\": \"Tenis Nike firmados por Jordan\",\r\n    \"descripcion\": \"Tenis originales firmados por Michael Jordan en 2001.\",\r\n    \"precio\": 150000.00,\r\n    \"etiquetas\": [\"Ropa\", \"Deportes\"],\r\n    \"imagenes\": [\"https://url.com/foto_tenis.png\"],\r\n    \"idCategoria\": 1,\r\n    \"idUsuario\": 1,\r\n    \"fechaInicio\": \"2025-10-27\",\r\n    \"fechaFin\": \"2025-11-27\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subastas",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subastas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerSubastas (sin filtros)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subastas/",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subastas",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerSubastas (por título)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/subastas?titulo=camiseta",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subastas"
+							],
+							"query": [
+								{
+									"key": "titulo",
+									"value": "camiseta"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerSubastas (por categoría)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/subastas?categoria=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subastas"
+							],
+							"query": [
+								{
+									"key": "categoria",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerSubastas (por etiquetas)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/subastas?etiquetas=Ropa",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subastas"
+							],
+							"query": [
+								{
+									"key": "etiquetas",
+									"value": "Ropa"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenersSubastas (por fechas)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/subastas?fechaInicio=2025-10-25&fechaFin=2025-11-28",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subastas"
+							],
+							"query": [
+								{
+									"key": "fechaInicio",
+									"value": "2025-10-25"
+								},
+								{
+									"key": "fechaFin",
+									"value": "2025-11-28"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerSubastaPorId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/subastas/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subastas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ActualizarSubasta",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idUsuario\": 1,\r\n    \"descripcion\": \"Tenis Nike 100% originales firmados por Michael Jordan en 2002.\",\r\n    \"fechaInicio\": \"2025-12-01\",\r\n    \"fechaFin\": \"2026-01-01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subastas/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subastas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarSubasta",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idUsuario\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subastas/3",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subastas",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pujas",
+			"item": [
+				{
+					"name": "CrearPuja",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"monto\": 90,\r\n    \"idUsuario\": 1,\r\n    \"idSubasta\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/pujas",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"pujas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPujas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/pujas?idSubasta=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"pujas"
+							],
+							"query": [
+								{
+									"key": "idSubasta",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPujaMasAlta",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"monto\": 90,\r\n    \"idUsuario\": 1,\r\n    \"idSubasta\": 41\r\n}"
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/pujas/mas-alta?idSubasta=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"pujas",
+								"mas-alta"
+							],
+							"query": [
+								{
+									"key": "idSubasta",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPujasPorUsuario",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjE1MzcwNjgsImV4cCI6MTc2MTU0MDY2OH0.PcNBFkcRhJuD09ABLP-FPZeV3FRXUSJ3k4jMywth0b0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/api/pujas?idSubasta=1&idUsuario=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"pujas"
+							],
+							"query": [
+								{
+									"key": "idSubasta",
+									"value": "1"
+								},
+								{
+									"key": "idUsuario",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Chats",
+			"item": [
+				{
+					"name": "Mensajes",
+					"item": [
+						{
+							"name": "CrearMensajeTexto",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"texto\": \"Hola ting ling, sigue disponible el teclado gamer?\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/chats/1/mensajes",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"chats",
+										"1",
+										"mensajes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CrearMensajeImagen",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"imagen\": \"https://url-imagen/imagen.jpg\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/chats/1/mensajes",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"chats",
+										"1",
+										"mensajes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ObtenerMensajePorId",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/chats/1/mensajes/1",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"chats",
+										"1",
+										"mensajes",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ObtenerMensajesDeChat",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/chats/1/mensajes",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"chats",
+										"1",
+										"mensajes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "EliminarMensaje",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/chats/1/mensajes/2",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"chats",
+										"1",
+										"mensajes",
+										"2"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CrearChat",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idPublicacion\": 1 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/chats",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"chats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerChatPorId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/chats/6",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"chats",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerChatsPorUsuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/chats",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"chats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarUsuarioDeChat",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/chats/5/usuarios/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"chats",
+								"5",
+								"usuarios",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarChat",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/chats/6",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"chats",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "jwt",
+		"jwt": [
+			{
+				"key": "algorithm",
+				"value": "HS256",
+				"type": "string"
+			},
+			{
+				"key": "isSecretBase64Encoded",
+				"value": false,
+				"type": "boolean"
+			},
+			{
+				"key": "payload",
+				"value": "{}",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "headerPrefix",
+				"value": "Bearer",
+				"type": "string"
+			},
+			{
+				"key": "queryParamKey",
+				"value": "token",
+				"type": "string"
+			},
+			{
+				"key": "header",
+				"value": "{}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "jwt_token",
+			"value": ""
+		}
+	]
+}
