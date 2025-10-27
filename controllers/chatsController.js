@@ -16,7 +16,6 @@ class ChatController {
             res.status(201).json(chat);
 
         } catch (error) {
-            console.error(error);
             next(new AppError('Ocurrió un error al crear el chat.', 500))
         }
     }
@@ -45,11 +44,9 @@ class ChatController {
             const offset = (page - 1) * limit;
 
             const chats = await ChatDAO.obtenerChatsPorUsuario(idUsuario, limit, offset);
-
             res.status(200).json(chats);
 
         } catch (error) {
-            console.error(error);
             next(new AppError('Ocurrió un error al obtener los chats por usuario.', 500))
         }
     }
@@ -65,7 +62,6 @@ class ChatController {
             }
 
             await ChatDAO.eliminarChat(id)
-
             res.status(200).json({ message: 'Chat eliminado con exito.' })
 
         } catch (error) {
@@ -90,11 +86,9 @@ class ChatController {
             }
 
             const nuevaRelacion = await UsuarioChatsDAO.agregarUsuarioAChat(idUsuario, idChat);
-
             res.status(201).json(nuevaRelacion);
 
         } catch (error) {
-            console.error(error);
             next(new AppError('Ocurrió un error al agregar el usuario al chat.', 500));
         }
     }
@@ -104,7 +98,6 @@ class ChatController {
             const { idChat, idUsuario } = req.params;
 
             await UsuarioChatsDAO.eliminarUsuarioDeChat(idUsuario, idChat);
-
             res.status(200).json({ message: 'Usuario eliminado del chat con éxito.' });
 
         } catch (error) {
@@ -112,7 +105,6 @@ class ChatController {
                 return next(new AppError('El usuario especificado no pertenece a este chat.', 404));
             }
 
-            console.error(error);
             next(new AppError('Ocurrió un error al eliminar el usuario del chat.', 500));
         }
     }

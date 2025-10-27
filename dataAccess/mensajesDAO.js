@@ -82,7 +82,7 @@ class MensajesDAO {
      * @returns {Promise<Mensaje[]>} Array de mensajes ordenados por fecha de envío
      * @throws {Error} Por si hay un error al obtener los mensajes
      */
-    async obtenerMensajesDeChat(idChat) {
+    async obtenerMensajesDeChat(idChat, limit = 30, offset = 0) {
         try {
             const mensajes = await Mensaje.findAll({
                 where: { idChat },
@@ -91,7 +91,9 @@ class MensajesDAO {
                     { model: MensajeTexto, attributes: ['texto'] },
                     { model: MensajeImagen, attributes: ['imagen'] }
                 ],
-                order: [['fechaEnviado', 'ASC']]
+                order: [['fechaEnviado', 'ASC']],
+                limit: limit,
+                offset: offset
             });
             return mensajes;
         } catch (error) {
