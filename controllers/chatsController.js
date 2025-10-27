@@ -3,7 +3,24 @@ const UsuarioChatsDAO = require('../dataAccess/usuarioChatsDAO.js');
 const UsuarioDAO = require('../dataAccess/usuariosDAO.js');
 const { AppError } = require('../utils/appError.js');
 
+/**
+ * Controlador para las operaciones relacionadas con chats.
+ *
+ * Contiene los métodos que responden a las rutas HTTP de crear, obtener, gestionar chats. 
+ */
 class ChatController {
+    /**
+     * Handler para crear un nuevo chat.
+     * 
+     * @param {Object} req - Request de Express
+     * @param {Object} req.body - Cuerpo de la petición
+     * @param {string} req.body.nombre - Nombre del chat
+     * @param {Date} req.body.fechaCreacion - Fecha de creación del chat
+     * @param {number} req.body.idPublicacion - ID de la publicación asociada al chat
+     * @param {Object} res - Response de Express
+     * @param {Function} next - Siguiente middleware
+     * @returns {Promise<void>}
+     */
     static async crearChat(req, res, next) {
         try {
             const { nombre, fechaCreacion, idPublicacion } = req.body;
@@ -20,6 +37,16 @@ class ChatController {
         }
     }
 
+    /**
+     * Handler para obtener un chat por su ID.
+     * 
+     * @param {Object} req - Request de Express
+     * @param {Object} req.params - Parámetros de la URL
+     * @param {string} req.params.idChat - ID del chat a obtener
+     * @param {Object} res - Response de Express
+     * @param {Function} next - Siguiente middleware
+     * @returns {Promise<void>}
+     */
     static async obtenerChatPorId(req, res, next) {
         try {
             const id = req.params.idChat;
@@ -37,6 +64,19 @@ class ChatController {
         }
     }
 
+    /**
+     * Handler para obtener todos los chats de un usuario.
+     * 
+     * @param {Object} req - Request de Express
+     * @param {Object} req.usuario - Usuario autenticado
+     * @param {number} req.usuario.userId - ID del usuario
+     * @param {Object} req.query - Query params
+     * @param {number} [req.query.limit=20] - Límite de resultados por página
+     * @param {number} [req.query.page=1] - Número de página
+     * @param {Object} res - Response de Express
+     * @param {Function} next - Siguiente middleware
+     * @returns {Promise<void>}
+     */
     static async obtenerChatsPorUsuario(req, res, next) {
         try {
             const idUsuario = req.usuario.userId || req.usuario.id;
@@ -52,6 +92,16 @@ class ChatController {
         }
     }
 
+    /**
+     * Handler para eliminar un chat específico.
+     * 
+     * @param {Object} req - Request de Express
+     * @param {Object} req.params - Parámetros de la URL
+     * @param {string} req.params.idChat - ID del chat a eliminar
+     * @param {Object} res - Response de Express
+     * @param {Function} next - Siguiente middleware
+     * @returns {Promise<void>}
+     */
     static async eliminarChat(req, res, next) {
         try {
             const id = req.params.idChat
@@ -70,6 +120,18 @@ class ChatController {
         }
     }
 
+    /**
+     * Handler para agregar un usuario a un chat existente.
+     * 
+     * @param {Object} req - Request de Express
+     * @param {Object} req.params - Parámetros de la URL
+     * @param {string} req.params.idChat - ID del chat al que se agregará el usuario
+     * @param {Object} req.body - Cuerpo de la petición
+     * @param {number} req.body.idUsuario - ID del usuario a agregar al chat
+     * @param {Object} res - Response de Express
+     * @param {Function} next - Siguiente middleware
+     * @returns {Promise<void>}
+     */
     static async agregarUsuarioAChat(req, res, next) {
         try {
             const { idChat } = req.params;
@@ -94,6 +156,17 @@ class ChatController {
         }
     }
 
+    /**
+     * Handler para eliminar un usuario de un chat.
+     * 
+     * @param {Object} req - Request de Express
+     * @param {Object} req.params - Parámetros de la URL
+     * @param {string} req.params.idChat - ID del chat
+     * @param {string} req.params.idUsuario - ID del usuario a eliminar del chat
+     * @param {Object} res - Response de Express
+     * @param {Function} next - Siguiente middleware
+     * @returns {Promise<void>}
+     */
     static async eliminarUsuarioDeChat(req, res, next) {
         try {
             const { idChat, idUsuario } = req.params;
