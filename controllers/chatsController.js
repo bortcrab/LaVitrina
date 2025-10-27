@@ -1,6 +1,7 @@
 const ChatDAO = require('../dataAccess/chatsDAO.js');
 const UsuarioChatsDAO = require('../dataAccess/usuarioChatsDAO.js');
 const UsuarioDAO = require('../dataAccess/usuariosDAO.js');
+const PublicacionDAO = require('../dataAccess/publicacionesDAO.js');
 const { AppError } = require('../utils/appError.js');
 
 /**
@@ -23,17 +24,41 @@ class ChatController {
      */
     static async crearChat(req, res, next) {
         try {
-            const { nombre, fechaCreacion, idPublicacion } = req.body;
+            const { idPublicacion } = req.body;
+            const idCliente = req.usuario.id;
 
-            if (!nombre || !fechaCreacion || !idPublicacion) {
-                return next(new AppError('Los campos nombre y fecha creación son requeridos.', 400))
+            if (!idPublicacion) {
+                return next(new AppError('La publicación es requerida.', 400));
             }
 
-            const chat = await ChatDAO.crearChat(nombre, fechaCreacion, idPublicacion);
+            const publicacion = await PublicacionDAO.obtenerPublicacionPorId(idPublicacion);
+
+            if (!publicacion) {
+                return next(new AppError('La publicación no existe.', 404));
+            }
+            const idVendedor = publicacion.idUsuario;
+            const tituloProducto = publicacion.titulo;
+            const cliente = await UsuarioDAO.obtenerUsuarioPorId(idCliente);
+            const vendedor = await UsuarioDAO.obtenerUsuarioPorId(idVendedor);
+
+            if (!cliente || !vendedor) {
+                 return next(new AppError('No se pudo encontrar la información de los usuarios.', 404));
+            }
+
+            const nombreCliente = cliente.nombres;
+            const nombreVendedor = vendedor.nombres;
+            const nombreChat = `${nombreVendedor} - ${nombreCliente} - ${tituloProducto}`;
+            const fechaCreacion = new Date();
+            const chat = await ChatDAO.crearChat(nombreChat, fechaCreacion, idPublicacion);
+
+            await UsuarioChatsDAO.agregarUsuarioAChat(idCliente, chat.id);
+            await UsuarioChatsDAO.agregarUsuarioAChat(idVendedor, chat.id);
+
             res.status(201).json(chat);
 
         } catch (error) {
-            next(new AppError('Ocurrió un error al crear el chat.', 500))
+            console.error(error);
+            next(new AppError('Ocurrió un error al crear el chat.', 500));
         }
     }
 
@@ -59,7 +84,6 @@ class ChatController {
             res.status(200).json(chat);
 
         } catch (error) {
-            console.log(error);
             next(new AppError('Ocurrió un error al obtener el chat.', 500))
         }
     }
