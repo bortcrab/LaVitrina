@@ -140,6 +140,7 @@ class ChatController {
             res.status(200).json({ message: 'Chat eliminado con exito.' })
 
         } catch (error) {
+            console.error(error);
             next(new AppError('Ocurrió un error al eliminar el chat.', 500))
         }
     }
@@ -202,7 +203,6 @@ class ChatController {
             if (error.message === 'El usuario ya no pertenece a este chat.') {
                 return next(new AppError('El usuario especificado no pertenece a este chat.', 404));
             }
-
             next(new AppError('Ocurrió un error al eliminar el usuario del chat.', 500));
         }
     }

@@ -20,10 +20,11 @@ module.exports = {
       idChat: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { 
+        references: {
           model: 'Chats',
           key: 'id'
-        }
+        },
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,

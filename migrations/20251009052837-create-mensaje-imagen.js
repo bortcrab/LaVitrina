@@ -9,7 +9,8 @@ module.exports = {
         references: {
           model: 'Mensajes',
           key: 'id'
-        }
+        },
+        onDelete: 'CASCADE'
       },
       imagen: {
         type: Sequelize.STRING

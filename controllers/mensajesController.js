@@ -134,6 +134,7 @@ class MensajesController {
             res.status(200).json({ message: 'Mensaje eliminado con exito.' });
 
         } catch (error) {
+            console.log(error);
             next(new AppError('Ocurrió un error al eliminar el mensaje.', 500));
         }
     }
