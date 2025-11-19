@@ -1,56 +1,77 @@
-import { PostService } from '../../services/post.service.js';
-import { UserService } from '../../services/user.service.js';
-
-export class Post extends HTMLElement {
-    #postService = new PostService();
-    #userService = new UserService();
+export class CrearPublicacionComponent extends HTMLElement {
     constructor() {
         super();
     }
 
     connectedCallback() {
-        const postId = this.getAttribute('postId');
         const shadow = this.attachShadow({ mode: 'open' });
         this.#agregarEstilos(shadow);
         this.#render(shadow);
-        this.#consultarPost(postId, shadow);
-    }
-
-    #agregarEstilos(shadow) {
-        let link = document.createElement('link');
-        link.setAttribute('rel', 'stylesheet');
-        link.setAttribute('href', '../src/components/post/post.component.css');
-        shadow.appendChild(link);
     }
 
     #render(shadow) {
         shadow.innerHTML += `
-        <section>
-            <h2><a href="#" id="titulo">...</a></h2>
-            <p id="contenido">...</p>
-            <p class="date">
-                Publicado por <span id="usuario">...</span>
-            </p>
-        </section>
-    `
-    }
+        <div class="contenedor">
+            <div class="imagenes">
+                <img class="imagen-producto" src="../../assets/senior.jpg" alt="">
+                <img class="imagen-producto" src="../../assets/rata.jpeg" alt="">
+                <img class="imagen-producto" src="../../assets/gato.jpeg" alt="">
+                <label class="agregar">
+                    <input type="file" hidden>
+                    <div class="contenido">
+                        <img class="icono" src="../../assets/agregarImagen.png">
+                        <span>Agregar</span>
+                    </div>
+                </label>
+            </div>
+            <div class="datos">
+                <div class="contenedor-input">
+                    <h1>Crear publicación</h1>
+                    <label for="titulo">Título</label>
+                    <input type="text" name="titulo" id="titulo" placeholder='ej. "Playera vintage de algodón"' />
+                </div>
+                <div class="contenedor-input">
+                    <label for="descripcion">Descripción</label>
+                    <textarea name="descripcion" id="descripcion"
+                        placeholder="Describe tu producto o servicio con detalle (características, tamaño, color, etc)"></textarea>
+                </div>
+                <div class="contenedor-input" id="contenedor-horizontal">
+                    <label for="precio">Precio</label>
+                    <input type="number" name="precio" id="precio" placeholder='$0.00' />
+                    <label for="categoria">Categoría</label>
+                    <select name="categoria" id="categoria">
+                        <option value="0">Seleccionar</option>
+                        <option value="1">Electrónica</option>
+                        <option value="2">Ropa</option>
+                        <option value="3">Hogar</option>
+                    </select>
+                </div>
+                <div class="contenedor-input">
+                    <label for="etiquetas">Etiquetas</label>
+                    <input type="text" name="etiquetas" id="etiquetas" placeholder='Agrega una etiqueta y presiona Enter...' />
+                </div>
+                <div class="tag-container" id="tag-container">
+                    <div class="tag">... | <a href="">×</a></div>
+                </div>
+                <div class="contenedor-input">
+                    <label for="tipo-publicacion">Tipo de publicación</label>
+                    <div class="toggle-container">
+                        <input type="radio" id="venta" name="tipo-publicacion" checked>
+                        <label for="venta" class="toggle-btn">Venta</label>
+                        <input type="radio" id="subasta" name="tipo-publicacion">
+                        <label for="subasta" class="toggle-btn">Subasta</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-crear">Crear</button>
+            </div>
+        </div>
+        `
+    };
 
-    #consultarPost(postId, shadow) {
-        this.#postService.obtenerPost(postId)
-            .then(post => {
-                let element = shadow.querySelector('#titulo');
-                element.innerHTML = post.title;
-                element = shadow.querySelector('#contenido');
-                element.innerHTML = post.body;
-                this.#consultarUsuario(post.userId, shadow);
-            })
-    }
-
-    #consultarUsuario(userId, shadow) {
-        this.#userService.obtenerUsuario(userId)
-            .then(user => {
-                let element = shadow.querySelector('#usuario');
-                element.innerHTML = user.name;
-            });
+    #agregarEstilos(shadow) {
+        let link = document.createElement("link");
+        link.setAttribute("rel", "stylesheet");
+        link.setAttribute("href", "./src/components/crearPublicacion/crearPublicacion.component.css");
+        shadow.appendChild(link);
     }
 }
