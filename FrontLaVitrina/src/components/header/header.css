@@ -1,0 +1,60 @@
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: white;
+    border: 1px solid #ccc;
+
+}
+
+.search-bar {
+    position: relative;
+    flex: 1;
+    max-width: 600px;
+    margin-right: 20px;
+}
+
+.search-input {
+    padding: 8px 15px 8px 45px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    width: 100%;
+    outline: none;
+    border: solid #D0D0D0 3px;
+    /*Para que no se me olivde ayuda a que el padding no deforme el ancho*/
+    box-sizing: border-box;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: medium;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+
+.user-name {
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #E62634;
+    padding: 2px;
+}
