@@ -1,0 +1,77 @@
+export class CrearPublicacionComponent extends HTMLElement {
+    constructor() {
+        super();
+    }
+
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: 'open' });
+        this.#agregarEstilos(shadow);
+        this.#render(shadow);
+    }
+
+    #render(shadow) {
+        shadow.innerHTML += `
+        <div class="contenedor">
+            <div class="imagenes">
+                <img class="imagen-producto" src="../../assets/senior.jpg" alt="">
+                <img class="imagen-producto" src="../../assets/rata.jpeg" alt="">
+                <img class="imagen-producto" src="../../assets/gato.jpeg" alt="">
+                <label class="agregar">
+                    <input type="file" hidden>
+                    <div class="contenido">
+                        <img class="icono" src="../../assets/agregarImagen.png">
+                        <span>Agregar</span>
+                    </div>
+                </label>
+            </div>
+            <div class="datos">
+                <div class="contenedor-input">
+                    <h1>Crear publicación</h1>
+                    <label for="titulo">Título</label>
+                    <input type="text" name="titulo" id="titulo" placeholder='ej. "Playera vintage de algodón"' />
+                </div>
+                <div class="contenedor-input">
+                    <label for="descripcion">Descripción</label>
+                    <textarea name="descripcion" id="descripcion"
+                        placeholder="Describe tu producto o servicio con detalle (características, tamaño, color, etc)"></textarea>
+                </div>
+                <div class="contenedor-input" id="contenedor-horizontal">
+                    <label for="precio">Precio</label>
+                    <input type="number" name="precio" id="precio" placeholder='$0.00' />
+                    <label for="categoria">Categoría</label>
+                    <select name="categoria" id="categoria">
+                        <option value="0">Seleccionar</option>
+                        <option value="1">Electrónica</option>
+                        <option value="2">Ropa</option>
+                        <option value="3">Hogar</option>
+                    </select>
+                </div>
+                <div class="contenedor-input">
+                    <label for="etiquetas">Etiquetas</label>
+                    <input type="text" name="etiquetas" id="etiquetas" placeholder='Agrega una etiqueta y presiona Enter...' />
+                </div>
+                <div class="tag-container" id="tag-container">
+                    <div class="tag">... | <a href="">×</a></div>
+                </div>
+                <div class="contenedor-input">
+                    <label for="tipo-publicacion">Tipo de publicación</label>
+                    <div class="toggle-container">
+                        <input type="radio" id="venta" name="tipo-publicacion" checked>
+                        <label for="venta" class="toggle-btn">Venta</label>
+                        <input type="radio" id="subasta" name="tipo-publicacion">
+                        <label for="subasta" class="toggle-btn">Subasta</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-crear">Crear</button>
+            </div>
+        </div>
+        `
+    };
+
+    #agregarEstilos(shadow) {
+        let link = document.createElement("link");
+        link.setAttribute("rel", "stylesheet");
+        link.setAttribute("href", "./src/components/crearPublicacion/crearPublicacion.component.css");
+        shadow.appendChild(link);
+    }
+}
