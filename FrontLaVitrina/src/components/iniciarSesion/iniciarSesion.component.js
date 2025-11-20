@@ -63,7 +63,7 @@ export class IniciarSesionComponent extends HTMLElement {
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/iniciarSesion/iniciarSesion.css");
+        link.setAttribute("href", "./src/components/iniciarSesion/iniciarSesion.component.css");
         shadow.appendChild(link);
     }
 }

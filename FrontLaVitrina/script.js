@@ -1,8 +1,8 @@
 
 import { SidebarComponent } from "./src/components/side-bar/sidebar.component.js";
 import { HeaderComponent } from './src/components/header/header.js';
-import { IniciarSesionComponent } from './src/components/iniciarSesion/iniciarSesion.js';
-import { RegistrarUsuarioComponent } from './src/components/registrar/registrar.js';
+import { IniciarSesionComponent } from './src/components/iniciarSesion/iniciarSesion.component.js';
+import { RegistrarUsuarioComponent } from './src/components/registrar/registrar.component.js';
 import { CrearPublicacionComponent } from "./src/components/crearPublicacion/crearPublicacion.component.js";
 
 window.customElements.define('sidebar-info', SidebarComponent);
