@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
 
-*{
-    font-family: "Bree Serif", serif;             
+* {
+    font-family: "Bree Serif", serif;
 }
 
-main{
+main {
     margin: 0;
     padding: 0;
 }
@@ -23,12 +23,24 @@ body {
 }
 
 .derecha {
+    flex-grow: 1;
+    height: 100vh;
+    margin-left: 39vh;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100%;
+    overflow-y: auto;
+    width: calc(100vw - 39vh);
 }
 
 .crear-publicacion {
     flex-grow: 1;
+    margin-top: 13vh;
+    overflow-y: auto;
+}
+
+header-info {
+    width: calc(100vw - 39vh);
+    position: fixed;
+    top: 0;
+    z-index: 10;
 }
