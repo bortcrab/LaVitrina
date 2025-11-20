@@ -3,3 +3,8 @@
 *{
     font-family: "Bree Serif", serif;             
 }
+
+main{
+    margin: 0;
+    padding: 0;
+}

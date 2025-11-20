@@ -1,0 +1,226 @@
+html, body, div, section, input{
+  box-sizing: border-box;
+}
+
+.all {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+.side-div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+.image-side {
+    position: relative;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.image-side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+    z-index: 2;
+}
+
+.content-over-image {
+    position: relative;
+    z-index: 3;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 60px;
+    color: white;
+}
+
+.image-side img.brand-logo {
+    width: 30rem;
+    height: auto;
+    object-fit: contain;
+    position: relative;
+    z-index: 100;
+    margin: 0 auto;
+}
+
+.logo-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-slogan {
+    font-size: 1.8rem;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+
+.login-form {
+    background-color: white;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.form-container {
+    width: 100%;
+    padding: 20px 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form h3 {
+    font-size: 2.4rem;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.header {
+    text-align: center;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 40px;
+    display: block;
+    font-size: 1.3rem;
+}
+
+.input-group {
+    margin-bottom: 20px;
+
+}
+
+.input-row {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+
+.input-group.half {
+    flex: 1;
+}
+
+label {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #333;
+    display: block;
+    margin-bottom: 8px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #CECECE;
+    background-color: #E4E4E4;
+    border-radius: 15px;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus,
+select:focus {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 0 2px rgba(226, 13, 24, 0.1);
+}
+
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23666' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+}
+
+input[type="date"] {
+    cursor: pointer;
+}
+
+.registrarse {
+    color: #e20d18;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.registrarse:hover {
+    text-decoration: underline;
+}
+
+button {
+    background-color: #E62634;
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #c40b14;
+}
+
+.register-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+
+@media (max-width: 900px) {
+    .image-side {
+        display: none;
+    }
+
+    .form-container {
+        max-width: 100%;
+        padding: 40px;
+    }
+
+    .input-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+@media (max-width: 500px) {
+    .form-container {
+        padding: 30px 20px;
+    }
+
+    .login-form h3 {
+        font-size: 2rem;
+    }
+}
