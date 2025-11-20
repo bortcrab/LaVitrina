@@ -12,14 +12,20 @@ export class SidebarComponent extends HTMLElement {
 
     #render(shadow) {
         shadow.innerHTML += `
-        <nav>
-            <img src="./src/assets/logoRojo.png" alt="Logo La Vitrina">
-            <ul class="side-bar-buttons">
-                <li><a href="#"><img src="./src/assets/inicioNegro.png" alt="">Inicio</a></li>
-                <li><a href="#"><img src="./src/assets/chatsNegro.png" alt="">Chats</a></li>
-                <li><a href="#"><img src="./src/assets/misPublicacionesNegro.png" alt="">Mis Publicaciones</a></li>
-            </ul>
-            <button class="side-bar-publicar">Publicar</button>
+        <nav class="side-bar">
+            <div class="div-logo">
+                <img src="./src/assets/logoRojo.png" alt="Logo La Vitrina" class="side-bar-logo">
+            </div>
+            <div class="div-buttons">
+                <ul>
+                    <li><a href="#" class="side-bar-button"><img src="./src/assets/inicioNegro.png" alt="Imagen inicio">Inicio</a></li>
+                    <li><a href="#" class="side-bar-button"><img src="./src/assets/chatsNegro.png" alt="Imagen chats">Chats</a></li>
+                    <li><a href="#" class="side-bar-button"><img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones</a></li>
+                </ul>
+            </div>
+            <div class="div-btn-publicar">
+                <button class="side-bar-btn-publicar">Publicar</button>
+            </div>
         </nav>
 		`;
     }
