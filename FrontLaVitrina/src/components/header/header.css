@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+* {
+    font-family: "Bree Serif", serif;
+}
+
 .main-header {
     display: flex;
     justify-content: space-between;
@@ -5,7 +11,6 @@
     padding: 10px 20px;
     background-color: white;
     border: 1px solid #ccc;
-
 }
 
 .search-bar {
