@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
 
 * {
-    font-family: "Bree Serif", serif;
+  font-family: "Bree Serif", serif;
 }
 
 main {
@@ -10,6 +10,8 @@ main {
   justify-content: center;
   background-color: #F3E7E8;
   padding: 1rem;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .contenedor {
