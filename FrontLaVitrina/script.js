@@ -4,4 +4,4 @@ import { CrearPublicacionComponent } from "./src/components/crearPublicacion/cre
 
 window.customElements.define('sidebar-info', SidebarComponent);
 window.customElements.define('header-info', HeaderComponent);
-window.customElements.define('crearPublicacion', CrearPublicacionComponent);
+window.customElements.define('crear-publicacion', CrearPublicacionComponent);
