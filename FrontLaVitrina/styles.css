@@ -9,6 +9,11 @@ main {
     padding: 0;
 }
 
+main{
+    margin: 0;
+    padding: 0;
+}
+
 body {
     width: 100dvw;
     height: 100dvh;
@@ -27,7 +32,7 @@ body {
     width: calc(100vw - 39vh);
 }
 
-crear-publicacion {
+.crear-publicacion {
     flex-grow: 1;
     margin-top: 13vh;
     overflow-y: auto;
