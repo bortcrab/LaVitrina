@@ -6,6 +6,8 @@ import { RegistrarUsuarioComponent } from './src/components/registrar/registrar.
 import { CrearPublicacionComponent } from "./src/components/crearPublicacion/crearPublicacion.component.js";
 import { ProductComponent } from "./src/components/productoCard/productoCard.component.js";
 import { HomePage } from './src/pages/home/home.page.js';
+import { PerfilComponent } from './src/components/perfil/perfil.component.js';
+import { ChatsComponent } from './src/components/chats/chats.component.js';
 
 window.customElements.define('sidebar-info', SidebarComponent);
 window.customElements.define('header-info', HeaderComponent);
@@ -14,9 +16,13 @@ window.customElements.define('registrar-usuario-info', RegistrarUsuarioComponent
 window.customElements.define('crear-publicacion', CrearPublicacionComponent);
 window.customElements.define('product-info', ProductComponent);
 window.customElements.define('home-page', HomePage);
+window.customElements.define('perfil-info', PerfilComponent);
+window.customElements.define('chats-info', ChatsComponent);
 
 document.addEventListener('DOMContentLoaded', function(){
     page('/', () => showContent('home-page'));
+    page('/perfil', () => showContent('perfil-info'));
+    page('/chats', () => showContent('chats-info'));
     //puse este de ejemplo ahi le mueves parra
     //page('/crear-publicacion', () => showContent('crear-publicacion'));
     page('*', () => showContent('home-page'));
