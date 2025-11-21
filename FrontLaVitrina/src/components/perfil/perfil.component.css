@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+* {
+    font-family: "Bree Serif", serif;
+    box-sizing: border-box;
+}
+
+.perfil-container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    background-color: #F3E7E8;
+    min-height: 100vh;
+}
+
+.perfil-info {
+    background-color: #FFFFFF;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    width: 400px;
+    height: fit-content;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.usuario-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.avatar-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #E62634;
+    padding: 3px;
+}
+
+.editar-avatar {
+    background-color: #FFFFFF;
+    border: 2px solid #E62634;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    margin-top: -50px;
+    margin-left: 100px;
+    transition: background-color 0.3s;
+}
+
+.editar-avatar:hover {
+    background-color: #FFCED6;
+}
+
+.usuario-nombre {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    text-align: center;
+}
+
+.usuario-fecha {
+    color: #999;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.reseñas-card {
+    background-color: #FFFFFF;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reseñas-card h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.3rem;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.estrellas {
+    color: #F0A37B;
+    font-size: 1.5rem;
+}
+
+.rating-numero {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.total-reseñas {
+    color: #999;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.ver-reseñas {
+    color: #E62634;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.ver-reseñas:hover {
+    text-decoration: underline;
+}
+
+.perfil-datos {
+    flex: 1;
+    background-color: #FFFFFF;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.perfil-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.perfil-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    color: #333;
+}
+
+.btn-editar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.btn-editar img {
+    width: 24px;
+    height: 24px;
+}
+
+/* Formulario */
+.formulario-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    padding: 0.8rem;
+    border: 2px solid #CECECE;
+    border-radius: 0.8rem;
+    font-size: 1rem;
+    background-color: #FBFBFB;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #E62634;
+}
+
+.form-group input:disabled {
+    background-color: #F5F5F5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.btn-guardar {
+    background-color: #E62634;
+    color: white;
+    border: none;
+    border-radius: 0.8rem;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    align-self: flex-end;
+    margin-top: 1rem;
+    transition: background-color 0.3s;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.3);
+}
+
+.btn-guardar:hover {
+    background-color: #c40b14;
+}
+
+.btn-guardar:disabled {
+    background-color: #CECECE;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+@media (max-width: 1024px) {
+    .perfil-container {
+        flex-direction: column;
+    }
+
+    .perfil-info {
+        width: 100%;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .perfil-container {
+        padding: 1rem;
+    }
+
+    .perfil-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .usuario-nombre {
+        font-size: 1.5rem;
+    }
+}
