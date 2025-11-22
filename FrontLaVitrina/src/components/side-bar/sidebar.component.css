@@ -2,6 +2,7 @@
 
 * {
     font-family: "Bree Serif", serif;
+    box-sizing: border-box;
 }
 
 .div-logo {

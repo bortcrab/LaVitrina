@@ -63,3 +63,7 @@
     font-weight: bold;
     font-size: 14px;
 }
+
+.card-details h4{
+    height: 3rem;
+}
