@@ -2,9 +2,7 @@
 
 * {
     font-family: "Bree Serif", serif;
-}
-
-main {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
@@ -12,8 +10,8 @@ main {
 body {
     width: 100dvw;
     height: 100dvh;
-    margin: 0;
     background-color: #F3E7E8;
+    display: block; 
 }
 
 .derecha {
@@ -24,17 +22,24 @@ body {
     flex-direction: column;
     overflow-y: auto;
     width: calc(100vw - 39vh);
+    margin-left: 39vh; 
+    width: calc(100% - 39vh)
 }
-
-crear-publicacion {
-    flex-grow: 1;
-    margin-top: 13vh;
-    overflow-y: auto;
-}
-
 header-info {
-    width: calc(100vw - 39vh);
+    display: block;
     position: fixed;
     top: 0;
+    left: 35vh;
+    width: calc(100% - 35vh);
     z-index: 10;
+}
+
+sidebar-info {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 35vh; 
+    height: 100vh;
+    z-index: 20;
 }
