@@ -1,6 +1,6 @@
 
-import { Product } from "../../models/product.js";
-export class ProductComponent extends HTMLElement {
+import { Publicacion } from "../../models/publicacion.js";
+export class PublicacionComponent extends HTMLElement {
     constructor() {
         super();
     }
@@ -15,49 +15,48 @@ export class ProductComponent extends HTMLElement {
         const imagen = this.getAttribute('imagen');
         const tipo = this.getAttribute('tipo');
 
-        const product = new Product(id, titulo, descripcion, precio, imagen, tipo);
+        const publicacion = new Publicacion(id, titulo, descripcion, precio, imagen, tipo);
         
         this.#agregarEstilos(shadow);
-        this.#render(shadow, product);
+        this.#render(shadow, publicacion);
     }
 
-    #render(shadow, product) {
+    #render(shadow, publicacion) {
         shadow.innerHTML += `
         <div class="card-container">
             <div class="card-image">
-                <img src="${product.imagen}" alt="Imagen no disponible" >
+                <img src="${publicacion.imagen}" alt="Imagen no disponible" >
             </div>
 
             <div class="card-details">
-                <h4>${product.titulo}</h4>
+                <h4>${publicacion.titulo}</h4>
                 <div class="card-footer">
-                    <span class="price">${product.precio}</span>
-                    <span class="tag ${product.tipo.toLowerCase()}">${product.tipo}</span>
+                    <span class="price">${publicacion.precio}</span>
                 </div>
             </div>
         </div>
         `
         const card = shadow.querySelector('.card-container');
-        card.addEventListener('click', () => this.#handleCardClick(product));
+        card.addEventListener('click', () => this.#handleCardClick(publicacion));
     };
 
     
-    #handleCardClick(product) {
-        // Emitir evento personalizado cuando se hace click en el producto
-        const productClickEvent = new CustomEvent('productClick', {
+    #handleCardClick(publicacion) {
+        // Emitir evento personalizado cuando se hace click en el publicaciono
+        const publicacionClickEvent = new CustomEvent('publicacionClick', {
             bubbles: true,
             composed: true,
-            detail: { product }
+            detail: { publicacion }
         });
-        this.dispatchEvent(productClickEvent);
+        this.dispatchEvent(publicacionClickEvent);
         
         // Aquí puedes navegar a una página de detalle si la tienes
-        // page(`/producto/${product.id}`);
+        // page(`/publicaciono/${publicacion.id}`);
     }
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/productoCard/productoCard.component.css");
+        link.setAttribute("href", "./src/components/publicacionCard/publicacionCard.component.css");
         shadow.appendChild(link);
     }
 }
