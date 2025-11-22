@@ -1,4 +1,4 @@
-import { ProductService } from '../../services/product.service.js';
+import { PublicacionService } from '../../services/publicacion.service.js';
 
 export class HomePage extends HTMLElement {
     constructor() {
@@ -8,22 +8,18 @@ export class HomePage extends HTMLElement {
 
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-        this.allProducts = ProductService.getProducts();
+        this.allProducts = PublicacionService.getPublicaciones();
         
         this.#agregarEstilos(shadow);
         this.#render(shadow);
     }
-
-  
-
-    
 
 
    #render(shadow) {
         shadow.innerHTML += `
             <section class="home-section">
                 <div class="section-header">
-                    <h2>Productos Disponibles</h2>
+                    <h2>Inicio</h2>
                 </div>
                 <div class="products-grid">
                     ${this.#renderProducts(this.allProducts)}
