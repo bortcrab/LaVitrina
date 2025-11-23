@@ -1,10 +1,6 @@
 export class ChatService {
     static API_BASE_URL = 'http://localhost:3000/api';
     
-    /**
-     * Obtiene todos los chats del usuario actual
-     * @returns {Promise<Array>} Lista de chats
-     */
     static async obtenerChats() {
         try {
             const response = await fetch(`${this.API_BASE_URL}/chats`, {
@@ -27,11 +23,6 @@ export class ChatService {
         }
     }
 
-    /**
-     * Obtiene los mensajes de un chat específico
-     * @param {number} chatId - ID del chat
-     * @returns {Promise<Array>} Lista de mensajes
-     */
     static async obtenerMensajes(chatId) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/chats/${chatId}/mensajes`, {
@@ -54,12 +45,6 @@ export class ChatService {
         }
     }
 
-    /**
-     * Envía un mensaje de texto
-     * @param {number} chatId - ID del chat
-     * @param {string} texto - Contenido del mensaje
-     * @returns {Promise<Object>} Mensaje enviado
-     */
     static async enviarMensaje(chatId, texto) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/chats/${chatId}/mensajes`, {
@@ -83,13 +68,6 @@ export class ChatService {
         }
     }
 
-    /**
-     * Envía imágenes en un mensaje
-     * @param {number} chatId - ID del chat
-     * @param {FileList} archivos - Archivos de imagen
-     * @param {string} texto - Texto opcional del mensaje
-     * @returns {Promise<Object>} Mensaje enviado
-     */
     static async enviarImagenes(chatId, archivos, texto = '') {
         try {
             const formData = new FormData();
@@ -119,12 +97,6 @@ export class ChatService {
         }
     }
 
-    /**
-     * Crea un nuevo chat con otro usuario
-     * @param {number} usuarioId - ID del usuario con quien chatear
-     * @param {number} productoId - ID del producto relacionado
-     * @returns {Promise<Object>} Chat creado
-     */
     static async crearChat(usuarioId, productoId) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/chats`, {
@@ -148,11 +120,6 @@ export class ChatService {
         }
     }
 
-    /**
-     * Marca los mensajes de un chat como leídos
-     * @param {number} chatId - ID del chat
-     * @returns {Promise<void>}
-     */
     static async marcarComoLeido(chatId) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/chats/${chatId}/leer`, {
@@ -174,11 +141,6 @@ export class ChatService {
         }
     }
 
-    /**
-     * Elimina un chat
-     * @param {number} chatId - ID del chat
-     * @returns {Promise<void>}
-     */
     static async eliminarChat(chatId) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/chats/${chatId}`, {
@@ -200,11 +162,6 @@ export class ChatService {
         }
     }
 
-    /**
-     * Busca chats por texto
-     * @param {string} busqueda - Texto a buscar
-     * @returns {Promise<Array>} Chats filtrados
-     */
     static async buscarChats(busqueda) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/chats/buscar?q=${encodeURIComponent(busqueda)}`, {
@@ -227,20 +184,10 @@ export class ChatService {
         }
     }
 
-    /**
-     * Obtiene el token de autenticación
-     * @private
-     * @returns {string|null}
-     */
     static #obtenerToken() {
         return localStorage.getItem('authToken');
     }
 
-    /**
-     * Configura WebSocket para mensajes en tiempo real
-     * @param {Function} onMensajeRecibido - Callback cuando se recibe un mensaje
-     * @returns {WebSocket} Instancia del WebSocket
-     */
     static configurarWebSocket(onMensajeRecibido) {
         const ws = new WebSocket(`ws://localhost:3000/ws?token=${this.#obtenerToken()}`);
         

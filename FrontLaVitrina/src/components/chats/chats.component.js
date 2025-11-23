@@ -6,6 +6,8 @@ export class ChatsComponent extends HTMLElement {
         this.chats = [];
         this.chatActual = null;
         this.mensajes = [];
+        this.adjuntarIconUrl = new URL('../../assets/adjuntarImagen.png', import.meta.url).href;
+        this.enviarIconUrl = new URL('../../assets/enviarMensaje.png', import.meta.url).href;
     }
 
     async connectedCallback() {
@@ -203,7 +205,7 @@ export class ChatsComponent extends HTMLElement {
 
             <div class="mensaje-input-container">
                 <button class="btn-adjunto" id="btnAdjunto" title="Adjuntar archivo">
-                    📎
+                    <img src="${this.adjuntarIconUrl}" alt="Adjuntar imagen">
                 </button>
                 <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
                 <textarea 
@@ -213,7 +215,7 @@ export class ChatsComponent extends HTMLElement {
                     rows="1"
                 ></textarea>
                 <button class="btn-enviar" id="btnEnviar">
-                    ➤
+                    <img src="${this.enviarIconUrl}" alt="Enviar mensaje">
                 </button>
             </div>
         `;

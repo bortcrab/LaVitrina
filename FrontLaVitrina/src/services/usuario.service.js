@@ -1,10 +1,6 @@
 export class UsuarioService {
     static API_BASE_URL = 'http://localhost:3000/api';
     
-    /**
-     * Obtiene el perfil del usuario actual
-     * @returns {Promise<Object>} Datos del perfil
-     */
     static async obtenerPerfil() {
         try {
             const response = await fetch(`${this.API_BASE_URL}/usuario/perfil`, {
@@ -27,11 +23,6 @@ export class UsuarioService {
         }
     }
 
-    /**
-     * Actualiza el perfil del usuario
-     * @param {Object} datosActualizados - Datos del perfil a actualizar
-     * @returns {Promise<Object>} Perfil actualizado
-     */
     static async actualizarPerfil(datosActualizados) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/usuario/perfil`, {
@@ -55,11 +46,6 @@ export class UsuarioService {
         }
     }
 
-    /**
-     * Sube una nueva foto de perfil
-     * @param {File} archivo - Archivo de imagen
-     * @returns {Promise<string>} URL de la imagen subida
-     */
     static async subirAvatar(archivo) {
         try {
             const formData = new FormData();
@@ -85,11 +71,6 @@ export class UsuarioService {
         }
     }
 
-    /**
-     * Obtiene las reseñas del usuario
-     * @param {number} usuarioId - ID del usuario
-     * @returns {Promise<Array>} Lista de reseñas
-     */
     static async obtenerReseñas(usuarioId) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/usuario/${usuarioId}/reseñas`, {
@@ -112,12 +93,6 @@ export class UsuarioService {
         }
     }
 
-    /**
-     * Inicia sesión
-     * @param {string} correo - Correo electrónico
-     * @param {string} contraseña - Contraseña
-     * @returns {Promise<Object>} Datos de sesión y token
-     */
     static async iniciarSesion(correo, contraseña) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/auth/login`, {
@@ -146,11 +121,6 @@ export class UsuarioService {
         }
     }
 
-    /**
-     * Registra un nuevo usuario
-     * @param {Object} datosUsuario - Datos del nuevo usuario
-     * @returns {Promise<Object>} Usuario creado
-     */
     static async registrarUsuario(datosUsuario) {
         try {
             const response = await fetch(`${this.API_BASE_URL}/auth/registro`, {
@@ -173,36 +143,20 @@ export class UsuarioService {
         }
     }
 
-    /**
-     * Cierra la sesión del usuario
-     */
     static cerrarSesion() {
         localStorage.removeItem('authToken');
         localStorage.removeItem('usuario');
         window.location.href = '/';
     }
 
-    /**
-     * Verifica si hay un usuario autenticado
-     * @returns {boolean}
-     */
     static estaAutenticado() {
         return !!this.#obtenerToken();
     }
 
-    /**
-     * Obtiene el token de autenticación
-     * @private
-     * @returns {string|null}
-     */
     static #obtenerToken() {
         return localStorage.getItem('authToken');
     }
 
-    /**
-     * Obtiene los datos del usuario actual desde localStorage
-     * @returns {Object|null}
-     */
     static obtenerUsuarioActual() {
         const usuarioStr = localStorage.getItem('usuario');
         return usuarioStr ? JSON.parse(usuarioStr) : null;
