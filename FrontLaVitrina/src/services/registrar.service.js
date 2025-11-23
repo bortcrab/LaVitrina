@@ -1,56 +1,71 @@
-import { IniciarSesionService } from './iniciarSesion.service.js';
-import { Usuario } from '../models/usuario.js'; 
+import { Usuario } from '../models/usuario.js';
 
 export class RegistrarService {
-
-    static obtenerUsuariosLocales() {
-        const usuariosGuardados = localStorage.getItem('usuariosRegistrados');
-        if (usuariosGuardados) {
-            const listaSimple = JSON.parse(usuariosGuardados);
-            return listaSimple; 
-        }
-        return [];
-    }
-
-    static guardarUsuariosLocales(usuarios) {
-        localStorage.setItem('usuariosRegistrados', JSON.stringify(usuarios));
-    }
-
+    static usuariosRegistrados = [];
 
     static registrarUsuario(datos) {
-        const mocks = IniciarSesionService.usuariosMock;
-        const locales = this.obtenerUsuariosLocales();
-        const todos = [...mocks, ...locales];
+        const { 
+            nombres, 
+            apellidoPaterno, 
+            apellidoMaterno, 
+            correo, 
+            contrasenia, 
+            telefono, 
+            ciudad, 
+            fechaNacimiento, 
+            fotoPerfil 
+        } = datos;
 
-        // 2. Validar correo único
-        const existe = todos.some(u => u.correo === datos.correo);
-        if (existe) {
-            return { exito: false, mensaje: 'El correo electrónico ya está registrado.' };
+        if (this.existeCorreo(correo)) {
+            return {
+                exito: false,
+                mensaje: 'Este correo ya está registrado'
+            };
         }
 
-        // 3. Generar ID único
-        const maxId = todos.length > 0 ? Math.max(...todos.map(u => u.idUsuario)) : 0;
-        const nuevoId = maxId + 1;
-
-        // 4. Instanciar tu clase Usuario
-        // Nota: Pasamos los datos en el orden exacto de tu constructor
+        const nuevoId = this.usuariosRegistrados.length + 100;
+        
         const nuevoUsuario = new Usuario(
-            nuevoId,                    // idUsuario
-            datos.nombres,              // nombres
-            datos.apellidoPaterno,      // apellidoPaterno
-            datos.apellidoMaterno,      // apellidoMaterno
-            datos.correo,               // correo
-            datos.contrasenia,          // contrasenia
-            datos.telefono,             // telefono
-            datos.ciudad,               // ciudad
-            datos.fechaNacimiento,      // fechaNacimiento
-            datos.fotoPerfil || null    // fotoPerfil (opcional)
+            nuevoId,
+            nombres,
+            apellidoPaterno,
+            apellidoMaterno,
+            correo,
+            contrasenia,
+            telefono,
+            ciudad,
+            fechaNacimiento,
+            fotoPerfil
         );
 
-        // 5. Guardar
-        locales.push(nuevoUsuario);
-        this.guardarUsuariosLocales(locales);
+        this.usuariosRegistrados.push(nuevoUsuario);
 
-        return { exito: true, usuario: nuevoUsuario };
+        console.log('Usuario registrado:', nuevoUsuario);
+        console.log('Total usuarios:', this.usuariosRegistrados.length);
+
+        return {
+            exito: true,
+            usuario: nuevoUsuario
+        };
+    }
+
+    static existeCorreo(correo) {
+        const usuariosMock = [
+            { correo: "abel@gmail.com" },
+            { correo: "maria@gmail.com" }
+        ];
+
+        const existeEnMock = usuariosMock.some(u => u.correo === correo);
+        const existeEnRegistrados = this.usuariosRegistrados.some(u => u.correo === correo);
+
+        return existeEnMock || existeEnRegistrados;
+    }
+
+    static obtenerUsuariosRegistrados() {
+        return this.usuariosRegistrados;
+    }
+
+    static obtenerUsuarioPorCorreo(correo) {
+        return this.usuariosRegistrados.find(u => u.correo === correo);
     }
 }

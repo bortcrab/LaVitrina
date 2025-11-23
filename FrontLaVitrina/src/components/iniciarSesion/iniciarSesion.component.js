@@ -20,7 +20,7 @@ export class IniciarSesionComponent extends HTMLElement {
 
         <div class="content-over-image">
             <div class="logo-container">
-                <img class="brand-logo" src="../../assets/logoBlanco.png" alt="">
+                <img class="brand-logo" src="./src/assets/logoBlanco.png" alt="">
             </div>
             <h2 class="brand-slogan">El Marketplace Donde Encontrarás<br>Todo lo que Necesitas.</h2>
         </div>
@@ -52,7 +52,7 @@ export class IniciarSesionComponent extends HTMLElement {
                 <div class="success-message" id="successMessage"></div>
 
 
-                <a href="/home-page"><button type="submit">Entrar</button></a>
+                <button type="submit">Entrar</button>
             </form>
 
             <p class="register-text">

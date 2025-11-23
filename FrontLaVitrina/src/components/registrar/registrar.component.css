@@ -6,6 +6,7 @@ html, body, div, section, input{
     display: flex;
     height: 100vh;
     width: 100%;
+    position: relative;
 }
 
 .side-div {
@@ -15,6 +16,27 @@ html, body, div, section, input{
     justify-content: center;
 }
 
+.login-form {
+    background-color: white;
+    align-items: center;
+    overflow-y: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: all 0.4s ease-in-out;
+    pointer-events: none;
+}
+
+.login-form.activo {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+    position: relative;
+}
 
 .image-side {
     position: relative;
@@ -30,6 +52,7 @@ html, body, div, section, input{
     top: 0;
     left: 0;
     z-index: 1;
+    transition: opacity 0.4s ease-in-out;
 }
 
 .overlay {
@@ -73,8 +96,8 @@ html, body, div, section, input{
     font-size: 1.8rem;
     line-height: 1.4;
     margin-bottom: 20px;
+    transition: opacity 0.3s ease-in-out;
 }
-
 
 .login-form {
     background-color: white;
@@ -161,6 +184,105 @@ input[type="date"] {
     cursor: pointer;
 }
 
+.input-foto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.photo-upload {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.photo-label {
+    cursor: pointer;
+    display: block;
+}
+
+.photo-placeholder {
+    width: 120px;
+    height: 120px;
+    border: 3px dashed #CECECE;
+    border-radius: 15px;
+    background-color: #F5F5F5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    overflow: hidden;
+}
+
+.photo-placeholder:hover {
+    background-color: #E4E4E4;
+    border-color: #E62634;
+}
+
+.photo-placeholder:hover svg path {
+    stroke: #E62634;
+}
+
+.error-message,
+.success-message {
+    display: none;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+}
+
+.success-message {
+    background-color: #efe;
+    color: #3c3;
+    border: 1px solid #cfc;
+}
+.button-row {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+button {
+    padding: 15px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.btn-primary,
+button[type="submit"] {
+    background-color: #E62634;
+    color: white;
+    flex: 1;
+}
+
+.btn-primary:hover,
+button[type="submit"]:hover {
+    background-color: #c40b14;
+}
+
+.btn-secondary {
+    background-color: #E4E4E4;
+    color: #333;
+    flex: 1;
+}
+
+.btn-secondary:hover {
+    background-color: #CECECE;
+}
+
 .registrarse {
     color: #e20d18;
     text-decoration: none;
@@ -173,24 +295,6 @@ input[type="date"] {
     text-decoration: underline;
 }
 
-button {
-    background-color: #E62634;
-    color: white;
-    padding: 15px;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 1rem;
-    font-weight: bold;
-    margin-top: 10px;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #c40b14;
-}
-
 .register-text {
     text-align: center;
     margin-top: 20px;
@@ -198,10 +302,14 @@ button:hover {
     color: #333;
 }
 
-
+/* Responsive */
 @media (max-width: 900px) {
     .image-side {
         display: none;
+    }
+
+    .login-form {
+        width: 100%;
     }
 
     .form-container {
@@ -222,5 +330,9 @@ button:hover {
 
     .login-form h3 {
         font-size: 2rem;
+    }
+
+    .button-row {
+        flex-direction: column;
     }
 }

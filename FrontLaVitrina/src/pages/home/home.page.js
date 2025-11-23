@@ -9,9 +9,8 @@ export class HomePage extends HTMLElement {
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
         this.allProducts = PublicacionService.getPublicaciones();
-        
-        this.#agregarEstilos(shadow);
         this.#render(shadow);
+        this.#agregarEstilos(shadow);
     }
 
 
