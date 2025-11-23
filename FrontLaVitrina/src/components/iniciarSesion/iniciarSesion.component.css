@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+* {
+    font-family: "Bree Serif", serif;
+    box-sizing: border-box;
+}
 html, body, div, section {
   box-sizing: border-box;
 }
@@ -94,6 +100,7 @@ html, body {
     padding: 20px 100px;
     display: flex;
     flex-direction: column;
+
 }
 
 .login-form h3 {
@@ -116,6 +123,7 @@ html, body {
 
 .input-group {
     margin-bottom: 25px;
+
 }
 
 .label-row {

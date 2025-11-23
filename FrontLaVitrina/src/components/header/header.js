@@ -18,7 +18,7 @@ export class HeaderComponent extends HTMLElement {
                 </div>
 
                 <div class="user-info" id="userInfo" style="cursor: pointer;">
-                    <span class="user-name">Juanito</span>
+                    <span class="user-name">Pedro Sola</span>
                     <img src="https://i.pravatar.cc/150?img=5" alt="Perfil" class="user-avatar">
                 </div>
         </header>

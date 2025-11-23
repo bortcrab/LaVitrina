@@ -1,3 +1,4 @@
+import { RegistrarService } from './registrar.service.js';
 
 export class IniciarSesionService {
 
@@ -54,8 +55,7 @@ export class IniciarSesionService {
     }
 
     static obtenerUsuariosRegistrados() {
-        //Aquí se consultaría bd
-        return [];
+        return RegistrarService.obtenerUsuariosRegistrados();
     }
 
     static cerrarSesion() {

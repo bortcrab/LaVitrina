@@ -20,7 +20,7 @@ export class IniciarSesionComponent extends HTMLElement {
 
         <div class="content-over-image">
             <div class="logo-container">
-                <img class="brand-logo" src="../../assets/logoBlanco.png" alt="">
+                <img class="brand-logo" src="./src/assets/logoBlanco.png" alt="">
             </div>
             <h2 class="brand-slogan">El Marketplace Donde Encontrarás<br>Todo lo que Necesitas.</h2>
         </div>
@@ -37,7 +37,7 @@ export class IniciarSesionComponent extends HTMLElement {
             <form id="formIniciarSesion" >
                 <div class="input-group">
                     <label>Correo electrónico</label>
-                    <input type="email" id="correo" placeholder="ejemplo@direccion.com">
+                    <input type="email" maxlength="100" id="correo" placeholder="ejemplo@direccion.com">
                 </div>
 
                 <div class="input-group">
@@ -45,7 +45,7 @@ export class IniciarSesionComponent extends HTMLElement {
                         <label>Contraseña</label>
                         <a href="#" class="forgot-link" id="olvidoContrasenia">¿Olvidaste tu contraseña?</a>
                     </div>
-                    <input type="password" id="contrasenia" placeholder="********">
+                    <input type="password" maxlength="30" id="contrasenia" placeholder="********">
                 </div>
 
                 <div class="error-message" id="errorMessage"></div>
@@ -53,6 +53,8 @@ export class IniciarSesionComponent extends HTMLElement {
 
 
                 <a href="/home-page"><button type="submit">Entrar</button></a>
+
+                 
             </form>
 
             <p class="register-text">
@@ -71,6 +73,17 @@ export class IniciarSesionComponent extends HTMLElement {
         const errorMessage = shadow.getElementById('errorMessage');
         const successMessage = shadow.getElementById('successMessage');
         const linkRegistrarse = shadow.getElementById('linkRegistrarse');
+        const inputCorreo = shadow.getElementById('correo');
+
+        inputCorreo.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+        });
+
+        inputCorreo.addEventListener('blur', (e) => {
+            e.target.value = e.target.value.replace(/\s/g, '');
+        });
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -85,16 +98,14 @@ export class IniciarSesionComponent extends HTMLElement {
                 return;
             }
             window.addEventListener('loginSuccess', (e) => {
-            // 1. Mostrar el mensaje de éxito
-            successMessage.textContent = `¡Bienvenido de nuevo, ${e.detail.usuario.nombres}!`;
-            successMessage.style.display = 'block';
-            errorMessage.style.display = 'none';
+                successMessage.textContent = `¡Bienvenido de nuevo, ${e.detail.usuario.nombres}!`;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
 
-            // 2. Redirigir al home después de 1.5 segundos
-            setTimeout(() => {
-                page('/home-page'); // <--- ESTO HACE LA REDIRECCIÓN
-            }, 1500);
-        });
+                setTimeout(() => {
+                    page('/home-page');
+                }, 1500);
+            });
 
             this.dispatchEvent(new CustomEvent('loginSubmit', {
                 bubbles: true,

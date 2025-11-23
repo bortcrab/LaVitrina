@@ -7,20 +7,18 @@ export class CrearPublicacionComponent extends HTMLElement {
         const shadow = this.attachShadow({ mode: 'open' });
         this.#agregarEstilos(shadow);
         this.#render(shadow);
+        this.#agregarEventListeners(shadow);
     }
 
     #render(shadow) {
         shadow.innerHTML += `
-        <main>
+        <div class="contenedor-main">
             <div class="contenedor">
-                <div class="imagenes">
-                    <img class="imagen-producto" src="./src/assets/senior.jpg" alt="">
-                    <img class="imagen-producto" src="./src/assets/rata.jpeg" alt="">
-                    <img class="imagen-producto" src="./src/assets/gato.jpeg" alt="">
+                <div class="imagenes" id="imagenes-contenedor">
                     <label class="agregar">
-                        <input type="file" hidden>
+                        <input type="file" id="input-subir-imagen" accept="image/*" multiple hidden> 
                         <div class="contenido">
-                            <img class="icono" src="./src/assets/agregarImagen.png">
+                            <img class="icono" src="FrontLaVitrina/src/assets/agregarImagen.png">
                             <span>Agregar</span>
                         </div>
                     </label>
@@ -52,7 +50,6 @@ export class CrearPublicacionComponent extends HTMLElement {
                         <input type="text" name="etiquetas" id="etiquetas" placeholder='Agrega una etiqueta y presiona Enter...' />
                     </div>
                     <div class="tag-container" id="tag-container">
-                        <div class="tag">... | <a href="">×</a></div>
                     </div>
                     <div class="contenedor-input">
                         <label for="tipo-publicacion">Tipo de publicación</label>
@@ -63,17 +60,130 @@ export class CrearPublicacionComponent extends HTMLElement {
                             <label for="subasta" class="toggle-btn">Subasta</label>
                         </div>
                     </div>
+                    <div class="subasta-campos-escondidos" id="fechas-subasta">
+                        <div class="contenedor-input">
+                            <label for="inicio-subasta">Inicio de subasta</label>
+                            <input type="datetime-local" id="inicio-subasta" placeholder="">
+                        </div>
+
+                        <div class="contenedor-input">
+                            <label for="fin-subasta">Fin de subasta</label>
+                            <input type="datetime-local" id="fin-subasta">
+                        </div>
+                    </div>
                     <button type="submit" class="btn-crear">Crear</button>
                 </div>
             </div>
-        </main>
+        </div>
         `
     };
+
+    #agregarEventListeners(shadow) {
+        const inputSubirImagen = shadow.getElementById('input-subir-imagen');
+        const imagenesContenedor = shadow.getElementById('imagenes-contenedor');
+        const agregarBoton = shadow.querySelector('.agregar');
+
+        inputSubirImagen.addEventListener('change', (event) => {
+            const files = event.target.files;
+
+            if (files.length === 0) return;
+
+            let imagesToLoad = files.length;
+            let imagesCurrentlyDisplayed = imagenesContenedor.querySelectorAll('.imagen-producto').length;
+
+            for (let i = 0; i < imagesToLoad; i++) {
+                const file = files[i];
+
+                // Salir si ya no hay espacio
+                if (!file.type.startsWith('image/')) {
+                    continue;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const nuevaImagen = document.createElement('img');
+                    nuevaImagen.classList.add('imagen-producto');
+                    nuevaImagen.src = e.target.result;
+                    nuevaImagen.alt = 'Imagen subida';
+
+                    nuevaImagen.addEventListener('click', () => {
+                        imagenesContenedor.removeChild(nuevaImagen);
+                    });
+
+                    imagenesContenedor.insertBefore(nuevaImagen, agregarBoton);
+                };
+
+                reader.readAsDataURL(file);
+                imagesCurrentlyDisplayed++;
+            }
+
+            event.target.value = '';
+        });
+
+
+        const etiquetasInput = shadow.getElementById('etiquetas');
+        const tagContainer = shadow.getElementById('tag-container');
+
+        // Función para crear y añadir un nuevo tag al DOM
+        const crearTag = (texto) => {
+            const tagDiv = document.createElement('div');
+            tagDiv.classList.add('tag');
+
+            const textSpan = document.createElement('span');
+            textSpan.classList.add('tag-text');
+            textSpan.textContent = texto + ' | ';
+
+            const removeLink = document.createElement('a');
+            removeLink.href = 'javascript:void(0)';
+            removeLink.textContent = '×';
+
+            removeLink.addEventListener('click', () => {
+                tagContainer.removeChild(tagDiv);
+            });
+
+            tagDiv.appendChild(textSpan);
+            tagDiv.appendChild(removeLink);
+
+            tagContainer.appendChild(tagDiv);
+        };
+
+
+        etiquetasInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+
+                const tagText = etiquetasInput.value.trim();
+
+                if (tagText) {
+                    crearTag(tagText);
+                    etiquetasInput.value = '';
+                }
+            }
+        });
+
+        const tipoVenta = shadow.getElementById('venta');
+        const tipoSubasta = shadow.getElementById('subasta');
+        const fechasSubasta = shadow.getElementById('fechas-subasta');
+
+        tipoVenta.addEventListener('click', () => {
+            if (fechasSubasta) {
+                fechasSubasta.className = 'subasta-campos-escondidos';
+            }
+        });
+
+        tipoSubasta.addEventListener('click', () => {
+            if (fechasSubasta) {
+                fechasSubasta.className = 'subasta-campos';
+            }
+        });
+    }
+
 
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/crearPublicacion/crearPublicacion.component.css");
+        link.setAttribute("href", "FrontLaVitrina/src/components/crearPublicacion/crearPublicacion.component.css");
         shadow.appendChild(link);
     }
 }

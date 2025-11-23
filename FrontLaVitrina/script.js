@@ -9,17 +9,17 @@ import { ChatsComponent } from './src/components/chats/chats.component.js';
 import { IniciarSesionComponent } from "./src/components/iniciarSesion/iniciarSesion.component.js";
 import { ReseniasComponent } from "./src/components/resenias/resenias.component.js";
 import { DetallePublicacionComponent } from "./src/components/detallePublicacion/detallepublicacion.component.js";
-
 //Pages
 import { HomePage } from './src/pages/home/home.page.js';
 import { IniciarSesionPage } from './src/pages/iniciarSesion/iniciarSesion.page.js';
+import { RegistrarPage } from "./src/pages/registrar.page.js/registrar.page.js";
 
 //definir componentes
 window.customElements.define('sidebar-info', SidebarComponent);
 window.customElements.define('header-info', HeaderComponent);
 window.customElements.define('registrar-usuario-info', RegistrarUsuarioComponent);
 window.customElements.define('crear-publicacion', CrearPublicacionComponent);
-window.customElements.define('product-info', PublicacionComponent);
+window.customElements.define('publicacion-info', PublicacionComponent);
 window.customElements.define('perfil-info', PerfilComponent);
 window.customElements.define('chats-info', ChatsComponent);
 window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
@@ -29,14 +29,15 @@ window.customElements.define('detalle-publicacion-info', DetallePublicacionCompo
 //definir pages
 window.customElements.define('home-page', HomePage);
 window.customElements.define('iniciar-sesion-page', IniciarSesionPage);
+window.customElements.define('registrar-page', RegistrarPage);
 
-document.addEventListener('DOMContentLoaded', function(){
-    
+document.addEventListener('DOMContentLoaded', function () {
+
     page('/home-page', () => {
-        toggleNav(true); 
+        toggleNav(true);
         showContent('home-page');
     });
-    
+
     page('/perfil', () => {
         toggleNav(true);
         showContent('perfil-info');
@@ -47,9 +48,19 @@ document.addEventListener('DOMContentLoaded', function(){
         showContent('chats-info');
     });
 
+    page('/crear-publicacion', () => {
+        toggleNav(true);
+        showContent('crear-publicacion');
+    });
+
     page('/iniciar-sesion', () => {
         toggleNav(false);
-        showContent('iniciar-sesion-page'); 
+        showContent('iniciar-sesion-page');
+    });
+
+    page('/registrar', () => {
+        toggleNav(false);
+        showContent('registrar-page');
     });
 
     page('*', () => {

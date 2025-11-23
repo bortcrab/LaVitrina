@@ -5,6 +5,8 @@ export class PerfilComponent extends HTMLElement {
         super();
         this.usuario = null;
         this.editMode = false;
+        this.editarRojoIconUrl = new URL('../../assets/editarRojo.png', import.meta.url).href;
+        this.editarGrisIconUrl = new URL('../../assets/editarGris.png', import.meta.url).href;
         this.cssUrl = new URL('./perfil.component.css', import.meta.url).href;
     }
 
@@ -35,7 +37,7 @@ export class PerfilComponent extends HTMLElement {
                     <div class="usuario-avatar">
                         <img src="${this.usuario.avatar}" alt="Avatar" class="avatar-img" id="avatarImg">
                         <button class="editar-avatar" id="btnEditarAvatar">
-                            ✏️
+                            <img src="${this.editarRojoIconUrl}" alt="Editar foto de perfil">
                         </button>
                         <input type="file" id="fileAvatar" accept="image/*" style="display: none;">
                     </div>
@@ -58,7 +60,7 @@ export class PerfilComponent extends HTMLElement {
                     <div class="perfil-header">
                         <h2>Datos de perfil</h2>
                         <button class="btn-editar" id="btnEditar" title="Editar perfil">
-                            <img src="./src/assets/editar.png" alt="Editar">
+                            <img src="${this.editarGrisIconUrl}" alt="Editar perfil">
                         </button>
                     </div>
 
@@ -76,7 +78,7 @@ export class PerfilComponent extends HTMLElement {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="apellidoMaterno">Apellido Materno</label>
+                                <label for="apellidoMaterno">Apellido Paterno</label>
                                 <input type="text" id="apellidoMaterno" value="${this.usuario.apellidoMaterno}" disabled>
                             </div>
                             <div class="form-group">
