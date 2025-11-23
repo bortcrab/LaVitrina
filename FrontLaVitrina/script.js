@@ -55,11 +55,9 @@ document.addEventListener('DOMContentLoaded', function(){
     page();
 });
 
-
 function showContent(contentId) {
     document.querySelector('.derecha').innerHTML = `<${contentId}></${contentId}>`;
 }
-
 
 function toggleNav(visible) {
     const sidebar = document.querySelector('sidebar-info');

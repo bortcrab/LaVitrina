@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+body {
+    background-color: bisque;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 13vh;
+    padding-top: 1rem;
+    padding-inline: 1rem;
+}
+
+.publicacion-container {
+    background-color: #fff;
+    border-radius: 2rem;
+    padding: 1.5rem;
+    width: 55%;
+}
+
+.publicacion-container img {
+    border-radius: 2rem;
+    width: 100%;
+}
+
+.descripcion-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#titulo {
+    margin-top: -0.5rem;
+}
+
+#disponibilidad {
+    margin-top: -1rem;
+    color: #E62634;
+}
+
+#precio {
+    color: #E62634;
+}
+
+#descripcion {
+    margin-top: -0.5rem;
+    color: #929292;
+    overflow: auto;
+}
+
+.mensaje-container {
+    background-color: #fff;
+    border-radius: 2rem;
+    padding: 1.5rem;
+    height: fit-content;
+    width: 30%;
+}
+
+.resenias {
+    display: flex;
+    flex-direction: row;
+    height: 2rem;
+    align-items: center;
+    margin: 0;
+}
+
+.estrella {
+    margin-right: 0.5rem;
+    color: #F0A37B;
+    font-size: 1.3rem;
+}
+
+#calificacion {
+    color: #929292;
+    font-weight: 500;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#btn-enviar-mensaje {
+    background-color: #fff;
+    border-color: #CECECE;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 0.5rem;
+    color: #E62634;
+    width: 100%;
+    height: 2.5rem;
+    font-size: 1rem;
+    font-family: "Bree Serif", serif;
+    cursor: pointer;
+}
+
+#btn-enviar-mensaje:hover {
+    background-color: #dedbdb;
+}
+
+
+.line {
+    height: 1px;
+    background-color: #CECECE;
+    border-color: #CECECE;
+    border-style: none;
+    margin-top: 0;
+}
+
+.profile-pic {
+    width: 15%;
+    border: 3px solid #E62634;
+    border-radius: 50%;
+}
+
+.perfil-info {
+    margin: 0 0 1rem 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+}
+
+.user-data {
+    display: flex;
+    flex-direction: column;
+    margin-left: 1rem;
+}
+
+.user-data h3 {
+    margin: 0 ;
+}
