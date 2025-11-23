@@ -2,13 +2,13 @@
 
 * {
     font-family: "Bree Serif", serif;
-    box-sizing: border-box;
 }
 
 .div-logo {
     height: auto;
     display: flex;
     justify-content: center;
+    width: 100%;
 }
 
 .div-buttons {
@@ -33,7 +33,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border: solid #C1C1C1 3px;
+    border-right: solid #cecece 1px;
 }
 
 .side-bar-button {
@@ -69,15 +69,23 @@
     margin: 1rem;
     font-size: 1.5rem;
     color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
+    transition: transform 0.3s ease; 
 }
 
 .side-bar-btn-publicar:hover {
     background-color: #e25e66;
     cursor: pointer;
+    transform: translateY(-4px);
 }
 
 .side-bar-logo {
     margin-top: 2rem;
     width: 70%;
     height: 70%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
 }
