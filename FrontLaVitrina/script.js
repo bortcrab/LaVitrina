@@ -39,6 +39,11 @@ document.addEventListener('DOMContentLoaded', function(){
         showContent('chats-info');
     });
 
+    page('/crear-publicacion', () => {
+        toggleNav(true);
+        showContent('crear-publicacion');
+    });
+
     page('*', () => {
         toggleNav(false);
         showContent('iniciar-sesion-info');
