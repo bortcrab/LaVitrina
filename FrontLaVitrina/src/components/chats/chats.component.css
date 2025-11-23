@@ -297,16 +297,25 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.8rem;
-    color: #666;
     padding: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.2s;
+}
+
+.btn-adjunto img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
 }
 
 .btn-adjunto:hover {
-    color: #E62634;
+    transform: scale(1.1);
+}
+
+.btn-adjunto:active {
+    transform: scale(0.95);
 }
 
 .btn-enviar {
@@ -320,10 +329,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
     flex-shrink: 0;
     transition: background-color 0.3s;
     box-shadow: 0 3px 8px rgba(230, 38, 52, 0.3);
+    padding: 0;
+}
+
+.btn-enviar img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
 }
 
 .btn-enviar:hover {
