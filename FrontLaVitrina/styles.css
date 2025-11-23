@@ -14,7 +14,6 @@ body {
     display: block; 
 }
 
-/* --- ESTILO NORMAL (Con Sidebar) --- */
 .derecha {
     flex-grow: 1;
     height: 100vh;
@@ -22,10 +21,9 @@ body {
     flex-direction: column;
     overflow-y: auto;
     
-    /* Tu configuración actual para dejar espacio al sidebar */
     margin-left: 39vh; 
     width: calc(100% - 39vh);
-    transition: all 0.3s ease; /* Agregué esto para que se vea suave el cambio */
+    transition: all 0.3s ease; 
 }
 
 header-info {
@@ -47,13 +45,7 @@ sidebar-info {
     z-index: 20;
 }
 
-/* --- NUEVO: ESTILO PANTALLA COMPLETA (Sin Sidebar) --- */
-/* Esta clase anula los márgenes cuando estamos en Login */
 .derecha.full-screen {
     margin-left: 0 !important;
     width: 100% !important;
-    
-    /* Opcional: Si quieres que el login quede centrado verticalmente */
-    /* justify-content: center; */
-    /* align-items: center; */
 }
