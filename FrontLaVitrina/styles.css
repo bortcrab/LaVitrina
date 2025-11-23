@@ -17,7 +17,7 @@ body {
 .derecha {
     flex-grow: 1;
     height: 100vh;
-    margin-left: 39vh;
+    margin-left: 35vh;
     display: flex;
     flex-direction: column;
     overflow-y: auto;

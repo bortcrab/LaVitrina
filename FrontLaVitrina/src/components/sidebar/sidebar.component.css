@@ -12,7 +12,7 @@
 }
 
 .div-buttons {
-    padding: 0.5rem;
+    margin: 0rem 1rem;
 }
 
 .div-buttons ul {
@@ -44,9 +44,8 @@
     align-items: center;
     padding: 1rem;
     width: auto;
-    margin: 3rem, 0;
+    margin: 1rem 0;
     text-decoration: none;
-    margin-bottom: 0.5rem;
     border-radius: 1rem;
 }
 
@@ -57,7 +56,7 @@
 }
 
 .side-bar-button:hover {
-    background-color: #cf919b;
+    background-color: #e6bbc3;
 }
 
 .side-bar-btn-publicar {
