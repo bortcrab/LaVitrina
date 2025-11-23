@@ -27,7 +27,7 @@ export class SidebarComponent extends HTMLElement {
                 </div>
             </div>
             <div class="div-btn-publicar">
-                <button class="side-bar-btn-publicar">Publicar</button>
+                <button class="side-bar-btn-publicar" id="btnPublicar">Publicar</button>
             </div>
         </nav>
 		`;
