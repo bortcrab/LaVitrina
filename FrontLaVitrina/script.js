@@ -19,7 +19,7 @@ window.customElements.define('sidebar-info', SidebarComponent);
 window.customElements.define('header-info', HeaderComponent);
 window.customElements.define('registrar-usuario-info', RegistrarUsuarioComponent);
 window.customElements.define('crear-publicacion', CrearPublicacionComponent);
-window.customElements.define('product-info', PublicacionComponent);
+window.customElements.define('publicacion-info', PublicacionComponent);
 window.customElements.define('perfil-info', PerfilComponent);
 window.customElements.define('chats-info', ChatsComponent);
 window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
