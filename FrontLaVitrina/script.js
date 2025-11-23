@@ -11,27 +11,58 @@ import { ChatsComponent } from './src/components/chats/chats.component.js';
 
 window.customElements.define('sidebar-info', SidebarComponent);
 window.customElements.define('header-info', HeaderComponent);
-window.customElements.define('iniciar-sesion-info', IniciarSesionComponent); 
+window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
 window.customElements.define('registrar-usuario-info', RegistrarUsuarioComponent);
 window.customElements.define('crear-publicacion', CrearPublicacionComponent);
 window.customElements.define('product-info', PublicacionComponent);
 window.customElements.define('home-page', HomePage);
 window.customElements.define('perfil-info', PerfilComponent);
 window.customElements.define('chats-info', ChatsComponent);
-
 document.addEventListener('DOMContentLoaded', function(){
-    page('/', () => showContent('home-page'));
-    page('/perfil', () => showContent('perfil-info'));
-    page('/chats', () => showContent('chats-info'));
-    //puse este de ejemplo ahi le mueves parra
-    //page('/crear-publicacion', () => showContent('crear-publicacion'));
-    page('*', () => showContent('home-page'));
+    
+    page('/home-page', () => {
+        toggleNav(true); 
+        showContent('home-page');
+    });
+    
+    page('/perfil', () => {
+        toggleNav(true);
+        showContent('perfil-info');
+    });
+
+    page('/chats', () => {
+        toggleNav(true);
+        showContent('chats-info');
+    });
+
+    page('*', () => {
+        toggleNav(false);
+        showContent('iniciar-sesion-info');
+    });
 
     page();
 });
 
 
-function showContent(contentId){
+function showContent(contentId) {
     document.querySelector('.derecha').innerHTML = `<${contentId}></${contentId}>`;
 }
 
+
+function toggleNav(visible) {
+    const sidebar = document.querySelector('sidebar-info');
+    const header = document.querySelector('header-info');
+    const mainContainer = document.querySelector('.derecha');
+
+    if (visible) {
+        sidebar.style.display = 'block';
+        header.style.display = 'block';
+
+        mainContainer.classList.remove('full-screen');
+    } else {
+        sidebar.style.display = 'none';
+        header.style.display = 'none';
+
+        mainContainer.classList.add('full-screen');
+    }
+}

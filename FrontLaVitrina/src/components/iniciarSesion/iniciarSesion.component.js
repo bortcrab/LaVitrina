@@ -51,7 +51,8 @@ export class IniciarSesionComponent extends HTMLElement {
                 <div class="error-message" id="errorMessage"></div>
                 <div class="success-message" id="successMessage"></div>
 
-                <button type="submit">Entrar</button>
+
+                <a href="/home-page"><button type="submit">Entrar</button></a>
             </form>
 
             <p class="register-text">
@@ -83,6 +84,17 @@ export class IniciarSesionComponent extends HTMLElement {
                 successMessage.style.display = 'none';
                 return;
             }
+            window.addEventListener('loginSuccess', (e) => {
+            // 1. Mostrar el mensaje de éxito
+            successMessage.textContent = `¡Bienvenido de nuevo, ${e.detail.usuario.nombres}!`;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            // 2. Redirigir al home después de 1.5 segundos
+            setTimeout(() => {
+                page('/home-page'); // <--- ESTO HACE LA REDIRECCIÓN
+            }, 1500);
+        });
 
             this.dispatchEvent(new CustomEvent('loginSubmit', {
                 bubbles: true,
