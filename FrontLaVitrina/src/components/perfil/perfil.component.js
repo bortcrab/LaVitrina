@@ -1,8 +1,11 @@
+import { PerfilService } from '../../services/perfil.service.js';
+
 export class PerfilComponent extends HTMLElement {
     constructor() {
         super();
         this.usuario = null;
         this.editMode = false;
+        this.cssUrl = new URL('./perfil.component.css', import.meta.url).href;
     }
 
     async connectedCallback() {
@@ -16,30 +19,18 @@ export class PerfilComponent extends HTMLElement {
 
     async #cargarDatosUsuario() {
         try {
-            // UsuarioService.obtenerPerfil() fue eliminado
-            throw new Error('Servicio no disponible');
+            this.usuario = await PerfilService.obtenerPerfil();
         } catch (error) {
             console.error('Error al cargar perfil:', error);
-            this.usuario = {
-                id: 1,
-                nombres: "Pedro",
-                apellidoPaterno: "Sola",
-                apellidoMaterno: "Sola",
-                correo: "pedro.sola@correo.com",
-                celular: "7776687989",
-                fechaNacimiento: "04/10/1960",
-                fechaCreacion: "02/11/2025",
-                avatar: "https://i.pravatar.cc/150?img=12",
-                rating: 4.9,
-                totalReseñas: 108
-            };
+            this.usuario = {}; 
         }
     }
 
     #render(shadow) {
+        if (!this.usuario) return;
+
         shadow.innerHTML += `
             <div class="perfil-container">
-                <!-- Columna izquierda -->
                 <div class="perfil-info">
                     <div class="usuario-avatar">
                         <img src="${this.usuario.avatar}" alt="Avatar" class="avatar-img" id="avatarImg">
@@ -63,7 +54,6 @@ export class PerfilComponent extends HTMLElement {
                     </div>
                 </div>
 
-                <!-- Columna derecha -->
                 <div class="perfil-datos">
                     <div class="perfil-header">
                         <h2>Datos de perfil</h2>
@@ -86,7 +76,7 @@ export class PerfilComponent extends HTMLElement {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="apellidoMaterno">Apellido Paterno</label>
+                                <label for="apellidoMaterno">Apellido Materno</label>
                                 <input type="text" id="apellidoMaterno" value="${this.usuario.apellidoMaterno}" disabled>
                             </div>
                             <div class="form-group">
@@ -128,30 +118,36 @@ export class PerfilComponent extends HTMLElement {
         const fileAvatar = shadow.getElementById('fileAvatar');
         const avatarImg = shadow.getElementById('avatarImg');
 
-        btnEditar.addEventListener('click', () => {
-            this.editMode = !this.editMode;
-            this.#toggleEditMode(shadow);
-        });
+        if(btnEditar) {
+            btnEditar.addEventListener('click', () => {
+                this.editMode = !this.editMode;
+                this.#toggleEditMode(shadow);
+            });
+        }
 
-        formPerfil.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await this.#guardarCambios(shadow);
-        });
+        if(formPerfil) {
+            formPerfil.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.#guardarCambios(shadow);
+            });
+        }
 
-        btnEditarAvatar.addEventListener('click', () => {
-            fileAvatar.click();
-        });
+        if(btnEditarAvatar && fileAvatar) {
+            btnEditarAvatar.addEventListener('click', () => {
+                fileAvatar.click();
+            });
 
-        fileAvatar.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    avatarImg.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+            fileAvatar.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        if(avatarImg) avatarImg.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
     }
 
     #toggleEditMode(shadow) {
@@ -164,7 +160,7 @@ export class PerfilComponent extends HTMLElement {
             }
         });
 
-        btnGuardar.style.display = this.editMode ? 'block' : 'none';
+        if(btnGuardar) btnGuardar.style.display = this.editMode ? 'block' : 'none';
     }
 
     async #guardarCambios(shadow) {
@@ -176,15 +172,18 @@ export class PerfilComponent extends HTMLElement {
             celular: shadow.getElementById('celular').value,
             contraseña: shadow.getElementById('contraseña').value !== '****************' 
                 ? shadow.getElementById('contraseña').value 
-                : null
+                : undefined 
         };
 
         try {
-            await UsuarioService.actualizarPerfil(datosActualizados);
+            await PerfilService.actualizarPerfil(datosActualizados);
+            
             alert('Perfil actualizado correctamente');
             this.editMode = false;
             this.#toggleEditMode(shadow);
+            
             await this.#cargarDatosUsuario();
+            
         } catch (error) {
             console.error('Error al actualizar perfil:', error);
             alert('Error al guardar los cambios');
@@ -194,7 +193,7 @@ export class PerfilComponent extends HTMLElement {
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/perfil/perfil.component.css");
+        link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
     }
 }
