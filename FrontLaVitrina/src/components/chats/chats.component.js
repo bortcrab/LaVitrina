@@ -13,6 +13,11 @@ export class ChatsComponent extends HTMLElement {
         this.#agregarEstilos(shadow);
         
         await this.#cargarChats();
+        if (this.chats.length > 0) {
+            this.chatActual = this.chats[0];
+            await this.#cargarMensajes(this.chatActual.id);
+        }
+        
         this.#render(shadow);
         this.#attachEventListeners(shadow);
     }
@@ -30,7 +35,7 @@ export class ChatsComponent extends HTMLElement {
                     ultimoMensaje: "Hola Ernestina! Me interes...",
                     avatar: "https://i.pravatar.cc/150?img=15",
                     productoImg: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200&h=200&fit=crop",
-                    noLeido: true
+                    noLeido: false
                 },
                 {
                     id: 2,
@@ -132,7 +137,8 @@ export class ChatsComponent extends HTMLElement {
     }
 
     #render(shadow) {
-        shadow.innerHTML += `
+        const container = document.createElement('div');
+        container.innerHTML = `
             <div class="chats-container">
                 <!-- Lista de chats -->
                 <div class="chats-lista">
@@ -150,6 +156,7 @@ export class ChatsComponent extends HTMLElement {
                 </div>
             </div>
         `;
+        shadow.appendChild(container.firstElementChild);
     }
 
     #renderChatsLista() {
@@ -237,20 +244,32 @@ export class ChatsComponent extends HTMLElement {
                 const chatId = parseInt(item.dataset.chatId);
                 this.chatActual = this.chats.find(c => c.id === chatId);
                 await this.#cargarMensajes(chatId);
+                
+                chatItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
                 this.#actualizarConversacion(shadow);
             });
         });
+
+        if (this.chatActual) {
+            this.#attachConversacionListeners(shadow);
+        }
     }
 
     async #actualizarConversacion(shadow) {
         const conversacionContainer = shadow.getElementById('chatConversacion');
-        conversacionContainer.innerHTML = this.#renderConversacion();
-        
-        this.#attachConversacionListeners(shadow);
-        
-        const mensajesContainer = shadow.getElementById('mensajesContainer');
-        if (mensajesContainer) {
-            mensajesContainer.scrollTop = mensajesContainer.scrollHeight;
+        if (conversacionContainer) {
+            conversacionContainer.innerHTML = this.#renderConversacion();
+            
+            this.#attachConversacionListeners(shadow);
+            
+            const mensajesContainer = shadow.getElementById('mensajesContainer');
+            if (mensajesContainer) {
+                setTimeout(() => {
+                    mensajesContainer.scrollTop = mensajesContainer.scrollHeight;
+                }, 100);
+            }
         }
     }
 
@@ -275,7 +294,6 @@ export class ChatsComponent extends HTMLElement {
             btnAdjunto.addEventListener('click', () => fileInput.click());
             
             fileInput.addEventListener('change', (e) => {
-                // manejar subida de archivos
                 console.log('Archivos seleccionados:', e.target.files);
             });
         }
@@ -301,6 +319,9 @@ export class ChatsComponent extends HTMLElement {
             this.#actualizarConversacion(shadow);
         } catch (error) {
             console.error('Error al enviar mensaje:', error);
+            this.mensajes.push(nuevoMensaje);
+            mensajeInput.value = '';
+            this.#actualizarConversacion(shadow);
         }
     }
 
