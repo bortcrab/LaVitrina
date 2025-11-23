@@ -52,7 +52,7 @@ export class IniciarSesionComponent extends HTMLElement {
                 <div class="success-message" id="successMessage"></div>
 
 
-                <button type="submit">Entrar</button>
+                <a href="/home-page"><button type="submit">Entrar</button></a>
             </form>
 
             <p class="register-text">
