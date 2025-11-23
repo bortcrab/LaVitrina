@@ -8,6 +8,7 @@ export class SidebarComponent extends HTMLElement {
         const shadow = this.attachShadow({ mode: "open" });
         this.#agregaEstilo(shadow);
         this.#render(shadow);
+        this.#attachEventListeners(shadow);
     }
 
     #render(shadow) {
@@ -19,7 +20,7 @@ export class SidebarComponent extends HTMLElement {
             <div class="div-buttons">
                 <ul>
                     <li><a href="#" class="side-bar-button"><img src="./src/assets/inicioNegro.png" alt="Imagen inicio">Inicio</a></li>
-                    <li><a href="#" class="side-bar-button"><img src="./src/assets/chatsNegro.png" alt="Imagen chats">Chats</a></li>
+                    <li><a href="/chats" class="side-bar-button"><img src="./src/assets/chatsNegro.png" alt="Imagen chats">Chats</a></li>
                     <li><a href="#" class="side-bar-button"><img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones</a></li>
                 </ul>
             </div>
@@ -28,6 +29,24 @@ export class SidebarComponent extends HTMLElement {
             </div>
         </nav>
 		`;
+    }
+
+    #attachEventListeners(shadow) {
+        const links = shadow.querySelectorAll('a[data-route]');
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const route = link.getAttribute('data-route');
+                page(route);
+            });
+        });
+
+        const btnPublicar = shadow.getElementById('btnPublicar');
+        if (btnPublicar) {
+            btnPublicar.addEventListener('click', () => {
+                page('/crear-publicacion');
+            });
+        }
     }
 
     #agregaEstilo(shadow) {
