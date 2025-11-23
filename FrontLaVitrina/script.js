@@ -30,13 +30,13 @@ window.customElements.define('detalle-publicacion-info', DetallePublicacionCompo
 window.customElements.define('home-page', HomePage);
 window.customElements.define('iniciar-sesion-page', IniciarSesionPage);
 
-document.addEventListener('DOMContentLoaded', function(){
-    
+document.addEventListener('DOMContentLoaded', function () {
+
     page('/home-page', () => {
-        toggleNav(true); 
+        toggleNav(true);
         showContent('home-page');
     });
-    
+
     page('/perfil', () => {
         toggleNav(true);
         showContent('perfil-info');
@@ -47,9 +47,14 @@ document.addEventListener('DOMContentLoaded', function(){
         showContent('chats-info');
     });
 
+    page('/crear-publicacion', () => {
+        toggleNav(true);
+        showContent('crear-publicacion');
+    });
+
     page('/iniciar-sesion', () => {
         toggleNav(false);
-        showContent('iniciar-sesion-page'); 
+        showContent('iniciar-sesion-page');
     });
 
     page('*', () => {
