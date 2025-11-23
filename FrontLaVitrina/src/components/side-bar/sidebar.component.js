@@ -20,7 +20,7 @@ export class SidebarComponent extends HTMLElement {
                 </div>
                 <div class="div-buttons">
                     <ul>
-                        <li><a href="/detalle-publicacion" class="side-bar-button"><img src="./src/assets/inicioNegro.png" alt="Imagen inicio">Inicio</a></li>
+                        <li><a href="/home-page" class="side-bar-button"><img src="./src/assets/inicioNegro.png" alt="Imagen inicio">Inicio</a></li>
                         <li><a href="/chats" class="side-bar-button"><img src="./src/assets/chatsNegro.png" alt="Imagen chats">Chats</a></li>
                         <li><a href="#" class="side-bar-button"><img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones</a></li>
                     </ul>
