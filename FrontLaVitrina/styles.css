@@ -25,6 +25,7 @@ body {
     margin-left: 35vh; 
     width: calc(100% - 35vh)
 }
+
 header-info {
     display: block;
     position: fixed;
@@ -42,4 +43,9 @@ sidebar-info {
     width: 35vh; 
     height: 100vh;
     z-index: 20;
+}
+
+.derecha.full-screen {
+    margin-left: 0 !important;
+    width: 100% !important;
 }

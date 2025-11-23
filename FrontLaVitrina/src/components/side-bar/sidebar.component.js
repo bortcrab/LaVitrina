@@ -14,15 +14,17 @@ export class SidebarComponent extends HTMLElement {
     #render(shadow) {
         shadow.innerHTML += `
         <nav class="side-bar">
-            <div class="div-logo">
-                <img src="./src/assets/logoRojo.png" alt="Logo La Vitrina" class="side-bar-logo">
-            </div>
-            <div class="div-buttons">
-                <ul>
-                    <li><a href="#" class="side-bar-button"><img src="./src/assets/inicioNegro.png" alt="Imagen inicio">Inicio</a></li>
-                    <li><a href="/chats" class="side-bar-button"><img src="./src/assets/chatsNegro.png" alt="Imagen chats">Chats</a></li>
-                    <li><a href="#" class="side-bar-button"><img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones</a></li>
-                </ul>
+            <div class="container">
+                <div class="div-logo">
+                    <img src="./src/assets/logoRojo.png" alt="Logo La Vitrina" class="side-bar-logo">
+                </div>
+                <div class="div-buttons">
+                    <ul>
+                        <li><a href="/detalle-publicacion" class="side-bar-button"><img src="./src/assets/inicioNegro.png" alt="Imagen inicio">Inicio</a></li>
+                        <li><a href="/chats" class="side-bar-button"><img src="./src/assets/chatsNegro.png" alt="Imagen chats">Chats</a></li>
+                        <li><a href="#" class="side-bar-button"><img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones</a></li>
+                    </ul>
+                </div>
             </div>
             <div class="div-btn-publicar">
                 <button class="side-bar-btn-publicar">Publicar</button>

@@ -42,7 +42,6 @@ export class PublicacionComponent extends HTMLElement {
 
     
     #handleCardClick(publicacion) {
-        // Emitir evento personalizado cuando se hace click en el publicaciono
         const publicacionClickEvent = new CustomEvent('publicacionClick', {
             bubbles: true,
             composed: true,
@@ -50,8 +49,6 @@ export class PublicacionComponent extends HTMLElement {
         });
         this.dispatchEvent(publicacionClickEvent);
         
-        // Aquí puedes navegar a una página de detalle si la tienes
-        // page(`/publicaciono/${publicacion.id}`);
     }
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
