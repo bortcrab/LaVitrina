@@ -1,5 +1,3 @@
-import { UsuarioService } from '../../services/usuario.service.js';
-
 export class PerfilComponent extends HTMLElement {
     constructor() {
         super();
@@ -18,7 +16,8 @@ export class PerfilComponent extends HTMLElement {
 
     async #cargarDatosUsuario() {
         try {
-            this.usuario = await UsuarioService.obtenerPerfil();
+            // UsuarioService.obtenerPerfil() fue eliminado
+            throw new Error('Servicio no disponible');
         } catch (error) {
             console.error('Error al cargar perfil:', error);
             this.usuario = {
