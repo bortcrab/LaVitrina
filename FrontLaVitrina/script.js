@@ -9,10 +9,13 @@ import { ChatsComponent } from './src/components/chats/chats.component.js';
 import { IniciarSesionComponent } from "./src/components/iniciarSesion/iniciarSesion.component.js";
 import { ReseniasComponent } from "./src/components/resenias/resenias.component.js";
 import { DetallePublicacionComponent } from "./src/components/detallePublicacion/detallepublicacion.component.js";
+import { ReseniaCardComponent } from "./src/components/reseniaCard/resenias.component.js";
+
 //Pages
 import { HomePage } from './src/pages/home/home.page.js';
 import { IniciarSesionPage } from './src/pages/iniciarSesion/iniciarSesion.page.js';
 import { RegistrarPage } from "./src/pages/registrar.page.js/registrar.page.js";
+import { ReseniasPage } from "./src/pages/resenias/resenias.page.js";
 
 //definir componentes
 window.customElements.define('sidebar-info', SidebarComponent);
@@ -25,11 +28,13 @@ window.customElements.define('chats-info', ChatsComponent);
 window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
 window.customElements.define('resenias-info', ReseniasComponent);
 window.customElements.define('detalle-publicacion-info', DetallePublicacionComponent);
+window.customElements.define('resenia-card-info', ReseniaCardComponent);
 
 //definir pages
 window.customElements.define('home-page', HomePage);
 window.customElements.define('iniciar-sesion-page', IniciarSesionPage);
 window.customElements.define('registrar-page', RegistrarPage);
+window.customElements.define('resenias-page', ReseniasPage);
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -62,6 +67,11 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleNav(false);
         showContent('registrar-page');
     });
+
+    page('/resenias', () => {
+        toggleNav(false);
+        showContent('resenias-info');
+    })
 
     page('*', () => {
         toggleNav(false);

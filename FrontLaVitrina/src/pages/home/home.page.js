@@ -9,8 +9,9 @@ export class HomePage extends HTMLElement {
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
         this.allProducts = PublicacionService.getPublicaciones();
-        this.#render(shadow);
+        
         this.#agregarEstilos(shadow);
+        this.#render(shadow);
     }
 
 
@@ -37,14 +38,14 @@ export class HomePage extends HTMLElement {
         }
 
         return products.map(product => `
-            <publicacion-info 
+            <product-info 
                 id="${product.id}"
                 titulo="${product.titulo}"
                 descripcion="${product.descripcion}"
                 precio="${product.precio}"
                 imagen="${product.imagen}"
                 tipo="${product.tipo}"
-            ></publicacion-info>
+            ></product-info>
         `).join('');
     }
 

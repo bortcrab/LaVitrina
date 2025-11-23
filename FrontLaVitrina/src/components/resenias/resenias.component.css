@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+* {
+    font-family: "Bree Serif", serif;
+}
+
+body {
+    background-color: antiquewhite;
+}
+
+.container {
+    background-color: white;
+    border-radius: 2rem;
+    padding: 1rem 5rem;
+}
+
+.top-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.estrella {
+    margin-right: 0.5rem;
+    color: #F0A37B;
+    font-size: 1.3rem;
+}
+
+.user-info {
+    margin: 0;
+}
+
+.user-info p {
+    margin: 0;
+}
+
+.user-info h5 {
+    margin: 0;
+}
+
+#username {
+    margin: 0;
+}
+
+.middle-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.filtro-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#filtro {
+    background-color: #D5B2B8;
+    color: #1A1717;
+    border: none;
+    border-radius: 1rem;
+    height: 3rem;
+    font-size: 1.4rem;
+    padding: 0 0.7rem;
+    margin-left: 1rem;
+}
+
+.user {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+}
+
+.user img {
+    width: 5rem;
+    height: 5rem;
+    margin-right: 1rem;
+}
+
+.user-info p {
+    color: #929292;
+}
+
+#calificacion {
+    color: #929292;
+}
+
+.btn-escribir-resenia {
+    background-color: #E62634;
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    height: 3.5rem;
+    width: 16rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); 
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.btn-escribir-resenia:hover {
+    background-color: #e25e66;
+    cursor: pointer;
+    transform: translateY(-4px);
+}
+
+.pencil {
+    font-size: 1.8rem;
+}
