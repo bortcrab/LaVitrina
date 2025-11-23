@@ -2,6 +2,7 @@
 
 * {
     font-family: "Bree Serif", serif;
+    box-sizing: border-box;
 }
 
 .div-logo {
@@ -32,6 +33,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border: solid #C1C1C1 3px;
 }
 
 .side-bar-button {
