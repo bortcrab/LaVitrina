@@ -52,7 +52,7 @@ export class PerfilComponent extends HTMLElement {
                             <span class="rating-numero">${this.usuario.rating}</span>
                         </div>
                         <p class="total-reseñas">Basado en ${this.usuario.totalReseñas} reseñas</p>
-                        <a href="#" class="ver-reseñas">Ver todas las reseñas</a>
+                        <a href="#" class="ver-reseñas" id="verResenias">Ver todas las reseñas</a>
                     </div>
                 </div>
 
@@ -119,11 +119,19 @@ export class PerfilComponent extends HTMLElement {
         const btnEditarAvatar = shadow.getElementById('btnEditarAvatar');
         const fileAvatar = shadow.getElementById('fileAvatar');
         const avatarImg = shadow.getElementById('avatarImg');
+        const verResenias = shadow.getElementById('verResenias');
 
         if(btnEditar) {
             btnEditar.addEventListener('click', () => {
                 this.editMode = !this.editMode;
                 this.#toggleEditMode(shadow);
+            });
+        }
+
+        if(verResenias) {
+            verResenias.addEventListener('click', (e) => {
+                e.preventDefault();
+                page('/resenias');
             });
         }
 
