@@ -7,6 +7,9 @@ import { PublicacionComponent } from "./src/components/publicacionCard/publicaci
 import { PerfilComponent } from './src/components/perfil/perfil.component.js';
 import { ChatsComponent } from './src/components/chats/chats.component.js';
 import { IniciarSesionComponent } from "./src/components/iniciarSesion/iniciarSesion.component.js";
+import { ReseniasComponent } from "./src/components/resenias/resenias.component.js";
+import { DetallePublicacionComponent } from "./src/components/detallePublicacion/detallepublicacion.component.js";
+
 //Pages
 import { HomePage } from './src/pages/home/home.page.js';
 import { IniciarSesionPage } from './src/pages/iniciarSesion/iniciarSesion.page.js';
@@ -20,6 +23,8 @@ window.customElements.define('product-info', PublicacionComponent);
 window.customElements.define('perfil-info', PerfilComponent);
 window.customElements.define('chats-info', ChatsComponent);
 window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
+window.customElements.define('resenias-info', ReseniasComponent);
+window.customElements.define('detalle-publicacion-info', DetallePublicacionComponent);
 
 //definir pages
 window.customElements.define('home-page', HomePage);
