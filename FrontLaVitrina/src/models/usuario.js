@@ -1,15 +1,16 @@
 export class Usuario {
     constructor(
-        idUsuario,
-        nombres,
-        apellidoPaterno,
-        apellidoMaterno,
-        correo,
-        contrasenia,
-        telefono,
-        ciudad,
-        fechaNacimiento,
-        fotoPerfil = null
+        idUsuario = 0,
+        nombres = '',
+        apellidoPaterno = '',
+        apellidoMaterno = '',
+        correo = '',
+        contrasenia = '',
+        telefono = '',
+        ciudad = '',
+        fechaNacimiento = null,
+        fotoPerfil = null,
+        puntuacion = 0
     ) {
         this.idUsuario = idUsuario;
         this.nombres = nombres;
@@ -23,7 +24,7 @@ export class Usuario {
         this.fechaNacimiento = fechaNacimiento;
         this.edad = this.calcularEdad(fechaNacimiento);
         this.fotoPerfil = fotoPerfil;
-        this.puntuacion = 0;
+        this.puntuacion = puntuacion    ;
     }
 
     calcularEdad(fechaNacimiento) {
