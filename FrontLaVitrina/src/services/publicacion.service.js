@@ -97,4 +97,36 @@ export class PublicacionService {
 
         return PublicacionList;
     }
+
+    static crearPublicacion(datosPublicacion) {
+        console.log('PublicacionService: Recibiendo datos para crear:', {
+            ...datosPublicacion,
+            // Mostrar solo nombres y tamaños de las imágenes para el log
+            imagenes: datosPublicacion.imagenes.map(f => ({ nombre: f.name, tamaño: f.size }))
+        });
+
+        return new Promise((resolve, reject) => {
+            // Simular un tiempo de espera de 500ms para la red/servidor
+            setTimeout(() => {
+                // Validación MOCK: Si no hay título, simular un error
+                if (!datosPublicacion.titulo) {
+                    console.error('PublicacionService: Error simulado - Título vacío.');
+                    reject({ message: "El título de la publicación es obligatorio." });
+                    return;
+                }
+
+                // Generar la publicación simulada con un ID
+                const publicacionCreada = {
+                    id: Date.now(),
+                    ...datosPublicacion,
+                    fechaCreacion: new Date().toISOString()
+                };
+
+                // En un entorno real, aquí se enviarían los datos (incluyendo archivos) a la API.
+                console.log('✅ PublicacionService: Creación simulada exitosa.');
+                resolve(publicacionCreada);
+
+            }, 500); // 0.5 segundos de latencia simulada
+        });
+    }
 }
