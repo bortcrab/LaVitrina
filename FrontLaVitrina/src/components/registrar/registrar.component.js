@@ -3,6 +3,7 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         super();
         this.pasoActual = 1;
         this.datosRegistro = {};
+        this.cssUrl = new URL('./registrar.component.css', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -276,7 +277,7 @@ export class RegistrarUsuarioComponent extends HTMLElement {
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/registrar/registrar.component.css");
+        link.setAttribute("href", this.cssUrl);
         console.log(link);
         shadow.appendChild(link);
     }

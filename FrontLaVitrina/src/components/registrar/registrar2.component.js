@@ -1,6 +1,7 @@
 export class RegistrarUsuario2Component extends HTMLElement {
     constructor() {
         super();
+        this.cssUrl = new URL('./registrar2.component.css', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -77,7 +78,7 @@ export class RegistrarUsuario2Component extends HTMLElement {
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/registrar/registrar2.component.css");
+        link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
     }
 }
