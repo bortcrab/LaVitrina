@@ -79,6 +79,8 @@ body {
     width: 5rem;
     height: 5rem;
     margin-right: 1rem;
+    border-radius: 50%;
+    
 }
 
 .user-info p {

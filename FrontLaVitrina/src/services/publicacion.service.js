@@ -12,13 +12,13 @@ export class PublicacionService {
         userTech.puntuacion = 5.0;
 
         const userJuan = new Usuario(103, "Juan", "Pérez");
-        userJuan.fotoPerfil = "./src/assets/logoBlanco.png"; 
+        userJuan.fotoPerfil = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop";
         userJuan.puntuacion = 3.5;
 
         const userPedro = new Usuario(1, "Pedro", "Sola");
-        userPedro.fotoPerfil = "https://i.pravatar.cc/150?img=12";
+        userPedro.fotoPerfil = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop";
         userPedro.puntuacion = 4.9;
-        
+
         const PublicacionList = [
             new Publicacion(
                 1,
@@ -68,17 +68,17 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Subasta",
-             userJuan
+                userJuan
             ),
             new Publicacion(
                 6,
                 "Chamarra de Cuero Vintage",
                 "Talla M, excelente estado, estilo clásico para motociclistas.",
                 "$1,200",
-                "https://images.unsplash.com/photo-1551028919-ac66c5f8b63b?w=500&h=500&fit=crop",
+                "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Moda", "Vehículos"],
                 "Venta",
-               userTech
+                userTech
             ),
             new Publicacion(
                 7,
@@ -126,11 +126,11 @@ export class PublicacionService {
         return PublicacionList;
     }
 
-    static obtenerPublicacionesPorId(id) {
+    static async obtenerPublicacionesPorId(id) {
         const productos = this.getPublicaciones();
         return productos.find(p => p.id == id);
     }
-    
+
     static crearPublicacion(datosPublicacion) {
         console.log('PublicacionService: Recibiendo datos para crear:', {
             ...datosPublicacion,
