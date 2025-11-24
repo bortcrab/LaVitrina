@@ -8,29 +8,56 @@ export class AgregarReseniaPage extends HTMLElement {
         this.calificacionSeleccionada = 0;
         // Nuevo estado para los datos del vendedor
         this.vendedor = null;
+        this.usuarioId = null;
     }
 
     async connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-        // 1. Cargar datos antes de renderizar
+
         this.#agregarEstilos(shadow);
-        await this.#cargarDatos();
+
+        // Obtener el ID del vendedor del atributo
+        this.usuarioId = this.getAttribute('id');
+
+        if (!this.usuarioId) {
+            console.error("No se proporcionó ID del vendedor");
+            return;
+        }
+
+        // Cargar datos del vendedor ANTES de renderizar
+        await this.#cargarDatos(shadow, this.usuarioId);
+
+        // Ahora renderizar con los datos cargados
         this.#render(shadow);
+
         this.#agregarEventListeners(shadow);
     }
+
 
     /**
      * Carga los datos del vendedor simulado.
      */
-    async #cargarDatos() {
+    async #cargarDatos(shadow, usuarioId) {
         try {
-            // Asumimos un ID de vendedor (e.g., 1) o lo obtendrías de la URL o un atributo.
-            const vendedorId = 1;
-            this.vendedor = await UsuariosService.getVendedor(vendedorId);
+            // Obtener los datos del vendedor usando el ID recibido
+            this.vendedor = await UsuariosService.getVendedor(usuarioId);
+
+            if (!this.vendedor) {
+                console.error("Vendedor no encontrado");
+                // Valores por defecto en caso de error
+                this.vendedor = {
+                    nombre: "Vendedor no encontrado",
+                    puntaje: 0,
+                    totalResenias: 0,
+                    imagenUrl: ""
+                };
+                return;
+            }
+
             console.log("Datos del vendedor cargados:", this.vendedor);
         } catch (error) {
             console.error("Error al cargar datos del vendedor:", error);
-            // Manejar el error, por ejemplo, mostrando un mensaje al usuario.
+            alert("Error al cargar los datos del vendedor");
             this.vendedor = {
                 nombre: "Vendedor no encontrado",
                 puntaje: 0,
@@ -62,6 +89,7 @@ export class AgregarReseniaPage extends HTMLElement {
         const puntajeVendedor = this.vendedor?.puntaje.toFixed(1) || 'N/A';
         const totalResenias = this.vendedor?.totalResenias || 0;
         const imagenUrl = this.vendedor?.imagenUrl || '';
+        console.log(imagenUrl);
         const estrellasHTML = this.#generarEstrellas(this.vendedor?.puntaje || 0);
 
         shadow.innerHTML += `
@@ -69,7 +97,7 @@ export class AgregarReseniaPage extends HTMLElement {
             <div class="contenedor">
                 <div class="datos-vendedor">
                     <h2>${nombreVendedor}</h2>
-                    <img class="imagen-vendedor" src="${imagenUrl}" alt="Imagen de ${nombreVendedor}">
+                    <img class="imagen-vendedor" src="../${imagenUrl}" alt="Imagen de ${nombreVendedor}">
                     <h4>Puntaje del vendedor</h4>
                     <div class="rating">
                         <span class="rating-numero">${puntajeVendedor}</span>
@@ -168,13 +196,7 @@ export class AgregarReseniaPage extends HTMLElement {
                 console.log('Reseña agregada con éxito:', nuevaResenia);
                 alert("¡Reseña agregada con éxito!");
 
-                // Opcional: Limpiar el formulario y resetear la calificación
-                shadow.getElementById('titulo').value = '';
-                shadow.getElementById('descripcion').value = '';
-                this.calificacionSeleccionada = 0;
-                actualizarEstrellas(0); // Limpiar visualmente las estrellas
-
-                // Aquí podrías navegar a la página de reseñas, etc.
+                page('/home-page');
 
             } catch (error) {
                 console.error("Error al agregar la reseña:", error);
@@ -186,7 +208,7 @@ export class AgregarReseniaPage extends HTMLElement {
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "FrontLaVitrina/src/pages/agregarResenia/agregarResenia.css");
+        link.setAttribute("href", "../FrontLaVitrina/src/pages/agregarResenia/agregarResenia.css");
         shadow.appendChild(link);
     }
 }
