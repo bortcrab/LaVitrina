@@ -1,57 +1,57 @@
-import { PerfilService } from '../../services/perfil.service.js';
-
 export class PerfilComponent extends HTMLElement {
+    #usuario = null;
+
     constructor() {
         super();
-        this.usuario = null;
         this.editMode = false;
         this.editarRojoIconUrl = new URL('../../assets/editarRojo.png', import.meta.url).href;
         this.editarGrisIconUrl = new URL('../../assets/editarGris.png', import.meta.url).href;
         this.cssUrl = new URL('./perfil.component.css', import.meta.url).href;
     }
 
-    async connectedCallback() {
+    set usuario(data) {
+        this.#usuario = data;
+        this.render();
+    }
+
+    get usuario() {
+        return this.#usuario;
+    }
+
+    connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
         this.#agregarEstilos(shadow);
-        
-        await this.#cargarDatosUsuario();
-        this.#render(shadow);
-        this.#attachEventListeners(shadow);
+        this.render(); 
     }
 
-    async #cargarDatosUsuario() {
-        try {
-            this.usuario = await PerfilService.obtenerPerfil();
-        } catch (error) {
-            console.error('Error al cargar perfil:', error);
-            this.usuario = {}; 
+    render() {
+        const shadow = this.shadowRoot;
+        if (!this.#usuario) {
+            shadow.innerHTML = '<div class="loading">Cargando perfil...</div>'; 
+            return;
         }
-    }
 
-    #render(shadow) {
-        if (!this.usuario) return;
-
-        shadow.innerHTML += `
+        shadow.innerHTML = `
             <div class="perfil-container">
                 <div class="perfil-info">
                     <div class="usuario-avatar">
-                        <img src="${this.usuario.avatar}" alt="Avatar" class="avatar-img" id="avatarImg">
+                        <img src="${this.#usuario.avatar}" alt="Avatar" class="avatar-img" id="avatarImg">
                         <button class="editar-avatar" id="btnEditarAvatar">
-                            <img src="${this.editarRojoIconUrl}" alt="Editar foto de perfil">
+                            <img src="${this.editarRojoIconUrl}" alt="Editar foto">
                         </button>
                         <input type="file" id="fileAvatar" accept="image/*" style="display: none;">
                     </div>
                     
-                    <h2 class="usuario-nombre">${this.usuario.nombres} ${this.usuario.apellidoPaterno}</h2>
-                    <p class="usuario-fecha">Perfil creado desde<br>${this.usuario.fechaCreacion}</p>
+                    <h2 class="usuario-nombre">${this.#usuario.nombres} ${this.#usuario.apellidoPaterno}</h2>
+                    <p class="usuario-fecha">Perfil creado desde<br>${this.#usuario.fechaCreacion}</p>
                     
                     <div class="reseñas-card">
                         <h3>Mi puntaje de reseñas</h3>
                         <div class="rating">
                             <span class="estrellas">★ ★ ★ ★ ★</span>
-                            <span class="rating-numero">${this.usuario.rating}</span>
+                            <span class="rating-numero">${this.#usuario.rating}</span>
                         </div>
-                        <p class="total-reseñas">Basado en ${this.usuario.totalReseñas} reseñas</p>
+                        <p class="total-reseñas">Basado en ${this.#usuario.totalReseñas} reseñas</p>
                         <a href="#" class="ver-reseñas" id="verResenias">Ver todas las reseñas</a>
                     </div>
                 </div>
@@ -68,25 +68,23 @@ export class PerfilComponent extends HTMLElement {
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="nombres">Nombres</label>
-                                <input type="text" id="nombres" value="${this.usuario.nombres}" disabled>
+                                <input type="text" id="nombres" value="${this.#usuario.nombres}" disabled>
                             </div>
                             <div class="form-group">
                                 <label for="apellidoPaterno">Apellido Paterno</label>
-                                <input type="text" id="apellidoPaterno" value="${this.usuario.apellidoPaterno}" disabled>
+                                <input type="text" id="apellidoPaterno" value="${this.#usuario.apellidoPaterno}" disabled>
                             </div>
                         </div>
-
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="apellidoMaterno">Apellido Materno</label>
-                                <input type="text" id="apellidoMaterno" value="${this.usuario.apellidoMaterno}" disabled>
+                                <input type="text" id="apellidoMaterno" value="${this.#usuario.apellidoMaterno}" disabled>
                             </div>
                             <div class="form-group">
                                 <label for="correo">Correo</label>
-                                <input type="email" id="correo" value="${this.usuario.correo}" disabled>
+                                <input type="email" id="correo" value="${this.#usuario.correo}" disabled>
                             </div>
                         </div>
-
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="contraseña">Contraseña</label>
@@ -94,13 +92,12 @@ export class PerfilComponent extends HTMLElement {
                             </div>
                             <div class="form-group">
                                 <label for="telefono">Teléfono</label>
-                                <input type="tel" id="telefono" value="${this.usuario.telefono}" disabled>
+                                <input type="tel" id="telefono" value="${this.#usuario.telefono}" disabled>
                             </div>
                         </div>
-
                         <div class="form-group full-width">
                             <label for="fechaNacimiento">Fecha nacimiento</label>
-                            <input type="text" id="fechaNacimiento" value="${this.usuario.fechaNacimiento}" disabled>
+                            <input type="text" id="fechaNacimiento" value="${this.#usuario.fechaNacimiento}" disabled>
                         </div>
 
                         <button type="submit" class="btn-guardar" id="btnGuardar" style="display: none;">
@@ -110,6 +107,11 @@ export class PerfilComponent extends HTMLElement {
                 </div>
             </div>
         `;
+        
+        this.#agregarEstilos(shadow);
+        this.#attachEventListeners(shadow);
+        
+        if(this.editMode) this.#toggleEditMode(shadow);
     }
 
     #attachEventListeners(shadow) {
@@ -136,17 +138,14 @@ export class PerfilComponent extends HTMLElement {
         }
 
         if(formPerfil) {
-            formPerfil.addEventListener('submit', async (e) => {
+            formPerfil.addEventListener('submit', (e) => {
                 e.preventDefault();
-                await this.#guardarCambios(shadow);
+                this.#emitirGuardado(shadow);
             });
         }
 
         if(btnEditarAvatar && fileAvatar) {
-            btnEditarAvatar.addEventListener('click', () => {
-                fileAvatar.click();
-            });
-
+            btnEditarAvatar.addEventListener('click', () => fileAvatar.click());
             fileAvatar.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -163,16 +162,12 @@ export class PerfilComponent extends HTMLElement {
     #toggleEditMode(shadow) {
         const inputs = shadow.querySelectorAll('input:not(#fileAvatar):not(#fechaNacimiento)');
         const btnGuardar = shadow.getElementById('btnGuardar');
-
-        inputs.forEach(input => {
-            input.disabled = !this.editMode;
-        });
-
+        inputs.forEach(input => input.disabled = !this.editMode);
         if(btnGuardar) btnGuardar.style.display = this.editMode ? 'block' : 'none';
     }
 
-    async #guardarCambios(shadow) {
-        const datosActualizados = {
+    #emitirGuardado(shadow) {
+        const datos = {
             nombres: shadow.getElementById('nombres').value,
             apellidoPaterno: shadow.getElementById('apellidoPaterno').value,
             apellidoMaterno: shadow.getElementById('apellidoMaterno').value,
@@ -183,27 +178,23 @@ export class PerfilComponent extends HTMLElement {
                 : undefined 
         };
 
-        if (datosActualizados.contrasenia === undefined) {
-            delete datosActualizados.contrasenia;
-        }
+        if (datos.contrasenia === undefined) delete datos.contrasenia;
 
-        try {
-            await PerfilService.actualizarPerfil(datosActualizados);
-            alert('Perfil actualizado correctamente');
-            this.editMode = false;
-            this.#toggleEditMode(shadow);
-            await this.#cargarDatosUsuario();
-            
-        } catch (error) {
-            console.error('Error al actualizar perfil:', error);
-            alert('Error al guardar los cambios');
-        }
+        this.editMode = false;
+        
+        this.dispatchEvent(new CustomEvent('guardar-cambios', {
+            detail: datos,
+            bubbles: true,
+            composed: true
+        }));
     }
 
     #agregarEstilos(shadow) {
-        let link = document.createElement("link");
-        link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", this.cssUrl);
-        shadow.appendChild(link);
+        if(!shadow.querySelector('link')) {
+            let link = document.createElement("link");
+            link.setAttribute("rel", "stylesheet");
+            link.setAttribute("href", this.cssUrl);
+            shadow.appendChild(link);
+        }
     }
 }

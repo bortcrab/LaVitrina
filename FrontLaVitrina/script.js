@@ -16,6 +16,8 @@ import { HomePage } from './src/pages/home/home.page.js';
 import { IniciarSesionPage } from './src/pages/iniciarSesion/iniciarSesion.page.js';
 import { RegistrarPage } from "./src/pages/registrar.page.js/registrar.page.js";
 import { ReseniasPage } from "./src/pages/resenias/resenias.page.js";
+import { PerfilPage } from './src/pages/perfil/perfil.page.js';
+import { ChatsPage } from './src/pages/chats/chats.page.js';
 
 //definir componentes
 window.customElements.define('sidebar-info', SidebarComponent);
@@ -35,6 +37,8 @@ window.customElements.define('home-page', HomePage);
 window.customElements.define('iniciar-sesion-page', IniciarSesionPage);
 window.customElements.define('registrar-page', RegistrarPage);
 window.customElements.define('resenias-page', ReseniasPage);
+window.customElements.define('perfil-page', PerfilPage);
+window.customElements.define('chats-page', ChatsPage);
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -45,12 +49,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     page('/perfil', () => {
         toggleNav(true);
-        showContent('perfil-info');
+        showContent('perfil-page');
     });
 
     page('/chats', () => {
         toggleNav(true);
-        showContent('chats-info');
+        showContent('chats-page');
     });
 
     page('/crear-publicacion', () => {
