@@ -3,12 +3,16 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         super();
         this.pasoActual = 1;
         this.datosRegistro = {};
+        this.cssUrl = new URL('./registrar.component.css', import.meta.url).href;
+        this.logoBlancoURL = new URL('../../assets/logoBlanco.png', import.meta.url).href;
+        this.registrarURL = new URL('../../assets/registrar.png', import.meta.url).href;
+        this.registrar2URL = new URL('../../assets/registrar2.png', import.meta.url).href;
     }
 
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-        
-        this.#render(shadow);     
+
+        this.#render(shadow);
         this.#agregarEstilos(shadow);
         this.#agregarEventListeners(shadow);
     }
@@ -128,12 +132,12 @@ export class RegistrarUsuarioComponent extends HTMLElement {
 
             <!-- Imagen lateral -->
             <div class="image-side side-div">
-                <img src="./src/assets/${this.pasoActual === 1 ? 'registrar.png' : 'registrar2.png'}" 
+                <img src="./FrontLaVitrina/src/assets/${this.pasoActual === 1 ? 'registrar.png' : 'registrar2.png'}" 
                      alt="Imagen de registro" id="imagenLateral">
                 <div class="overlay"></div>
                 <div class="content-over-image">
                     <div class="logo-container">
-                        <img class="brand-logo" src="./src/assets/logoBlanco.png" alt="La Vitrina">
+                        <img class="brand-logo" src="${this.logoBlancoURL}" alt="La Vitrina">
                     </div>
                     <h2 class="brand-slogan" id="sloganTexto">
                         ${this.pasoActual === 1
@@ -211,14 +215,14 @@ export class RegistrarUsuarioComponent extends HTMLElement {
             paso2.classList.remove('activo');
             setTimeout(() => {
                 paso1.classList.add('activo');
-                imagenLateral.src = './src/assets/registrar.png';
+                imagenLateral.src = this.registrarURL;
                 sloganTexto.innerHTML = 'Tu Página de Compras y Ventas en<br>Línea de Confianza.';
             }, 300);
         } else {
             paso1.classList.remove('activo');
             setTimeout(() => {
                 paso2.classList.add('activo');
-                imagenLateral.src = './src/assets/registrar2.png';
+                imagenLateral.src = this.registrar2URL;
                 sloganTexto.innerHTML = 'Vender Productos en Línea Nunca<br>Había Sido Tan Fácil.';
             }, 300);
         }

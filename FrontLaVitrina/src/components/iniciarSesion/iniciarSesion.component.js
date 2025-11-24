@@ -1,6 +1,9 @@
 export class IniciarSesionComponent extends HTMLElement {
     constructor() {
         super();
+        this.cssUrl = new URL('./iniciarSesion.component.css', import.meta.url).href;
+        this.iniciarSesionUrl = new URL('../../assets/iniciarSesion.png', import.meta.url).href;
+        this.logoBlancoURL = new URL('../../assets/logoBlanco.png', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -20,7 +23,7 @@ export class IniciarSesionComponent extends HTMLElement {
 
         <div class="content-over-image">
             <div class="logo-container">
-                <img class="brand-logo" src="./src/assets/logoBlanco.png" alt="">
+                <img class="brand-logo" src="${this.logoBlancoURL}">
             </div>
             <h2 class="brand-slogan">El Marketplace Donde Encontrarás<br>Todo lo que Necesitas.</h2>
         </div>
