@@ -108,7 +108,7 @@ export class MisPublicacionesPage extends HTMLElement {
     #handleAction(action, publicacion) {
         switch(action) {
             case 'editar':
-                page(`/editar-publicacion?id=${publicacion.id}`);
+                page(`/editar-publicacion/${publicacion.id}`);
                 break;
                 
             case 'marcar':
