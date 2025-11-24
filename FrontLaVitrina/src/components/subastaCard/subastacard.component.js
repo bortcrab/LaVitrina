@@ -1,0 +1,60 @@
+export class SubastaCardComponent extends HTMLElement {
+
+    constructor() {
+        super();
+        this.cssUrl = new URL('./subastacard.component.css', import.meta.url).href;
+    }
+
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: "open" });
+        this.#agregaEstilo(shadow);
+        this.#render(shadow);
+    }
+
+    #render(shadow) {
+        shadow.innerHTML += `
+        <div class="subasta-container">
+            <div class="contador-container">
+                <h2>Subasta termina en:</h2>
+                <div class="cuenta-atras">
+                    <div class="tiempo">
+                        <h3 id="dias">2</h3>
+                        <h4>Días</h4>
+                    </div>
+                    <div class="tiempo">
+                        <h3 id="horas">18</h3>
+                        <h4>Horas</h4>
+                    </div>
+                    <div class="tiempo">
+                        <h3 id="minutos">45</h3>
+                        <h4>Minutos</h4>
+                    </div>
+                    <div class="tiempo">
+                        <h3 id="segundos">12</h3>
+                        <h4>Segundos</h4>
+                    </div>
+                </div>
+                <div class="contador-info">
+                    <h4>Oferta actual:</h4>
+                    <h4 id="cantidad-pujas">23 pujas</h4>
+                </div>
+                <h2 id="oferta-actual">$ 1,350.00</h2>
+            </div>
+            <div class="puja-container">
+                <h2>Realizar puja</h2>
+                <h4>El monto mínimo es de $ 1,370.00</h4>
+                <input type="number" name="" id="puja" placeholder="$ 1,000.00">
+                <button id="btn-realizar-puja">Realizar</button>
+            </div>
+        </div>
+		`;
+    }
+
+    #agregaEstilo(shadow) {
+        let link = document.createElement("link");
+        link.setAttribute("rel", "stylesheet");
+        link.setAttribute("href", this.cssUrl);
+        shadow.appendChild(link);
+    }
+
+}

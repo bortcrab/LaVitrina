@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+* {
+    font-family: "Bree Serif", serif;
+    margin: 0;
+    font-weight: 500;
+}
+
+body {
+    background-color: antiquewhite;
+}
+
+.contador-container {
+    background-color: #fff;
+    border-radius: 2rem;
+    padding: 1.5rem;
+    height: fit-content;
+}
+
+.contador-container h2 {
+    margin: 0;
+}
+
+.cuenta-atras {
+    margin: 1rem 0 0 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.contador-info {
+    margin: 1.2rem 0 0.5rem 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#cantidad-pujas {
+    color: #929292;
+}
+
+#oferta-actual {
+    color: #E62634;
+}
+
+#dias {
+    background-color: #D9D9D9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0.8rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 20%;
+    font-size: 1.5rem;
+}
+
+#horas {
+    background-color: #D9D9D9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0.8rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 20%;
+    font-size: 1.5rem;
+}
+
+#minutos {
+    background-color: #FFCED6;
+    color: #E62634;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0.8rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 20%;
+    font-size: 1.5rem;
+}
+
+
+#segundos {
+    background-color: #FFCED6;
+    color: #E62634;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0.8rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 20%;
+    font-size: 1.5rem;
+}
+
+.tiempo h4 {
+    margin: 0;
+}
+
+.tiempo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.puja-container {
+    margin: 1rem 0;
+    background-color: #fff;
+    border-radius: 2rem;
+    padding: 1.5rem;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+}
+
+.puja-container h4 {
+    color: #929292;
+    margin: 0.5rem 0 1rem;
+}
+
+#puja {
+    margin: 0 0 1rem 0;
+    padding: 0.5rem;
+    font-size: 1.3rem;
+    color: #E62634;
+    border-radius: 0.7rem;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #CECECE;
+}
+
+#puja:focus {
+    outline: none;
+}
+
+#puja::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+#puja::placeholder {
+    color: #929292;
+}
+
+#btn-realizar-puja {
+    background-color: #E62634;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 0;
+    border-radius: 1rem;
+    font-size: 1.3rem;
+}
+
+#btn-realizar-puja:hover {
+    background-color: #e25e66;
+    cursor: pointer;
+}
