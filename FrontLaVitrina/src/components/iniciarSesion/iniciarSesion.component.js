@@ -1,6 +1,8 @@
 export class IniciarSesionComponent extends HTMLElement {
     constructor() {
         super();
+        this.cssUrl = new URL('./iniciarSesion.component.css', import.meta.url).href;
+        this.iniciarSesionUrl = new URL('../../assets/iniciarSesion.png', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -14,7 +16,7 @@ export class IniciarSesionComponent extends HTMLElement {
         shadow.innerHTML += `
         <div class="all">
     <div class="image-side side-div">
-        <img src="./src/assets/iniciarSesion.png" alt="Gente empacando">
+        <img src="${this.iniciarSesionUrl}" alt="Gente empacando">
 
         <div class="overlay"></div>
 
@@ -140,7 +142,7 @@ export class IniciarSesionComponent extends HTMLElement {
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/iniciarSesion/iniciarSesion.component.css");
+        link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
     }
 }
