@@ -29,6 +29,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Disponible",
+                false,
                 userMaria,
                 new Date(2025, 10, 20)
             ),
@@ -40,6 +41,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop",
                 ["Electrónica", "Hogar"],
                 "Venta",
+                false,
                 userTech,
                 new Date(2025, 10, 20)
             ),
@@ -51,6 +53,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=500&fit=crop",
                 ["Inmuebles", "Hogar"],
                 "Venta",
+                false,
                 userTech,
                 new Date(2025, 10, 20)
             ),
@@ -62,6 +65,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=500&h=500&fit=crop",
                 ["Deportes", "Vehículos"],
                 "Venta",
+                false,
                 userJuan,
                 new Date(2025, 10, 20)
             ),
@@ -73,6 +77,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Subasta",
+                false,
                 userJuan,
                 new Date(2025, 10, 20)
             ),
@@ -84,6 +89,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Moda", "Vehículos"],
                 "Venta",
+                false,
                 userTech,
                 new Date(2025, 10, 20)
             ),
@@ -95,6 +101,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&h=500&fit=crop",
                 ["Hogar", "Inmuebles"],
                 "Venta",
+                false,
                 userTech,
                 new Date(2025, 10, 20)
             ),
@@ -106,6 +113,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=500&h=500&fit=crop",
                 ["Vehículos"],
                 "Venta",
+                false,
                 userMaria,
                 new Date(2025, 10, 20)
             ),
@@ -117,6 +125,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&h=500&fit=crop",
                 ["Moda", "Deportes"],
                 "",
+                false,
                 userMaria,
                 new Date(2025, 10, 20)
             ),
@@ -128,6 +137,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=500&h=500&fit=crop",
                 ["Electrónica", "Hogar"],
                 "Subasta",
+                false,
                 userPedro,
                 new Date(2025, 10, 20)
             )
@@ -266,26 +276,35 @@ export class PublicacionService {
 
 
     static async obtenerPublicacion(id) {
-        const publicacion = publicacionesMock.find(p => p.id === id);
+        const publicaciones = this.getPublicaciones();
 
-        if (!publicacion) throw new Error("Publicación no encontrada");
+        const idNumerico = parseInt(id);
 
-        // Se retorna una copia para evitar modificar el mock accidentalmente
+        const publicacion = publicaciones.find(p => p.id === idNumerico);
+
+        if (!publicacion) {
+            console.error(`No se encontró la publicación con id: ${id} (numérico: ${idNumerico})`);
+            throw new Error("Publicación no encontrada");
+        }
+
         return JSON.parse(JSON.stringify(publicacion));
     }
 
     static async editarPublicacion(id, datosActualizados) {
-        const index = publicacionesMock.findIndex(p => p.id === id);
+        const publicaciones = this.getPublicaciones();
+
+        const idNumerico = parseInt(id);
+
+        const index = publicaciones.findIndex(p => p.id === idNumerico);
 
         if (index === -1) throw new Error("Publicación no encontrada");
 
-        publicacionesMock[index] = {
-            ...publicacionesMock[index],
+        publicaciones[index] = {
+            ...publicaciones[index],
             ...datosActualizados
         };
 
-        // También regresamos una copia
-        return JSON.parse(JSON.stringify(publicacionesMock[index]));
+        return JSON.parse(JSON.stringify(publicaciones[index]));
     }
 
     static getPublicacionesPorUsuario(nombreUsuario) {
@@ -313,7 +332,7 @@ export class PublicacionService {
         if (etiqueta === 'Todo') {
             return this.publicaciones;
         }
-        return this.publicaciones.filter(pub => 
+        return this.publicaciones.filter(pub =>
             pub.etiquetas.includes(etiqueta)
         );
     }
