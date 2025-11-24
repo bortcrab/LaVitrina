@@ -1,4 +1,5 @@
 import { Publicacion } from '../models/publicacion.js';
+import { Usuario } from '../models/usuario.js';
 
 const publicacionesMock = [
     {

@@ -108,9 +108,10 @@ document.addEventListener('DOMContentLoaded', function () {
         showContent('detalle-publicacion-info', { id: idPublicacion });
     });
 
-    page('/agregar-resenia', () => {
+    page('/agregar-resenia/:id', (resenia) => {
         toggleNav(true);
-        showContent('agregar-resenia-page');
+        const idUsuario = resenia.params.id;
+        showContent('agregar-resenia-page', { id: idUsuario });
     });
 
     page('*', () => {

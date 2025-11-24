@@ -19,6 +19,7 @@ export class ReseniasComponent extends HTMLElement {
         const fotoPerfil = this.getAttribute('fotoPerfil') || 'https://i.pravatar.cc/150?img=default';
 
         const usuario = {
+            id: 1,
             nombres: nombres,
             fotoPerfil: fotoPerfil,
             puntuacion: puntuacion
@@ -26,7 +27,7 @@ export class ReseniasComponent extends HTMLElement {
 
         this.#agregaEstilo(shadow);
         this.#render(shadow, usuario);
-        this.#agregarEventListeners(shadow);
+        this.#agregarEventListeners(shadow, usuario.id);
     }
 
     async #cargarResenias() {
@@ -69,11 +70,11 @@ export class ReseniasComponent extends HTMLElement {
 		`;
     }
 
-    #agregarEventListeners(shadow) {
+    #agregarEventListeners(shadow, id) {
         const btnAgregarResenia = shadow.getElementById('btnAgregarResenia');
 
         btnAgregarResenia.addEventListener('click', () => {
-            page('/agregar-resenia');
+            page(`/agregar-resenia/${id}`);
         });
     }
 

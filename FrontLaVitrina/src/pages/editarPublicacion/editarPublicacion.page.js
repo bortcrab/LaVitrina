@@ -5,6 +5,7 @@ export class EditarPublicacionPage extends HTMLElement {
         super();
         this.archivosImagenes = [];
         this.publicacion = null;
+        this.publicacionId = null;
     }
 
     async connectedCallback() {
@@ -13,15 +14,15 @@ export class EditarPublicacionPage extends HTMLElement {
         this.#agregarEstilos(shadow);
         this.#render(shadow);
 
-        const publicacionId = this.getAttribute('id-publicacion');
+        this.publicacionId = this.getAttribute('id');
 
-        if (!publicacionId) {
+        if (!this.publicacionId) {
             console.error("No se proporcionó ID de la publicación");
             return;
         }
 
         // Cargar datos de la publicación
-        await this.#cargarDatos(shadow, publicacionId);
+        await this.#cargarDatos(shadow, this.publicacionId);
 
         this.#agregarEventListeners(shadow);
     }
@@ -311,7 +312,7 @@ export class EditarPublicacionPage extends HTMLElement {
             const etiquetas = Array.from(etiquetasElementos).map(el => el.textContent.replace(' | ', '').trim());
 
             let datosPublicacion = {
-                id: this.getAttribute('id-publicacion'),
+                id: this.publicacionId,
                 titulo,
                 descripcion,
                 precio,
