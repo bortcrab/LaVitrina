@@ -3,6 +3,7 @@ import { SidebarComponent } from "./src/components/side-bar/sidebar.component.js
 import { HeaderComponent } from './src/components/header/header.js';
 import { RegistrarUsuarioComponent } from './src/components/registrar/registrar.component.js';
 import { PublicacionComponent } from "./src/components/publicacionCard/publicacionCard.component.js";
+import { PublicacionOpcionesComponent } from "./src/components/publicacionCardOpciones/publicacionCardOpciones.component.js";
 import { PerfilComponent } from './src/components/perfil/perfil.component.js';
 import { ChatsComponent } from './src/components/chats/chats.component.js';
 import { IniciarSesionComponent } from "./src/components/iniciarSesion/iniciarSesion.component.js";
@@ -26,6 +27,7 @@ window.customElements.define('sidebar-info', SidebarComponent);
 window.customElements.define('header-info', HeaderComponent);
 window.customElements.define('registrar-usuario-info', RegistrarUsuarioComponent);
 window.customElements.define('publicacion-info', PublicacionComponent);
+window.customElements.define('publicacionOpciones-info', PublicacionOpcionesComponent);
 window.customElements.define('perfil-info', PerfilComponent);
 window.customElements.define('chats-info', ChatsComponent);
 window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
