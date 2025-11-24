@@ -18,10 +18,10 @@ export class DetallePublicacionComponent extends HTMLElement {
         
         if (publicacion) {
             this.#render(shadow, publicacion);
-            shadow.innerHTML = "<h2>PENE.</h2>";
         } else {
             shadow.innerHTML = "<h2>publicacion no encontrada.</h2>";
         }
+        this.#agregarEventListeners(shadow);
     }
 
     #render(shadow, publicacion) {
@@ -31,7 +31,7 @@ export class DetallePublicacionComponent extends HTMLElement {
                     <h2 id="titulo">${publicacion.titulo}</h2>
                     <div class="disponibilidad-fecha">
                         <h3 id="disponibilidad">${publicacion.estado}</h3>
-                        <h4 id="fechaPublicacion">${publicacion.fechaPublicacion}</h4>
+                        <h4 id="fechaPublicacion">${publicacion.fechaPublicacion.getDate() + '-' + (publicacion.fechaPublicacion.getMonth() + 1) + '-' + publicacion.fechaPublicacion.getFullYear()}</h4>
                     </div>
                     <img src="${publicacion.imagen}" alt="">
                     <div class="descripcion-info">
@@ -59,6 +59,15 @@ export class DetallePublicacionComponent extends HTMLElement {
                 </div>
             </div>
 		`;
+    }
+
+    #agregarEventListeners(shadow) {
+        const btnEnviarMensaje = shadow.getElementById('btn-enviar-mensaje');
+
+        btnEnviarMensaje.addEventListener('click', (e) => {
+            e.preventDefault();
+            page("/chats");
+        });
     }
 
     #agregaEstilo(shadow) {

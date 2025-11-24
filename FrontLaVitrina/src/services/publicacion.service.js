@@ -27,8 +27,9 @@ export class PublicacionService {
                 "$10,000",
                 "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&h=500&fit=crop",
                 ["Electrónica"],
-                "Venta",
-                userMaria
+                "Disponible",
+                userMaria,
+                new Date(2025, 10, 20)
             ),
             new Publicacion(
                 2,
@@ -38,7 +39,8 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop",
                 ["Electrónica", "Hogar"],
                 "Venta",
-                userTech
+                userTech,
+                new Date(2025, 10, 20)
             ),
             new Publicacion(
                 3,
@@ -48,7 +50,8 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=500&fit=crop",
                 ["Inmuebles", "Hogar"],
                 "Venta",
-                userTech
+                userTech,
+                new Date(2025, 10, 20)
             ),
             new Publicacion(
                 4,
@@ -58,7 +61,8 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=500&h=500&fit=crop",
                 ["Deportes", "Vehículos"],
                 "Venta",
-                userJuan
+                userJuan,
+                new Date(2025, 10, 20)
             ),
             new Publicacion(
                 5,
@@ -68,7 +72,8 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Subasta",
-                userJuan
+                userJuan,
+                new Date(2025, 10, 20)
             ),
             new Publicacion(
                 6,
@@ -78,7 +83,8 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Moda", "Vehículos"],
                 "Venta",
-                userTech
+                userTech,
+                new Date(2025, 10, 20)
             ),
             new Publicacion(
                 7,
@@ -88,7 +94,8 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&h=500&fit=crop",
                 ["Hogar", "Inmuebles"],
                 "Venta",
-                userTech
+                userTech,
+                new Date(2025, 10, 20)
             ),
             new Publicacion(
                 8,
@@ -98,7 +105,8 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=500&h=500&fit=crop",
                 ["Vehículos"],
                 "Venta",
-                userMaria
+                userMaria,
+                new Date(2025, 10, 20)
             ),
             new Publicacion(
                 9,
@@ -107,8 +115,9 @@ export class PublicacionService {
                 "$2,500",
                 "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&h=500&fit=crop",
                 ["Moda", "Deportes"],
-                "Venta",
-                userMaria
+                "",
+                userMaria,
+                new Date(2025, 10, 20)
             ),
             new Publicacion(
                 10,
@@ -118,7 +127,8 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=500&h=500&fit=crop",
                 ["Electrónica", "Hogar"],
                 "Subasta",
-                userPedro
+                userPedro,
+                new Date(2025, 10, 20)
             )
         ];
 
@@ -127,8 +137,8 @@ export class PublicacionService {
     }
 
     static async obtenerPublicacionesPorId(id) {
-        const productos = this.getPublicaciones();
-        return productos.find(p => p.id == id);
+        const publicaciones = this.getPublicaciones();
+        return publicaciones.find(p => p.id == id);
     }
 
     static crearPublicacion(datosPublicacion) {

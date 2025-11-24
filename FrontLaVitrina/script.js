@@ -125,6 +125,7 @@ function showContent(contentId, data = {}) {
     if (data.nombres) element.setAttribute('nombres', data.nombres);
     if (data.puntuacion) element.setAttribute('puntuacion', data.puntuacion);
     if (data.fotoPerfil) element.setAttribute('fotoPerfil', data.fotoPerfil);
+    if (data.id) element.setAttribute('id', data.id);
 
     container.appendChild(element);
 }
