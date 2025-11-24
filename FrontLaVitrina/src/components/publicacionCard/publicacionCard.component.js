@@ -13,9 +13,9 @@ export class PublicacionComponent extends HTMLElement {
         const descripcion = this.getAttribute('descripcion');
         const precio = this.getAttribute('precio');
         const imagen = this.getAttribute('imagen');
-        const tipo = this.getAttribute('tipo');
+        const estado = this.getAttribute('estado');
 
-        const publicacion = new Publicacion(id, titulo, descripcion, precio, imagen, tipo);
+        const publicacion = new Publicacion(id, titulo, descripcion, precio, imagen, estado);
         
         this.#agregarEstilos(shadow);
         this.#render(shadow, publicacion);
@@ -32,7 +32,9 @@ export class PublicacionComponent extends HTMLElement {
                 <h4>${publicacion.titulo}</h4>
                 <div class="card-footer">
                     <span class="price">${publicacion.precio}</span>
+                    <span class="tag">${publicacion.estado}</span>
                 </div>
+                
             </div>
         </div>
         `
