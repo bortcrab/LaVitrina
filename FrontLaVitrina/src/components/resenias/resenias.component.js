@@ -26,6 +26,7 @@ export class ReseniasComponent extends HTMLElement {
 
         this.#agregaEstilo(shadow);
         this.#render(shadow, usuario);
+        this.#agregarEventListeners(shadow);
     }
 
     async #cargarResenias() {
@@ -49,7 +50,7 @@ export class ReseniasComponent extends HTMLElement {
                             <h5 id="calificacion"><span class="estrella">★</span>${usuario.puntuacion}</h5>
                         </div>
                     </div>
-                    <button class="btn-escribir-resenia">Escribir reseña<span class="pencil">✎</span></button>
+                    <button id="btnAgregarResenia" class="btn-escribir-resenia">Escribir reseña<span class="pencil">✎</span></button>
                 </div>
                 <div class="middle-info">
                     <h2>${this.resenias.length} Reseñas</h2>
@@ -66,6 +67,14 @@ export class ReseniasComponent extends HTMLElement {
                 </div>
             </div>
 		`;
+    }
+
+    #agregarEventListeners(shadow) {
+        const btnAgregarResenia = shadow.getElementById('btnAgregarResenia');
+
+        btnAgregarResenia.addEventListener('click', () => {
+            page('/agregar-resenia');
+        });
     }
 
     #renderResenias() {

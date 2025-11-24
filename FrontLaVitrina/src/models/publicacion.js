@@ -4,7 +4,7 @@ export class Publicacion {
         titulo = '', 
         descripcion = '', 
         precio = 0.0, 
-        imagenes = null, 
+        imagen = null, 
         etiquetas = null, 
         estado = '', 
         usuario = null, 
@@ -13,7 +13,7 @@ export class Publicacion {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.precio = precio;
-        this.imagenes = imagenes;
+        this.imagen = imagen;
         this.etiquetas = etiquetas;
         this.estado = estado;
         this.usuario = usuario;

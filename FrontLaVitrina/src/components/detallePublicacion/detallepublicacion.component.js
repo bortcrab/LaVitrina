@@ -1,4 +1,4 @@
-import { Publicacion } from "../../models/publicacion.js";
+import { PublicacionService } from "../../services/publicacion.service.js";
 
 export class DetallePublicacionComponent extends HTMLElement {
 
@@ -7,22 +7,21 @@ export class DetallePublicacionComponent extends HTMLElement {
         this.cssUrl = new URL('./detallepublicacion.component.css', import.meta.url).href;
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         const shadow = this.attachShadow({ mode: "open" });
 
-        const titulo = this.getAttribute('titulo');
-        const precio = this.getAttribute('precio');
-        const estado = this.getAttribute('estado');
-        const imagenes = this.getAttribute('imagenes');
-        const usuario = this.getAttribute('usuario');
-        const fechaPublicacion = this.getAttribute('fechaPublicacion');
-        const descripcion = this.getAttribute('descripcion');
-
-        const publicacion = new Publicacion(titulo, descripcion, precio, imagenes, estado, usuario, fechaPublicacion);
-
+        const id = this.getAttribute('id');
+    
+        const publicacion = await PublicacionService.obtenerPublicacionesPorId(id);
 
         this.#agregaEstilo(shadow);
-        this.#render(shadow, publicacion);
+        
+        if (publicacion) {
+            this.#render(shadow, publicacion);
+            shadow.innerHTML = "<h2>PENE.</h2>";
+        } else {
+            shadow.innerHTML = "<h2>publicacion no encontrada.</h2>";
+        }
     }
 
     #render(shadow, publicacion) {
@@ -45,7 +44,7 @@ export class DetallePublicacionComponent extends HTMLElement {
                 </div>
                 <div class="mensaje-container">
                     <div class="perfil-info">
-                        <img class="profile-pic" src="FrontLaVitrina/src/assets/pedrito.png" alt="">
+                        <img class="profile-pic" src="${publicacion.usuario.fotoPerfil}" alt="">
                         <div class="user-data">
                             <h3 id="nombre-perfil">${publicacion.usuario.nombres}</h3>
                             <div class="resenias">
