@@ -1,23 +1,42 @@
+import { Usuario } from '../models/usuario.js';
+
 export class PerfilService {
     
-    static usuarioMock = {
+    static usuarioDataDB = {
         id: 1,
         nombres: "Pedro",
         apellidoPaterno: "Sola",
         apellidoMaterno: "Sola",
         correo: "pedro.sola@correo.com",
-        celular: "7776687989",
-        fechaNacimiento: "04/10/1960",
-        fechaCreacion: "02/11/2025",
-        avatar: "https://i.pravatar.cc/150?img=12",
-        rating: 4.9,
-        totalReseñas: 108
+        contrasenia: "********",
+        telefono: "7776687989",
+        ciudad: "CDMX",
+        fechaNacimiento: "1960-10-04",
+        fotoPerfil: "https://i.pravatar.cc/150?img=12"
     };
 
     static async obtenerPerfil() {
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve({ ...this.usuarioMock });
+                const usuario = new Usuario(
+                    this.usuarioDataDB.id,
+                    this.usuarioDataDB.nombres,
+                    this.usuarioDataDB.apellidoPaterno,
+                    this.usuarioDataDB.apellidoMaterno,
+                    this.usuarioDataDB.correo,
+                    this.usuarioDataDB.contrasenia,
+                    this.usuarioDataDB.telefono,
+                    this.usuarioDataDB.ciudad,
+                    this.usuarioDataDB.fechaNacimiento,
+                    this.usuarioDataDB.fotoPerfil
+                );
+
+                usuario.fechaCreacion = "02/11/2025";
+                usuario.rating = 4.9;
+                usuario.totalReseñas = 108;
+                usuario.avatar = usuario.fotoPerfil; 
+
+                resolve(usuario);
             }, 100);
         });
     }
@@ -25,8 +44,8 @@ export class PerfilService {
     static async actualizarPerfil(datosActualizados) {
         return new Promise((resolve) => {
             setTimeout(() => {
-                this.usuarioMock = { ...this.usuarioMock, ...datosActualizados };
-                resolve({ ...this.usuarioMock });
+                this.usuarioDataDB = { ...this.usuarioDataDB, ...datosActualizados };
+                this.obtenerPerfil().then(usuario => resolve(usuario));
             }, 100);
         });
     }
