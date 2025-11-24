@@ -28,7 +28,7 @@ window.customElements.define('sidebar-info', SidebarComponent);
 window.customElements.define('header-info', HeaderComponent);
 window.customElements.define('registrar-usuario-info', RegistrarUsuarioComponent);
 window.customElements.define('publicacion-info', PublicacionComponent);
-window.customElements.define('publicacion-opciones-info', PublicacionOpcionesComponent);
+//window.customElements.define('publicacionOpciones-info', PublicacionOpcionesComponent);
 window.customElements.define('perfil-info', PerfilComponent);
 window.customElements.define('chats-info', ChatsComponent);
 window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
@@ -70,9 +70,10 @@ document.addEventListener('DOMContentLoaded', function () {
         showContent('crear-publicacion-page');
     });
 
-    page('/editar-publicacion', () => {
+    page('/editar-publicacion/:id', (publicacion) => {
         toggleNav(true);
-        showContent('editar-publicacion-page');
+        const idPublicacion = publicacion.params.id;
+        showContent('editar-publicacion-page', { id: idPublicacion });
     });
 
     page('/agregar-resenia', () => {

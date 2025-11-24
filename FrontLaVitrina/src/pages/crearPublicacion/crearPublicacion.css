@@ -83,14 +83,19 @@ h1 {
   margin: 0;
 }
 
-.contenedor-input:not(#contenedor-horizontal) {
+.contenedor-input {
   display: flex;
   flex-direction: column;
 }
 
-#contenedor-horizontal {
+.contenedor-horizontal {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+}
+
+.contenedor-input-horizontal {
+  flex: 1;
 }
 
 input,

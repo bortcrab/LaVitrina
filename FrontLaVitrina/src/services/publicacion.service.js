@@ -1,5 +1,40 @@
 import { Publicacion } from '../models/publicacion.js';
-import { Usuario } from '../models/usuario.js';
+
+const publicacionesMock = [
+    {
+        id: "1",
+        titulo: "Playera Oversize Negra",
+        descripcion: "Playera estilo streetwear, talla L, algodón suave.",
+        precio: 250,
+        categoria: 3,
+        tipo: "subasta",
+        inicio_subasta: "2025-11-25T10:00",
+        fin_subasta: "2025-11-30T18:00",
+        etiquetas: ["ropa", "negro", "oversize"],
+        imagenes: [
+            "https://picsum.photos/300?random=1",
+            "https://picsum.photos/300?random=2"
+        ]
+    },
+    {
+        id: "2",
+        titulo: "Tenis Nike Dunk Low",
+        descripcion: "Edición limitada, talla 27.5 MX.",
+        precio: 2500,
+        categoria: 5,
+        tipo: "venta",
+        etiquetas: ["tenis", "nike", "streetwear"],
+        imagenes: [
+            "https://picsum.photos/300?random=3",
+            "https://picsum.photos/300?random=4"
+        ]
+    }
+];
+
+// Utilidad para simular tiempo de red
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 export class PublicacionService {
     static getPublicaciones() {
 
@@ -144,17 +179,109 @@ export class PublicacionService {
     static crearPublicacion(datosPublicacion) {
         console.log('PublicacionService: Recibiendo datos para crear:', {
             ...datosPublicacion,
-            // Mostrar solo nombres y tamaños de las imágenes para el log
             imagenes: datosPublicacion.imagenes.map(f => ({ nombre: f.name, tamaño: f.size }))
         });
 
         return new Promise((resolve, reject) => {
-            // Simular un tiempo de espera de 500ms para la red/servidor
             setTimeout(() => {
-                // Validación MOCK: Si no hay título, simular un error
-                if (!datosPublicacion.titulo) {
-                    console.error('PublicacionService: Error simulado - Título vacío.');
-                    reject({ message: "El título de la publicación es obligatorio." });
+                // ✅ VALIDACIONES EN EL SERVICIO (Backend simulado)
+                const errores = [];
+
+                // Validar título
+                if (!datosPublicacion.titulo || datosPublicacion.titulo.trim() === '') {
+                    errores.push("El título es obligatorio.");
+                } else if (datosPublicacion.titulo.length < 5) {
+                    errores.push("El título debe tener al menos 5 caracteres.");
+                } else if (datosPublicacion.titulo.length > 100) {
+                    errores.push("El título no puede exceder 100 caracteres.");
+                }
+
+                // Validar descripción
+                if (!datosPublicacion.descripcion || datosPublicacion.descripcion.trim() === '') {
+                    errores.push("La descripción es obligatoria.");
+                } else if (datosPublicacion.descripcion.length < 10) {
+                    errores.push("La descripción debe tener al menos 10 caracteres.");
+                } else if (datosPublicacion.descripcion.length > 1000) {
+                    errores.push("La descripción no puede exceder 1000 caracteres.");
+                }
+
+                // Validar precio
+                if (!datosPublicacion.precio || datosPublicacion.precio <= 0) {
+                    errores.push("El precio debe ser mayor a 0.");
+                } else if (datosPublicacion.precio > 1000000) {
+                    errores.push("El precio no puede exceder $1,000,000.");
+                }
+
+                // Validar categoría
+                if (!datosPublicacion.categoria || datosPublicacion.categoria === 'Seleccionar') {
+                    errores.push("Debes seleccionar una categoría válida.");
+                }
+
+                // Validar imágenes
+                if (!datosPublicacion.imagenes || datosPublicacion.imagenes.length === 0) {
+                    errores.push("Debes agregar al menos una imagen.");
+                } else if (datosPublicacion.imagenes.length > 10) {
+                    errores.push("No puedes agregar más de 10 imágenes.");
+                } else {
+                    // Validar tamaño de cada imagen (máx 5MB por imagen)
+                    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+                    const imagenesGrandes = datosPublicacion.imagenes.filter(img => img.size > MAX_SIZE);
+                    if (imagenesGrandes.length > 0) {
+                        errores.push(`Algunas imágenes exceden el tamaño máximo de 5MB.`);
+                    }
+
+                    // Validar tipo de archivo
+                    const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+                    const imagenesInvalidas = datosPublicacion.imagenes.filter(img => !tiposPermitidos.includes(img.type));
+                    if (imagenesInvalidas.length > 0) {
+                        errores.push("Solo se permiten imágenes en formato JPG, PNG, WEBP o GIF.");
+                    }
+                }
+
+                // Validar etiquetas
+                if (datosPublicacion.etiquetas && datosPublicacion.etiquetas.length > 10) {
+                    errores.push("No puedes agregar más de 10 etiquetas.");
+                }
+
+                // Validar tipo de publicación
+                if (!datosPublicacion.tipoPublicacion || !['venta', 'subasta'].includes(datosPublicacion.tipoPublicacion)) {
+                    errores.push("El tipo de publicación debe ser 'venta' o 'subasta'.");
+                }
+
+                // Validar fechas de subasta
+                if (datosPublicacion.tipoPublicacion === 'subasta') {
+                    if (!datosPublicacion.inicioSubasta) {
+                        errores.push("La fecha de inicio de subasta es obligatoria.");
+                    }
+                    if (!datosPublicacion.finSubasta) {
+                        errores.push("La fecha de fin de subasta es obligatoria.");
+                    }
+
+                    if (datosPublicacion.inicioSubasta && datosPublicacion.finSubasta) {
+                        const fechaInicio = new Date(datosPublicacion.inicioSubasta);
+                        const fechaFin = new Date(datosPublicacion.finSubasta);
+                        const ahora = new Date();
+
+                        if (isNaN(fechaInicio.getTime()) || isNaN(fechaFin.getTime())) {
+                            errores.push("Las fechas de subasta no son válidas.");
+                        } else {
+                            if (fechaInicio < ahora) {
+                                errores.push("La fecha de inicio debe ser futura.");
+                            }
+                            if (fechaFin <= fechaInicio) {
+                                errores.push("La fecha de fin debe ser posterior a la fecha de inicio.");
+                            }
+                        }
+                    }
+                }
+
+                // Si hay errores, rechazar
+                if (errores.length > 0) {
+                    console.error('❌ PublicacionService: Errores de validación:', errores);
+                    reject({
+                        message: errores.join(' '),
+                        errores: errores
+                    });
                     return;
                 }
 
@@ -162,15 +289,42 @@ export class PublicacionService {
                 const publicacionCreada = {
                     id: Date.now(),
                     ...datosPublicacion,
-                    fechaCreacion: new Date().toISOString()
+                    fechaCreacion: new Date().toISOString(),
+                    // Convertir las imágenes a URLs simuladas (en un backend real serían URLs del servidor)
+                    imagenes: datosPublicacion.imagenes.map((file, index) =>
+                        URL.createObjectURL(file) // URL temporal para la simulación
+                    )
                 };
 
-                // En un entorno real, aquí se enviarían los datos (incluyendo archivos) a la API.
                 console.log('✅ PublicacionService: Creación simulada exitosa.');
                 resolve(publicacionCreada);
 
-            }, 500); // 0.5 segundos de latencia simulada
+            }, 500);
         });
+    }
+
+
+    static async obtenerPublicacion(id) {
+        const publicacion = publicacionesMock.find(p => p.id === id);
+
+        if (!publicacion) throw new Error("Publicación no encontrada");
+
+        // Se retorna una copia para evitar modificar el mock accidentalmente
+        return JSON.parse(JSON.stringify(publicacion));
+    }
+
+    static async editarPublicacion(id, datosActualizados) {
+        const index = publicacionesMock.findIndex(p => p.id === id);
+
+        if (index === -1) throw new Error("Publicación no encontrada");
+
+        publicacionesMock[index] = {
+            ...publicacionesMock[index],
+            ...datosActualizados
+        };
+
+        // También regresamos una copia
+        return JSON.parse(JSON.stringify(publicacionesMock[index]));
     }
 
     static getPublicacionesPorUsuario(nombreUsuario) {
