@@ -14,6 +14,10 @@ export class PublicacionService {
         const userJuan = new Usuario(103, "Juan", "Pérez");
         userJuan.fotoPerfil = "./src/assets/logoBlanco.png"; 
         userJuan.puntuacion = 3.5;
+
+        const userPedro = new Usuario(1, "Pedro", "Sola");
+        userPedro.fotoPerfil = "https://i.pravatar.cc/150?img=12";
+        userPedro.puntuacion = 4.9;
         
         const PublicacionList = [
             new Publicacion(
@@ -105,6 +109,16 @@ export class PublicacionService {
                 ["Moda", "Deportes"],
                 "Venta",
                 userMaria
+            ),
+            new Publicacion(
+                10,
+                "Tablet Samsung Galaxy Tab S6",
+                "Incluye S Pen, 128GB de almacenamiento, color azul nube. Poco uso.",
+                "$6,800",
+                "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=500&h=500&fit=crop",
+                ["Electrónica", "Hogar"],
+                "Subasta",
+                userPedro
             )
         ];
 
@@ -147,5 +161,10 @@ export class PublicacionService {
 
             }, 500); // 0.5 segundos de latencia simulada
         });
+    }
+
+    static getPublicacionesPorUsuario(nombreUsuario) {
+        const todas = this.getPublicaciones();
+        return todas.filter(p => p.usuario.nombres === nombreUsuario);
     }
 }

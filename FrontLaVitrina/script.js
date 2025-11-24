@@ -19,6 +19,7 @@ import { ChatsPage } from './src/pages/chats/chats.page.js';
 import { CrearPublicacionPage } from "./src/pages/crearPublicacion/crearPublicacion.page.js";
 import { EditarPublicacionPage } from "./src/pages/editarPublicacion/editarPublicacion.page.js";
 import { AgregarReseniaPage } from "./src/pages/agregarResenia/agregarResenia.page.js";
+import { MisPublicacionesPage } from './src/pages/misPublicaciones/misPublicaciones.page.js';
 
 //definir componentes
 window.customElements.define('sidebar-info', SidebarComponent);
@@ -41,6 +42,7 @@ window.customElements.define('chats-page', ChatsPage);
 window.customElements.define('crear-publicacion-page', CrearPublicacionPage);
 window.customElements.define('editar-publicacion-page', EditarPublicacionPage);
 window.customElements.define('agregar-resenia-page', AgregarReseniaPage);
+window.customElements.define('mis-publicaciones-page', MisPublicacionesPage);
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -90,9 +92,9 @@ document.addEventListener('DOMContentLoaded', function () {
         showContent('resenias-info', datos);
     });
 
-    page('/detalle-publicacion', () => {
+    page('/mis-publicaciones', () => {
         toggleNav(true);
-        showContent('detalle-publicacion-info');
+        showContent('mis-publicaciones-page');
     });
 
     page('*', () => {
