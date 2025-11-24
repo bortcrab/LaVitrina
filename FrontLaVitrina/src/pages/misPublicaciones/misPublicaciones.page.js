@@ -69,14 +69,15 @@ export class MisPublicacionesPage extends HTMLElement {
         }
 
         return products.map(product => `
-            <publicacion-info 
+            <publicacionOpciones-info 
                 id="${product.id}"
                 titulo="${product.titulo}"
                 descripcion="${product.descripcion}"
                 precio="${product.precio}"
                 imagen="${product.imagen}"
-                estado="${product.estado}" 
-            ></publicacion-info>
+                estado="${product.estado}"
+                vendido="${product.vendido || false}"
+            ></publicacionOpciones-info>
         `).join('');
     }
 
