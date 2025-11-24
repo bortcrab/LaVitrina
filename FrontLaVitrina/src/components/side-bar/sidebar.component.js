@@ -20,9 +20,20 @@ export class SidebarComponent extends HTMLElement {
                 </div>
                 <div class="div-buttons">
                     <ul>
-                        <li><a href="/home-page" class="side-bar-button"><img src="./src/assets/inicioNegro.png" alt="Imagen inicio">Inicio</a></li>
-                        <li><a href="/chats" class="side-bar-button"><img src="./src/assets/chatsNegro.png" alt="Imagen chats">Chats</a></li>
-                        <li><a href="#" class="side-bar-button"><img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones</a></li>
+                        <li>
+                            <a href="#" class="side-bar-button" data-route="/home-page">
+                                <img src="./src/assets/inicioNegro.png" alt="Imagen inicio">Inicio
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="side-bar-button" data-route="/chats">
+                                <img src="./src/assets/chatsNegro.png" alt="Imagen chats">Chats
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="side-bar-button" data-route="/perfil"> <img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -35,6 +46,7 @@ export class SidebarComponent extends HTMLElement {
 
     #attachEventListeners(shadow) {
         const links = shadow.querySelectorAll('a[data-route]');
+        
         links.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();

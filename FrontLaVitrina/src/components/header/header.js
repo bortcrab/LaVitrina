@@ -22,7 +22,7 @@ export class HeaderComponent extends HTMLElement {
                     <img src="https://i.pravatar.cc/150?img=5" alt="Perfil" class="user-avatar">
                 </div>
         </header>
-        `
+        `;
         
         const userInfo = shadow.getElementById('userInfo');
         if (userInfo) {
@@ -30,7 +30,7 @@ export class HeaderComponent extends HTMLElement {
                 page('/perfil');
             });
         }
-    };
+    }
 
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
