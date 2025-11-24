@@ -15,8 +15,7 @@ export class PublicacionComponent extends HTMLElement {
         const imagen = this.getAttribute('imagen');
         const estado = this.getAttribute('estado');
 
-        const publicacion = new Publicacion(id, titulo, descripcion, precio, imagen, estado);
-        
+        const publicacion = new Publicacion(id, titulo, descripcion, precio, imagen, [], estado);
         this.#agregarEstilos(shadow);
         this.#render(shadow, publicacion);
     }
