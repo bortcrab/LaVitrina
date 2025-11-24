@@ -27,15 +27,15 @@ export class RegistrarUsuarioComponent extends HTMLElement {
                     <form id="formPaso1">
                         <div class="input-group">
                             <label>Nombre</label>
-                            <input type="text" id="nombres" placeholder="Nombres" required>
+                            <input type="text" id="nombres" maxlength="255" placeholder="Nombres" required>
                         </div>
 
                         <div class="input-row">
                             <div class="input-group half">
-                                <input type="text" id="apellidoPaterno" placeholder="Apellido paterno" required>
+                                <input type="text" id="apellidoPaterno" maxlength="255" placeholder="Apellido paterno" required>
                             </div>
                             <div class="input-group half">
-                                <input type="text" id="apellidoMaterno" placeholder="Apellido materno" required>
+                                <input type="text" id="apellidoMaterno" maxlength="255" placeholder="Apellido materno" required>
                             </div>
                         </div>
 
@@ -59,7 +59,7 @@ export class RegistrarUsuarioComponent extends HTMLElement {
 
                         <div class="input-group">
                             <label>Número de celular</label>
-                            <input type="tel" id="telefono" placeholder="###-###-####" required>
+                            <input type="tel" id="telefono" maxlength="10" placeholder="###-###-####" required>
                         </div>
 
                         <button type="submit">Siguiente</button>
@@ -97,17 +97,17 @@ export class RegistrarUsuarioComponent extends HTMLElement {
 
                         <div class="input-group">
                             <label>Correo electrónico</label>
-                            <input type="email" id="correo" placeholder="ejemplo@direccion.com" required>
+                            <input type="email" id="correo" maxlength="100" placeholder="ejemplo@direccion.com" required>
                         </div>
 
                         <div class="input-group">
                             <label>Contraseña</label>
-                            <input type="password" id="contrasenia" placeholder="********" required>
+                            <input type="password" id="contrasenia" maxlength="30"  placeholder="********" required>
                         </div>
 
                         <div class="input-group">
                             <label>Confirmar contraseña</label>
-                            <input type="password" id="confirmarContrasenia" placeholder="********" required>
+                            <input type="password" id="confirmarContrasenia" maxlength="30" placeholder="********" required>
                         </div>
 
                         <div class="error-message" id="errorMessage"></div>
@@ -246,11 +246,9 @@ export class RegistrarUsuarioComponent extends HTMLElement {
             return;
         }
 
-        // Obtener foto (si existe)
         const photoInput = shadow.getElementById('photoInput');
         const fotoPerfil = photoInput.files[0] ? URL.createObjectURL(photoInput.files[0]) : null;
 
-        // Disparar evento con todos los datos
         this.dispatchEvent(new CustomEvent('registroSubmit', {
             bubbles: true,
             composed: true,
