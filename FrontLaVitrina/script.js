@@ -68,9 +68,10 @@ document.addEventListener('DOMContentLoaded', function () {
         showContent('crear-publicacion-page');
     });
 
-    page('/editar-publicacion', () => {
+    page('/editar-publicacion/:id', (publicacion) => {
         toggleNav(true);
-        showContent('editar-publicacion-page');
+        const idPublicacion = publicacion.params.id;
+        showContent('editar-publicacion-page', { id: idPublicacion });
     });
 
     page('/agregar-resenia', () => {
@@ -127,6 +128,7 @@ function showContent(contentId, data = {}) {
     if (data.nombres) element.setAttribute('nombres', data.nombres);
     if (data.puntuacion) element.setAttribute('puntuacion', data.puntuacion);
     if (data.fotoPerfil) element.setAttribute('fotoPerfil', data.fotoPerfil);
+    if (data.id) element.setAttribute('id-publicacion', data.id);
 
     container.appendChild(element);
 }
