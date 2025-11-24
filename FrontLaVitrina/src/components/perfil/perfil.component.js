@@ -133,7 +133,16 @@ export class PerfilComponent extends HTMLElement {
         if(verResenias) {
             verResenias.addEventListener('click', (e) => {
                 e.preventDefault();
-                page('/resenias');
+                
+                this.dispatchEvent(new CustomEvent('ver-resenias', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        nombres: `${this.#usuario.nombres} ${this.#usuario.apellidoPaterno}`,
+                        puntuacion: this.#usuario.rating,
+                        fotoPerfil: this.#usuario.avatar || this.#usuario.fotoPerfil
+                    }
+                }));
             });
         }
 
