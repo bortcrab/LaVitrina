@@ -31,7 +31,8 @@ export class SidebarComponent extends HTMLElement {
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="side-bar-button" data-route="/perfil"> <img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones
+                            <a href="#" class="side-bar-button" data-route="/mis-publicaciones"> 
+                                <img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones
                             </a>
                         </li>
                     </ul>
@@ -46,7 +47,7 @@ export class SidebarComponent extends HTMLElement {
 
     #attachEventListeners(shadow) {
         const links = shadow.querySelectorAll('a[data-route]');
-        
+
         links.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();

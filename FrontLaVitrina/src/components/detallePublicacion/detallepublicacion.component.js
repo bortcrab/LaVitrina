@@ -1,42 +1,54 @@
+import { PublicacionService } from "../../services/publicacion.service.js";
+
 export class DetallePublicacionComponent extends HTMLElement {
 
     constructor() {
         super();
+        this.cssUrl = new URL('./detallepublicacion.component.css', import.meta.url).href;
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         const shadow = this.attachShadow({ mode: "open" });
+
+        const id = this.getAttribute('id');
+    
+        const publicacion = await PublicacionService.obtenerPublicacionesPorId(id);
+
         this.#agregaEstilo(shadow);
-        this.#render(shadow);
+        
+        if (publicacion) {
+            this.#render(shadow, publicacion);
+            shadow.innerHTML = "<h2>PENE.</h2>";
+        } else {
+            shadow.innerHTML = "<h2>publicacion no encontrada.</h2>";
+        }
     }
 
-    #render(shadow) {
+    #render(shadow, publicacion) {
         shadow.innerHTML += `
             <div class="container">
                 <div class="publicacion-container">
-                    <h2 id="titulo">iPhone 11 en muy buen estado</h2>
-                    <h3 id="disponibilidad">Artículo disponible</h3>
-                    <img src="https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&h=500&fit=crop" alt="">
+                    <h2 id="titulo">${publicacion.titulo}</h2>
+                    <div class="disponibilidad-fecha">
+                        <h3 id="disponibilidad">${publicacion.estado}</h3>
+                        <h4 id="fechaPublicacion">${publicacion.fechaPublicacion}</h4>
+                    </div>
+                    <img src="${publicacion.imagen}" alt="">
                     <div class="descripcion-info">
                         <h3>Descripción</h3>
-                        <h3 id="precio">$ 5,000.00</h3>
+                        <h3 id="precio">${publicacion.precio}</h3>
                     </div>
                     <p id="descripcion">
-                        Vendo iPhone 11 con todos sus accesorios 📱 <br>
-                        ✅ Cargador <br>
-                        ✅ Audífonos <br>
-                        ✅ Case protector <br>
-                        <br>
-                        La batería tiene 93% de condición, he cuidado muy bien el teléfono.
+                        ${publicacion.descripcion}
                     </p>
                 </div>
                 <div class="mensaje-container">
                     <div class="perfil-info">
-                        <img class="profile-pic" src="FrontLaVitrina/src/assets/pedrito.png" alt="">
+                        <img class="profile-pic" src="${publicacion.usuario.fotoPerfil}" alt="">
                         <div class="user-data">
-                            <h3 id="nombre-perfil">Finn, The Human</h3>
+                            <h3 id="nombre-perfil">${publicacion.usuario.nombres}</h3>
                             <div class="resenias">
-                                <h5 id="calificacion"><span class="estrella">★</span>4.9 (1,204 reseñas)</h5>
+                                <h5 id="calificacion"><span class="estrella">★</span>${publicacion.usuario.puntuacion} (1,204 reseñas)</h5>
                             </div>
                         </div>
                     </div>
@@ -52,7 +64,7 @@ export class DetallePublicacionComponent extends HTMLElement {
     #agregaEstilo(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/detallePublicacion/detallepublicacion.component.css");
+        link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
     }
 }

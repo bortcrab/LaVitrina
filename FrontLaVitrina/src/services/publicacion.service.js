@@ -37,6 +37,23 @@ function delay(ms) {
 }
 export class PublicacionService {
     static getPublicaciones() {
+
+        const userMaria = new Usuario(101, "María", "González");
+        userMaria.fotoPerfil = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop";
+        userMaria.puntuacion = 4.8;
+
+        const userTech = new Usuario(102, "Tech", "Store");
+        userTech.fotoPerfil = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop";
+        userTech.puntuacion = 5.0;
+
+        const userJuan = new Usuario(103, "Juan", "Pérez");
+        userJuan.fotoPerfil = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop";
+        userJuan.puntuacion = 3.5;
+
+        const userPedro = new Usuario(1, "Pedro", "Sola");
+        userPedro.fotoPerfil = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop";
+        userPedro.puntuacion = 4.9;
+
         const PublicacionList = [
             new Publicacion(
                 1,
@@ -46,7 +63,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Venta",
-                "María González"
+                userMaria
             ),
             new Publicacion(
                 2,
@@ -56,7 +73,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop",
                 ["Electrónica", "Hogar"],
                 "Venta",
-                "Tech Store"
+                userTech
             ),
             new Publicacion(
                 3,
@@ -66,7 +83,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=500&fit=crop",
                 ["Inmuebles", "Hogar"],
                 "Venta",
-                "Inmobiliaria del Valle"
+                userTech
             ),
             new Publicacion(
                 4,
@@ -76,7 +93,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=500&h=500&fit=crop",
                 ["Deportes", "Vehículos"],
                 "Venta",
-                "Juan Pérez"
+                userJuan
             ),
             new Publicacion(
                 5,
@@ -86,17 +103,17 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Subasta",
-                "Gamers MX"
+                userJuan
             ),
             new Publicacion(
                 6,
                 "Chamarra de Cuero Vintage",
                 "Talla M, excelente estado, estilo clásico para motociclistas.",
                 "$1,200",
-                "https://images.unsplash.com/photo-1551028919-ac66c5f8b63b?w=500&h=500&fit=crop",
+                "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Moda", "Vehículos"],
                 "Venta",
-                "Vintage Shop"
+                userTech
             ),
             new Publicacion(
                 7,
@@ -106,7 +123,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&h=500&fit=crop",
                 ["Hogar", "Inmuebles"],
                 "Venta",
-                "Muebles Confort"
+                userTech
             ),
             new Publicacion(
                 8,
@@ -116,7 +133,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=500&h=500&fit=crop",
                 ["Vehículos"],
                 "Venta",
-                "Autos del Norte"
+                userMaria
             ),
             new Publicacion(
                 9,
@@ -126,11 +143,27 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&h=500&fit=crop",
                 ["Moda", "Deportes"],
                 "Venta",
-                "Sport Life"
+                userMaria
+            ),
+            new Publicacion(
+                10,
+                "Tablet Samsung Galaxy Tab S6",
+                "Incluye S Pen, 128GB de almacenamiento, color azul nube. Poco uso.",
+                "$6,800",
+                "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=500&h=500&fit=crop",
+                ["Electrónica", "Hogar"],
+                "Subasta",
+                userPedro
             )
         ];
 
+
         return PublicacionList;
+    }
+
+    static async obtenerPublicacionesPorId(id) {
+        const productos = this.getPublicaciones();
+        return productos.find(p => p.id == id);
     }
 
     static crearPublicacion(datosPublicacion) {
@@ -284,4 +317,8 @@ export class PublicacionService {
         return JSON.parse(JSON.stringify(publicacionesMock[index]));
     }
 
+    static getPublicacionesPorUsuario(nombreUsuario) {
+        const todas = this.getPublicaciones();
+        return todas.filter(p => p.usuario.nombres === nombreUsuario);
+    }
 }

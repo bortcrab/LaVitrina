@@ -1,21 +1,26 @@
 import { PublicacionService } from '../../services/publicacion.service.js';
+import { IniciarSesionService } from '../../services/iniciarSesion.service.js';
 
-export class HomePage extends HTMLElement {
+export class MisPublicacionesPage extends HTMLElement {
     constructor() {
         super();
-        this.allPublicaciones = [];
+        this.misPublicaciones = [];
         this.filteredProducts = [];
         this.uniqueTags = [];     
         this.activeTag = 'Todo';
-        this.cssUrl = new URL('./home.page.css', import.meta.url).href;  
+        this.cssUrl = new URL('./misPublicaciones.page.css', import.meta.url).href;  
     }
 
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
+        
+        const usuarioActivo = IniciarSesionService.obtenerUsuarioActivo();
+        const nombreUsuario = usuarioActivo ? usuarioActivo.nombres : "Pedro"; 
 
-        this.allPublicaciones = PublicacionService.getPublicaciones();
-        this.filteredProducts = [...this.allPublicaciones];
-
+        this.misPublicaciones = PublicacionService.getPublicacionesPorUsuario(nombreUsuario);
+        
+        this.filteredProducts = [...this.misPublicaciones]; 
+        
         this.#extractUniqueTags();
 
         this.#agregarEstilos(shadow);
@@ -24,16 +29,16 @@ export class HomePage extends HTMLElement {
     }
 
     #extractUniqueTags() {
-        const allTags = this.allPublicaciones.flatMap(product => product.etiquetas);
-
-        this.uniqueTags = ['Todo', ...new Set(allTags)];
+        const allTags = this.misPublicaciones.flatMap(product => product.etiquetas);
+        
+        this.uniqueTags = ['Todo', ...new Set(allTags)]; 
     }
 
     #render(shadow) {
         shadow.innerHTML = `
             <section class="home-section">
                 <div class="section-header">
-                    <h2>Inicio</h2>
+                    <h2>Mis Publicaciones</h2>
                 </div>
 
                 <div class="categories-container">
@@ -50,7 +55,7 @@ export class HomePage extends HTMLElement {
                 </div>
             </section>
         `;
-
+        
         this.#agregarEstilos(shadow);
     }
 
@@ -58,33 +63,36 @@ export class HomePage extends HTMLElement {
         if (products.length === 0) {
             return `
                 <div class="no-results">
-                    <p>No hay productos con esta etiqueta.</p>
+                    <p>No tienes publicaciones en esta categoría.</p>
                 </div>
             `;
         }
 
         return products.map(product => `
-            <publicacion-info 
+            <publicacionOpciones-info 
                 id="${product.id}"
                 titulo="${product.titulo}"
                 descripcion="${product.descripcion}"
                 precio="${product.precio}"
                 imagen="${product.imagen}"
-                estado="${product.estado}" 
-            ></publicacion-info>
+                estado="${product.estado}"
+                vendido="${product.vendido || false}"
+            ></publicacionOpciones-info>
         `).join('');
     }
 
     #setupEventListeners(shadow) {
         const categoriesContainer = shadow.querySelector('.categories-container');
         const productsGrid = shadow.getElementById('productsGrid');
+
         productsGrid.addEventListener('publicacionClick', (e) => {
             const idPublicacion = e.detail.publicacion.id;
             page(`/detalle-publicacion/${idPublicacion}`);
         });
+        
         categoriesContainer.addEventListener('click', (e) => {
             const button = e.target.closest('.filter-pill');
-
+            
             if (button) {
                 const tag = button.dataset.tag;
                 this.#filterBy(tag, shadow);
@@ -96,9 +104,9 @@ export class HomePage extends HTMLElement {
         this.activeTag = tag;
 
         if (tag === 'Todo') {
-            this.filteredProducts = this.allPublicaciones;
+            this.filteredProducts = this.misPublicaciones;
         } else {
-            this.filteredProducts = this.allPublicaciones.filter(product =>
+            this.filteredProducts = this.misPublicaciones.filter(product => 
                 product.etiquetas.includes(tag)
             );
         }
@@ -117,7 +125,7 @@ export class HomePage extends HTMLElement {
     }
 
     #agregarEstilos(shadow) {
-        if (!shadow.querySelector('link[href="./src/pages/home/home.page.css"]')) {
+        if (!shadow.querySelector('link')) {
             let link = document.createElement("link");
             link.setAttribute("rel", "stylesheet");
             link.setAttribute("href", this.cssUrl);
