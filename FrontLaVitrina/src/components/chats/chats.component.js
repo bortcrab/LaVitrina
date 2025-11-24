@@ -14,9 +14,8 @@ export class ChatsComponent extends HTMLElement {
     async connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
         this.#agregarEstilos(shadow);
-        
         await this.#cargarChats();
-        
+
         if (this.chats.length > 0) {
             this.chatActual = this.chats[0];
             await this.#cargarMensajes(this.chatActual.id);
@@ -62,12 +61,18 @@ export class ChatsComponent extends HTMLElement {
                 </div>
             </div>
         `;
+        shadow.innerHTML = '';
         shadow.appendChild(container.firstElementChild);
+        this.#agregarEstilos(shadow);
     }
 
     #renderChatsLista() {
+        if (!this.chats || this.chats.length === 0) {
+            return '<div class="chat-vacio"><p>No tienes chats.</p></div>';
+        }
+
         return this.chats.map(chat => `
-            <div class="chat-item ${chat.id === this.chatActual?.id ? 'active' : ''}" data-chat-id="${chat.id}">
+            <div class="chat-item ${this.chatActual && chat.id === this.chatActual.id ? 'active' : ''}" data-chat-id="${chat.id}">
                 <img src="${chat.avatar}" alt="${chat.nombre}" class="chat-avatar">
                 <div class="chat-info">
                     <div class="chat-nombre-linea">
@@ -90,6 +95,8 @@ export class ChatsComponent extends HTMLElement {
     }
 
     #renderConversacion() {
+        if (!this.chatActual) return '';
+
         return `
             <div class="conversacion-header">
                 <img src="${this.chatActual.avatar}" alt="${this.chatActual.nombre}" class="conversacion-avatar">
@@ -126,11 +133,16 @@ export class ChatsComponent extends HTMLElement {
     }
 
     #renderMensajes() {
+        if (!this.mensajes || this.mensajes.length === 0) {
+            return '<div class="chat-vacio"><p>No hay mensajes aún.</p></div>';
+        }
+
         return this.mensajes.map(mensaje => `
             <div class="mensaje ${mensaje.enviado ? 'enviado' : 'recibido'}">
                 <div class="mensaje-bubble">
-                    ${mensaje.texto || ''}
-                    ${mensaje.imagenes ? `
+                    ${mensaje.texto ? `<div>${mensaje.texto}</div>` : ''}
+                    
+                    ${mensaje.imagenes && mensaje.imagenes.length > 0 ? `
                         <div class="mensaje-imagenes">
                             ${mensaje.imagenes.map(img => `
                                 <img src="${img}" alt="Imagen" class="mensaje-imagen">
@@ -150,7 +162,6 @@ export class ChatsComponent extends HTMLElement {
                 const chatId = parseInt(item.dataset.chatId);
                 this.chatActual = this.chats.find(c => c.id === chatId);
                 await this.#cargarMensajes(chatId);
-                
                 shadow.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 
@@ -163,18 +174,14 @@ export class ChatsComponent extends HTMLElement {
         }
     }
 
-    async #actualizarConversacion(shadow) {
+    #actualizarConversacion(shadow) {
         const conversacionContainer = shadow.getElementById('chatConversacion');
         if (conversacionContainer) {
-            conversacionContainer.innerHTML = this.#renderConversacion();
+            conversacionContainer.innerHTML = this.chatActual ? this.#renderConversacion() : this.#renderVacio();
             
-            this.#attachConversacionListeners(shadow);
-            
-            const mensajesContainer = shadow.getElementById('mensajesContainer');
-            if (mensajesContainer) {
-                setTimeout(() => {
-                    mensajesContainer.scrollTop = mensajesContainer.scrollHeight;
-                }, 100);
+            if (this.chatActual) {
+                this.#attachConversacionListeners(shadow);
+                this.#scrollToBottom(shadow);
             }
         }
     }
@@ -213,20 +220,30 @@ export class ChatsComponent extends HTMLElement {
 
         try {
             await ChatService.enviarMensaje(this.chatActual.id, texto);
-            
             await this.#cargarMensajes(this.chatActual.id);
-            
             mensajeInput.value = '';
             this.#actualizarConversacion(shadow);
+            
         } catch (error) {
             console.error('Error al enviar mensaje:', error);
         }
     }
 
+    #scrollToBottom(shadow) {
+        const mensajesContainer = shadow.getElementById('mensajesContainer');
+        if (mensajesContainer) {
+            setTimeout(() => {
+                mensajesContainer.scrollTop = mensajesContainer.scrollHeight;
+            }, 50);
+        }
+    }
+
     #agregarEstilos(shadow) {
-        let link = document.createElement("link");
-        link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", this.cssUrl);
-        shadow.appendChild(link);
+        if (!shadow.querySelector(`link[href="${this.cssUrl}"]`)) {
+            let link = document.createElement("link");
+            link.setAttribute("rel", "stylesheet");
+            link.setAttribute("href", this.cssUrl);
+            shadow.appendChild(link);
+        }
     }
 }

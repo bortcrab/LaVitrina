@@ -78,7 +78,7 @@ export class PerfilComponent extends HTMLElement {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="apellidoMaterno">Apellido Paterno</label>
+                                <label for="apellidoMaterno">Apellido Materno</label>
                                 <input type="text" id="apellidoMaterno" value="${this.usuario.apellidoMaterno}" disabled>
                             </div>
                             <div class="form-group">
@@ -93,8 +93,8 @@ export class PerfilComponent extends HTMLElement {
                                 <input type="password" id="contraseña" value="****************" disabled>
                             </div>
                             <div class="form-group">
-                                <label for="celular">Celular</label>
-                                <input type="tel" id="celular" value="${this.usuario.celular}" disabled>
+                                <label for="telefono">Teléfono</label>
+                                <input type="tel" id="telefono" value="${this.usuario.telefono}" disabled>
                             </div>
                         </div>
 
@@ -114,7 +114,6 @@ export class PerfilComponent extends HTMLElement {
 
     #attachEventListeners(shadow) {
         const btnEditar = shadow.getElementById('btnEditar');
-        const btnGuardar = shadow.getElementById('btnGuardar');
         const formPerfil = shadow.getElementById('formPerfil');
         const btnEditarAvatar = shadow.getElementById('btnEditarAvatar');
         const fileAvatar = shadow.getElementById('fileAvatar');
@@ -122,7 +121,8 @@ export class PerfilComponent extends HTMLElement {
         const verResenias = shadow.getElementById('verResenias');
 
         if(btnEditar) {
-            btnEditar.addEventListener('click', () => {
+            btnEditar.addEventListener('click', (e) => {
+                e.preventDefault();
                 this.editMode = !this.editMode;
                 this.#toggleEditMode(shadow);
             });
@@ -161,13 +161,11 @@ export class PerfilComponent extends HTMLElement {
     }
 
     #toggleEditMode(shadow) {
-        const inputs = shadow.querySelectorAll('input:not(#fileAvatar)');
+        const inputs = shadow.querySelectorAll('input:not(#fileAvatar):not(#fechaNacimiento)');
         const btnGuardar = shadow.getElementById('btnGuardar');
 
         inputs.forEach(input => {
-            if (input.id !== 'fechaNacimiento') {
-                input.disabled = !this.editMode;
-            }
+            input.disabled = !this.editMode;
         });
 
         if(btnGuardar) btnGuardar.style.display = this.editMode ? 'block' : 'none';
@@ -179,19 +177,21 @@ export class PerfilComponent extends HTMLElement {
             apellidoPaterno: shadow.getElementById('apellidoPaterno').value,
             apellidoMaterno: shadow.getElementById('apellidoMaterno').value,
             correo: shadow.getElementById('correo').value,
-            celular: shadow.getElementById('celular').value,
-            contraseña: shadow.getElementById('contraseña').value !== '****************' 
+            telefono: shadow.getElementById('telefono').value,
+            contrasenia: shadow.getElementById('contraseña').value !== '****************' 
                 ? shadow.getElementById('contraseña').value 
                 : undefined 
         };
 
+        if (datosActualizados.contrasenia === undefined) {
+            delete datosActualizados.contrasenia;
+        }
+
         try {
             await PerfilService.actualizarPerfil(datosActualizados);
-            
             alert('Perfil actualizado correctamente');
             this.editMode = false;
             this.#toggleEditMode(shadow);
-            
             await this.#cargarDatosUsuario();
             
         } catch (error) {
