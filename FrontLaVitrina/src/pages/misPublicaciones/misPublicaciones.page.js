@@ -4,9 +4,9 @@ import { IniciarSesionService } from '../../services/iniciarSesion.service.js';
 export class MisPublicacionesPage extends HTMLElement {
     constructor() {
         super();
-        this.myProducts = [];
+        this.misPublicaciones = [];
         this.filteredProducts = [];
-        this.uniqueTags = [];       
+        this.uniqueTags = [];     
         this.activeTag = 'Todo';
         this.cssUrl = new URL('./misPublicaciones.page.css', import.meta.url).href;  
     }
@@ -15,11 +15,11 @@ export class MisPublicacionesPage extends HTMLElement {
         const shadow = this.attachShadow({ mode: 'open' });
         
         const usuarioActivo = IniciarSesionService.obtenerUsuarioActivo();
-        const nombreUsuario = usuarioActivo ? usuarioActivo.nombres : "Pedro Sola";
+        const nombreUsuario = usuarioActivo ? usuarioActivo.nombres : "Pedro"; 
 
-        this.myProducts = PublicacionService.getPublicacionesPorUsuario(nombreUsuario);
+        this.misPublicaciones = PublicacionService.getPublicacionesPorUsuario(nombreUsuario);
         
-        this.filteredProducts = [...this.myProducts]; 
+        this.filteredProducts = [...this.misPublicaciones]; 
         
         this.#extractUniqueTags();
 
@@ -29,7 +29,8 @@ export class MisPublicacionesPage extends HTMLElement {
     }
 
     #extractUniqueTags() {
-        const allTags = this.myProducts.flatMap(product => product.etiquetas);
+        const allTags = this.misPublicaciones.flatMap(product => product.etiquetas);
+        
         this.uniqueTags = ['Todo', ...new Set(allTags)]; 
     }
 
@@ -62,7 +63,7 @@ export class MisPublicacionesPage extends HTMLElement {
         if (products.length === 0) {
             return `
                 <div class="no-results">
-                    <p>No tienes publicaciones con esta etiqueta.</p>
+                    <p>No tienes publicaciones en esta categoría.</p>
                 </div>
             `;
         }
@@ -81,6 +82,12 @@ export class MisPublicacionesPage extends HTMLElement {
 
     #setupEventListeners(shadow) {
         const categoriesContainer = shadow.querySelector('.categories-container');
+        const productsGrid = shadow.getElementById('productsGrid');
+
+        productsGrid.addEventListener('publicacionClick', (e) => {
+            const idPublicacion = e.detail.publicacion.id;
+            page(`/detalle-publicacion/${idPublicacion}`);
+        });
         
         categoriesContainer.addEventListener('click', (e) => {
             const button = e.target.closest('.filter-pill');
@@ -96,9 +103,9 @@ export class MisPublicacionesPage extends HTMLElement {
         this.activeTag = tag;
 
         if (tag === 'Todo') {
-            this.filteredProducts = this.myProducts;
+            this.filteredProducts = this.misPublicaciones;
         } else {
-            this.filteredProducts = this.myProducts.filter(product => 
+            this.filteredProducts = this.misPublicaciones.filter(product => 
                 product.etiquetas.includes(tag)
             );
         }
@@ -117,9 +124,11 @@ export class MisPublicacionesPage extends HTMLElement {
     }
 
     #agregarEstilos(shadow) {
-        let link = document.createElement("link");
-        link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", this.cssUrl);
-        shadow.appendChild(link);
+        if (!shadow.querySelector('link')) {
+            let link = document.createElement("link");
+            link.setAttribute("rel", "stylesheet");
+            link.setAttribute("href", this.cssUrl);
+            shadow.appendChild(link);
+        }
     }
 }
