@@ -18,10 +18,10 @@ export class DetallePublicacionComponent extends HTMLElement {
         
         if (publicacion) {
             this.#render(shadow, publicacion);
-            shadow.innerHTML = "<h2>PENE.</h2>";
         } else {
             shadow.innerHTML = "<h2>publicacion no encontrada.</h2>";
         }
+        this.#agregarEventListeners(shadow);
     }
 
     #render(shadow, publicacion) {
@@ -31,7 +31,7 @@ export class DetallePublicacionComponent extends HTMLElement {
                     <h2 id="titulo">${publicacion.titulo}</h2>
                     <div class="disponibilidad-fecha">
                         <h3 id="disponibilidad">${publicacion.estado}</h3>
-                        <h4 id="fechaPublicacion">${publicacion.fechaPublicacion}</h4>
+                        <h4 id="fechaPublicacion">${publicacion.fechaPublicacion.getDate() + '-' + (publicacion.fechaPublicacion.getMonth() + 1) + '-' + publicacion.fechaPublicacion.getFullYear()}</h4>
                     </div>
                     <img src="${publicacion.imagen}" alt="">
                     <div class="descripcion-info">
@@ -42,23 +42,36 @@ export class DetallePublicacionComponent extends HTMLElement {
                         ${publicacion.descripcion}
                     </p>
                 </div>
-                <div class="mensaje-container">
-                    <div class="perfil-info">
-                        <img class="profile-pic" src="${publicacion.usuario.fotoPerfil}" alt="">
-                        <div class="user-data">
-                            <h3 id="nombre-perfil">${publicacion.usuario.nombres}</h3>
-                            <div class="resenias">
-                                <h5 id="calificacion"><span class="estrella">★</span>${publicacion.usuario.puntuacion} (1,204 reseñas)</h5>
+                <div class="derecha">
+                    ${publicacion.estado === 'Subasta' ? '<subasta-card-info></subasta-card-info>' : ''}
+
+                    <div class="mensaje-container">
+                        <div class="perfil-info">
+                            <img class="profile-pic" src="${publicacion.usuario.fotoPerfil}" alt="">
+                            <div class="user-data">
+                                <h3 id="nombre-perfil">${publicacion.usuario.nombres}</h3>
+                                <div class="resenias">
+                                    <h5 id="calificacion"><span class="estrella">★</span>${publicacion.usuario.puntuacion} (1,204 reseñas)</h5>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <hr class="line">
-                    <div class="button">
-                        <button id="btn-enviar-mensaje">Enviar mensaje</button>
+                        <hr class="line">
+                        <div class="button">
+                            <button id="btn-enviar-mensaje">Enviar mensaje</button>
+                        </div>
                     </div>
                 </div>
             </div>
 		`;
+    }
+
+    #agregarEventListeners(shadow) {
+        const btnEnviarMensaje = shadow.getElementById('btn-enviar-mensaje');
+
+        btnEnviarMensaje.addEventListener('click', (e) => {
+            e.preventDefault();
+            page("/chats");
+        });
     }
 
     #agregaEstilo(shadow) {

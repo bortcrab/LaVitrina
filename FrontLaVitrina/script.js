@@ -10,6 +10,7 @@ import { IniciarSesionComponent } from "./src/components/iniciarSesion/iniciarSe
 import { ReseniasComponent } from "./src/components/resenias/resenias.component.js";
 import { DetallePublicacionComponent } from "./src/components/detallePublicacion/detallepublicacion.component.js";
 import { ReseniaCardComponent } from "./src/components/reseniaCard/reseniacard.component.js";
+import { SubastaCardComponent } from "./src/components/subastaCard/subastacard.component.js";
 
 //Pages
 import { HomePage } from './src/pages/home/home.page.js';
@@ -34,6 +35,7 @@ window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
 window.customElements.define('resenias-info', ReseniasComponent);
 window.customElements.define('detalle-publicacion-info', DetallePublicacionComponent);
 window.customElements.define('resenia-card-info', ReseniaCardComponent);
+window.customElements.define('subasta-card-info', SubastaCardComponent);
 
 //definir pages
 window.customElements.define('home-page', HomePage);
@@ -128,7 +130,7 @@ function showContent(contentId, data = {}) {
     if (data.nombres) element.setAttribute('nombres', data.nombres);
     if (data.puntuacion) element.setAttribute('puntuacion', data.puntuacion);
     if (data.fotoPerfil) element.setAttribute('fotoPerfil', data.fotoPerfil);
-    if (data.id) element.setAttribute('id-publicacion', data.id);
+    if (data.id) element.setAttribute('id', data.id);
 
     container.appendChild(element);
 }

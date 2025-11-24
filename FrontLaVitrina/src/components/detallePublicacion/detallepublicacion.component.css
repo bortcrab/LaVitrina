@@ -34,6 +34,7 @@ body {
 
 .publicacion-container img {
     border-radius: 2rem;
+    margin-top: 1rem;
     width: 100%;
 }
 
@@ -67,7 +68,6 @@ body {
     border-radius: 2rem;
     padding: 1.5rem;
     height: fit-content;
-    width: 30%;
 }
 
 .resenias {
@@ -141,4 +141,10 @@ body {
 
 .user-data h3 {
     margin: 0 ;
+}
+
+.derecha {
+    width: auto;
+    display: flex;
+    flex-direction: column;
 }
