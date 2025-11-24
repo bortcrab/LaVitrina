@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+* {
+  font-family: "Bree Serif", serif;
+}
+
+.contenedor-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  margin-top: 15vh;
+  margin-right: 4vh;
+  margin-left: 4vh;
+  margin-bottom: 1vw;
+  gap: 1rem;
+}
+
+.contenedor {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 1rem;
+  background-color: #FFFFFF;
+  border-color: #CECECE;
+  border-radius: 1rem;
+  gap: 1rem;
+  width: fit-content;
+}
+
+.datos-vendedor {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.1rem;
+  max-width: 350px;
+}
+
+h2,
+h4 {
+  margin-bottom: 0.3rem;
+}
+
+.estrellas {
+  color: #F0A37B;
+  font-size: 1.2rem;
+}
+
+.rating-numero {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.total-reseñas {
+  color: #999;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.3rem;
+}
+
+.rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  background-color: #E62634;
+}
+
+.imagen-vendedor {
+  width: 170px;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.datos {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
+
+#datos-resenia {
+  flex: 1;
+}
+
+h1 {
+  margin: 0;
+}
+
+.contenedor-input {
+  display: flex;
+  flex-direction: column;
+}
+
+input,
+textarea {
+  background-color: #FBFBFB;
+  border: 1.5px solid #CECECE;
+  border-radius: 10px;
+  padding: 0.3rem;
+}
+
+textarea {
+  min-height: 200px;
+}
+
+.btn-agregar {
+  height: 2.5rem;
+  font-size: 1.3rem;
+  background-color: #E62634;
+  border: none;
+  border-radius: 0.8rem;
+  color: #FFFFFF;
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.contenedor-rating-usuario {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rating-usuario {
+    display: flex;
+    gap: 0.2rem;
+}
+
+.estrella {
+    width: 35px; /* Ajusta el tamaño según tus imágenes */
+    height: 35px; /* Ajusta el tamaño según tus imágenes */
+    background-image: url('../../assets/estrellaVacia.png'); /* Usa tu imagen de estrella vacía */
+    background-size: cover;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.estrella.llena {
+    background-image: url('../../assets/estrellaLlena.png'); /* Usa tu imagen de estrella llena */
+}
+
+/* Efecto visual al pasar el ratón */
+.estrella:hover {
+    transform: scale(1.1);
+}

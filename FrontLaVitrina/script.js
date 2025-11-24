@@ -2,7 +2,6 @@
 import { SidebarComponent } from "./src/components/side-bar/sidebar.component.js";
 import { HeaderComponent } from './src/components/header/header.js';
 import { RegistrarUsuarioComponent } from './src/components/registrar/registrar.component.js';
-import { CrearPublicacionComponent } from "./src/components/crearPublicacion/crearPublicacion.component.js";
 import { PublicacionComponent } from "./src/components/publicacionCard/publicacionCard.component.js";
 import { PerfilComponent } from './src/components/perfil/perfil.component.js';
 import { ChatsComponent } from './src/components/chats/chats.component.js';
@@ -18,12 +17,14 @@ import { RegistrarPage } from "./src/pages/registrar.page.js/registrar.page.js";
 import { ReseniasPage } from "./src/pages/resenias/resenias.page.js";
 import { PerfilPage } from './src/pages/perfil/perfil.page.js';
 import { ChatsPage } from './src/pages/chats/chats.page.js';
+import { CrearPublicacionPage } from "./src/pages/crearPublicacion/crearPublicacion.page.js";
+import { EditarPublicacionPage } from "./src/pages/editarPublicacion/editarPublicacion.page.js";
+import { AgregarReseniaPage } from "./src/pages/agregarResenia/agregarResenia.page.js";
 
 //definir componentes
 window.customElements.define('sidebar-info', SidebarComponent);
 window.customElements.define('header-info', HeaderComponent);
 window.customElements.define('registrar-usuario-info', RegistrarUsuarioComponent);
-window.customElements.define('crear-publicacion', CrearPublicacionComponent);
 window.customElements.define('publicacion-info', PublicacionComponent);
 window.customElements.define('perfil-info', PerfilComponent);
 window.customElements.define('chats-info', ChatsComponent);
@@ -39,6 +40,9 @@ window.customElements.define('registrar-page', RegistrarPage);
 window.customElements.define('resenias-page', ReseniasPage);
 window.customElements.define('perfil-page', PerfilPage);
 window.customElements.define('chats-page', ChatsPage);
+window.customElements.define('crear-publicacion-page', CrearPublicacionPage);
+window.customElements.define('editar-publicacion-page', EditarPublicacionPage);
+window.customElements.define('agregar-resenia-page', AgregarReseniaPage);
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -59,7 +63,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     page('/crear-publicacion', () => {
         toggleNav(true);
-        showContent('crear-publicacion');
+        showContent('crear-publicacion-page');
+    });
+
+    page('/editar-publicacion', () => {
+        toggleNav(true);
+        showContent('editar-publicacion-page');
+    });
+
+    page('/agregar-resenia', () => {
+        toggleNav(true);
+        showContent('agregar-resenia-page');
     });
 
     page('/iniciar-sesion', () => {

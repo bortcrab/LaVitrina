@@ -9,7 +9,7 @@ export class PublicacionService {
                 "iPhone 11 color verde, 128GB, batería al 85%, con caja y accesorios originales",
                 "$10,000",
                 "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&h=500&fit=crop",
-                ["Electrónica", "Celulares"], 
+                ["Electrónica", "Celulares"],
                 "Venta",
                 "María González"
             ),
@@ -19,7 +19,7 @@ export class PublicacionService {
                 "MacBook Pro 13 pulgadas, 16GB RAM, 512GB SSD, perfectas condiciones",
                 "$18,500",
                 "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop",
-                ["Electrónica", "Computación"], 
+                ["Electrónica", "Computación"],
                 "Venta",
                 "Tech Store"
             ),
@@ -29,8 +29,8 @@ export class PublicacionService {
                 "2 recámaras, 1 baño, cocina integral, estacionamiento",
                 "$8,000/mes",
                 "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=500&fit=crop",
-                ["Inmuebles", "Renta"], 
-                "Venta", 
+                ["Inmuebles", "Renta"],
+                "Venta",
                 "Inmobiliaria del Valle"
             ),
             new Publicacion(
@@ -39,7 +39,7 @@ export class PublicacionService {
                 "Bicicleta Trek rodada 29, frenos de disco, suspensión delantera",
                 "$7,500",
                 "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=500&h=500&fit=crop",
-                ["Deportes", "Aire Libre"], 
+                ["Deportes", "Aire Libre"],
                 "Venta",
                 "Juan Pérez"
             ),
@@ -49,7 +49,7 @@ export class PublicacionService {
                 "Consola nueva en caja sellada con 2 controles",
                 "$12,000",
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
-                ["Electrónica", "Videojuegos"], 
+                ["Electrónica", "Videojuegos"],
                 "Subasta",
                 "Gamers MX"
             ),
@@ -59,7 +59,7 @@ export class PublicacionService {
                 "Cámara profesional con lente 24-105mm, menos de 5000 disparos",
                 "$45,000",
                 "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&h=500&fit=crop",
-                ["Electrónica", "Fotografía"], 
+                ["Electrónica", "Fotografía"],
                 "Venta",
                 "Photo Pro"
             ),
@@ -69,7 +69,7 @@ export class PublicacionService {
                 "Sala moderna color gris, incluye sofá de 3 plazas y 2 sillones",
                 "$15,000",
                 "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&h=500&fit=crop",
-                ["Hogar", "Muebles"], 
+                ["Hogar", "Muebles"],
                 "Venta",
                 "Muebles Confort"
             ),
@@ -79,7 +79,7 @@ export class PublicacionService {
                 "Seminuevo, automático, único dueño, factura original",
                 "$180,000",
                 "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=500&h=500&fit=crop",
-                ["Vehículos", "Autos"], 
+                ["Vehículos", "Autos"],
                 "Venta",
                 "Autos del Norte"
             ),
@@ -89,12 +89,44 @@ export class PublicacionService {
                 "Escritorio moderno con cajones, perfecto para home office",
                 "$2,500",
                 "https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=500&h=500&fit=crop",
-                ["Oficina", "Muebles"], 
+                ["Oficina", "Muebles"],
                 "Venta",
                 "Office Solutions"
             )
         ];
 
         return PublicacionList;
+    }
+
+    static crearPublicacion(datosPublicacion) {
+        console.log('PublicacionService: Recibiendo datos para crear:', {
+            ...datosPublicacion,
+            // Mostrar solo nombres y tamaños de las imágenes para el log
+            imagenes: datosPublicacion.imagenes.map(f => ({ nombre: f.name, tamaño: f.size }))
+        });
+
+        return new Promise((resolve, reject) => {
+            // Simular un tiempo de espera de 500ms para la red/servidor
+            setTimeout(() => {
+                // Validación MOCK: Si no hay título, simular un error
+                if (!datosPublicacion.titulo) {
+                    console.error('PublicacionService: Error simulado - Título vacío.');
+                    reject({ message: "El título de la publicación es obligatorio." });
+                    return;
+                }
+
+                // Generar la publicación simulada con un ID
+                const publicacionCreada = {
+                    id: Date.now(),
+                    ...datosPublicacion,
+                    fechaCreacion: new Date().toISOString()
+                };
+
+                // En un entorno real, aquí se enviarían los datos (incluyendo archivos) a la API.
+                console.log('✅ PublicacionService: Creación simulada exitosa.');
+                resolve(publicacionCreada);
+
+            }, 500); // 0.5 segundos de latencia simulada
+        });
     }
 }
