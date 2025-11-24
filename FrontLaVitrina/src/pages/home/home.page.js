@@ -3,7 +3,7 @@ import { PublicacionService } from '../../services/publicacion.service.js';
 export class HomePage extends HTMLElement {
     constructor() {
         super();
-        this.allProducts = [];
+        this.allPublicaciones = [];
         this.filteredProducts = [];
         this.uniqueTags = [];
         this.activeTag = 'Todo';
@@ -12,8 +12,8 @@ export class HomePage extends HTMLElement {
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
 
-        this.allProducts = PublicacionService.getPublicaciones();
-        this.filteredProducts = [...this.allProducts];
+        this.allPublicaciones = PublicacionService.getPublicaciones();
+        this.filteredProducts = [...this.allPublicaciones];
 
         this.#extractUniqueTags();
 
@@ -23,7 +23,7 @@ export class HomePage extends HTMLElement {
     }
 
     #extractUniqueTags() {
-        const allTags = this.allProducts.flatMap(product => product.etiquetas);
+        const allTags = this.allPublicaciones.flatMap(product => product.etiquetas);
 
         this.uniqueTags = ['Todo', ...new Set(allTags)];
     }
@@ -95,9 +95,9 @@ export class HomePage extends HTMLElement {
         this.activeTag = tag;
 
         if (tag === 'Todo') {
-            this.filteredProducts = this.allProducts;
+            this.filteredProducts = this.allPublicaciones;
         } else {
-            this.filteredProducts = this.allProducts.filter(product =>
+            this.filteredProducts = this.allPublicaciones.filter(product =>
                 product.etiquetas.includes(tag)
             );
         }
