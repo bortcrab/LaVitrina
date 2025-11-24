@@ -1,6 +1,9 @@
-export class CrearPublicacionComponent extends HTMLElement {
+import { PublicacionService } from '../../services/publicacion.service.js';
+
+export class CrearPublicacionPage extends HTMLElement {
     constructor() {
         super();
+        this.archivosImagenes = [];
     }
 
     connectedCallback() {
@@ -87,6 +90,8 @@ export class CrearPublicacionComponent extends HTMLElement {
             const files = event.target.files;
 
             if (files.length === 0) return;
+            // Almacenar los archivos en la propiedad del componente
+            this.archivosImagenes.push(...Array.from(files));
 
             let imagesToLoad = files.length;
             let imagesCurrentlyDisplayed = imagenesContenedor.querySelectorAll('.imagen-producto').length;
@@ -177,13 +182,61 @@ export class CrearPublicacionComponent extends HTMLElement {
                 fechasSubasta.className = 'subasta-campos';
             }
         });
-    }
 
+        const btnCrear = shadow.querySelector('.btn-crear');
+        btnCrear.addEventListener('click', async () => {
+            // 1. Recolectar datos del formulario
+            const titulo = shadow.getElementById('titulo').value;
+            const descripcion = shadow.getElementById('descripcion').value;
+            const precio = parseFloat(shadow.getElementById('precio').value) || 0;
+            const categoriaElement = shadow.getElementById('categoria');
+            const categoria = categoriaElement.options[categoriaElement.selectedIndex].text;
+            const tipoPublicacion = shadow.getElementById('venta').checked ? 'venta' : 'subasta';
+
+            const etiquetasElementos = shadow.querySelectorAll('.tag-text');
+            // Mapeamos solo el texto de la etiqueta, eliminando el separador '|'
+            const etiquetas = Array.from(etiquetasElementos).map(el => el.textContent.replace(' | ', '').trim());
+
+            let datosPublicacion = {
+                titulo,
+                descripcion,
+                precio,
+                categoria,
+                tipoPublicacion,
+                etiquetas,
+                imagenes: this.archivosImagenes,
+            };
+
+            // 2. Agregar datos de subasta si aplica
+            if (tipoPublicacion === 'subasta') {
+                const inicioSubasta = shadow.getElementById('inicio-subasta').value;
+                const finSubasta = shadow.getElementById('fin-subasta').value;
+                datosPublicacion.inicioSubasta = inicioSubasta;
+                datosPublicacion.finSubasta = finSubasta;
+            }
+
+            // 3. Llamar al servicio para crear la publicación
+            try {
+                // Llama al servicio MOCK para simular la creación
+                const publicacionCreada = PublicacionService.crearPublicacion(datosPublicacion);
+
+                console.log('Publicación creada. Objeto de respuesta:', publicacionCreada);
+                alert('Publicación creada con éxito.');
+
+                page('/home-page');
+
+            } catch (error) {
+                // Captura el error simulado del servicio
+                console.error('Error al crear la publicación:', error);
+                alert(`Error al crear la publicación: ${error.message || 'Inténtelo de nuevo.'}`);
+            }
+        });
+    }
 
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "FrontLaVitrina/src/components/crearPublicacion/crearPublicacion.component.css");
+        link.setAttribute("href", "FrontLaVitrina/src/pages/crearPublicacion/crearPublicacion.css");
         shadow.appendChild(link);
     }
 }
