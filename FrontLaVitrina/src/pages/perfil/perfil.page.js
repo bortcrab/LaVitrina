@@ -43,5 +43,10 @@ export class PerfilPage extends HTMLElement {
                 alert('No se pudo actualizar el perfil');
             }
         });
+
+        perfilComponent.addEventListener('ver-resenias', (e) => {
+            const datosUsuario = e.detail;
+            page('/resenias', datosUsuario);
+        });
     }
 }
