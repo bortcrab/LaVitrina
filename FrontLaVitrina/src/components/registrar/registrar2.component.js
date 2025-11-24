@@ -2,6 +2,9 @@ export class RegistrarUsuario2Component extends HTMLElement {
     constructor() {
         super();
         this.cssUrl = new URL('./registrar2.component.css', import.meta.url).href;
+        this.logoBlancoURL = new URL('../../assets/logoBlanco.png', import.meta.url).href;
+        this.registrarURL = new URL('../../assets/registrar.png', import.meta.url).href;
+        this.registrar2URL = new URL('../../assets/registrar2.png', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -61,13 +64,13 @@ export class RegistrarUsuario2Component extends HTMLElement {
     </div>
 
     <div class="image-side side-div">
-        <img src="../../assets/registrar2.png" alt="Productos en línea">
+        <img src="${this.registrar2URL}" alt="Productos en línea">
 
         <div class="overlay"></div>
 
         <div class="content-over-image">
             <div class="logo-container">
-                <img class="brand-logo" src="../../assets/logoBlanco.png" alt="La Vitrina">
+                <img class="brand-logo" src="${this.logoBlancoURL}" alt="La Vitrina">
             </div>
             <h2 class="brand-slogan">Vender Productos en Línea Nunca<br>Había Sido Tan Fácil.</h2>
         </div>
