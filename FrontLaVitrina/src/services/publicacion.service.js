@@ -1,7 +1,20 @@
 import { Publicacion } from '../models/publicacion.js';
-
+import { Usuario } from '../models/usuario.js';
 export class PublicacionService {
     static getPublicaciones() {
+
+        const userMaria = new Usuario(101, "María", "González");
+        userMaria.fotoPerfil = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop";
+        userMaria.puntuacion = 4.8;
+
+        const userTech = new Usuario(102, "Tech", "Store");
+        userTech.fotoPerfil = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop";
+        userTech.puntuacion = 5.0;
+
+        const userJuan = new Usuario(103, "Juan", "Pérez");
+        userJuan.fotoPerfil = "./src/assets/logoBlanco.png"; 
+        userJuan.puntuacion = 3.5;
+        
         const PublicacionList = [
             new Publicacion(
                 1,
@@ -11,7 +24,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Venta",
-                "María González"
+                userMaria
             ),
             new Publicacion(
                 2,
@@ -21,7 +34,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop",
                 ["Electrónica", "Hogar"],
                 "Venta",
-                "Tech Store"
+                userTech
             ),
             new Publicacion(
                 3,
@@ -31,7 +44,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=500&fit=crop",
                 ["Inmuebles", "Hogar"],
                 "Venta",
-                "Inmobiliaria del Valle"
+                userTech
             ),
             new Publicacion(
                 4,
@@ -41,7 +54,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=500&h=500&fit=crop",
                 ["Deportes", "Vehículos"],
                 "Venta",
-                "Juan Pérez"
+                userJuan
             ),
             new Publicacion(
                 5,
@@ -51,7 +64,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Subasta",
-                "Gamers MX"
+             userJuan
             ),
             new Publicacion(
                 6,
@@ -61,7 +74,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1551028919-ac66c5f8b63b?w=500&h=500&fit=crop",
                 ["Moda", "Vehículos"],
                 "Venta",
-                "Vintage Shop"
+               userTech
             ),
             new Publicacion(
                 7,
@@ -71,7 +84,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&h=500&fit=crop",
                 ["Hogar", "Inmuebles"],
                 "Venta",
-                "Muebles Confort"
+                userTech
             ),
             new Publicacion(
                 8,
@@ -81,7 +94,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=500&h=500&fit=crop",
                 ["Vehículos"],
                 "Venta",
-                "Autos del Norte"
+                userMaria
             ),
             new Publicacion(
                 9,
@@ -91,7 +104,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&h=500&fit=crop",
                 ["Moda", "Deportes"],
                 "Venta",
-                "Sport Life"
+                userMaria
             )
         ];
 
