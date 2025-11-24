@@ -13,24 +13,24 @@ export class MisPublicacionesPage extends HTMLElement {
 
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-        
-        const usuarioActivo = IniciarSesionService.obtenerUsuarioActivo();
-        const nombreUsuario = usuarioActivo ? usuarioActivo.nombres : "Pedro"; 
-
-        this.misPublicaciones = PublicacionService.getPublicacionesPorUsuario(nombreUsuario);
-        
-        this.filteredProducts = [...this.misPublicaciones]; 
-        
-        this.#extractUniqueTags();
-
+        this.shadow = shadow;
+        this.#cargarPublicaciones();
         this.#agregarEstilos(shadow);
         this.#render(shadow);
         this.#setupEventListeners(shadow);
     }
 
+    #cargarPublicaciones() {
+        const usuarioActivo = IniciarSesionService.obtenerUsuarioActivo();
+        const nombreUsuario = usuarioActivo ? usuarioActivo.nombres : "Pedro"; 
+
+        this.misPublicaciones = PublicacionService.getPublicacionesPorUsuario(nombreUsuario);
+        this.filteredProducts = [...this.misPublicaciones]; 
+        this.#extractUniqueTags();
+    }
+
     #extractUniqueTags() {
         const allTags = this.misPublicaciones.flatMap(product => product.etiquetas);
-        
         this.uniqueTags = ['Todo', ...new Set(allTags)]; 
     }
 
@@ -69,7 +69,7 @@ export class MisPublicacionesPage extends HTMLElement {
         }
 
         return products.map(product => `
-            <publicacionOpciones-info 
+            <publicacion-opciones-info 
                 id="${product.id}"
                 titulo="${product.titulo}"
                 descripcion="${product.descripcion}"
@@ -77,7 +77,7 @@ export class MisPublicacionesPage extends HTMLElement {
                 imagen="${product.imagen}"
                 estado="${product.estado}"
                 vendido="${product.vendido || false}"
-            ></publicacionOpciones-info>
+            ></publicacion-opciones-info>
         `).join('');
     }
 
@@ -89,6 +89,11 @@ export class MisPublicacionesPage extends HTMLElement {
             const idPublicacion = e.detail.publicacion.id;
             page(`/detalle-publicacion/${idPublicacion}`);
         });
+
+        productsGrid.addEventListener('publicacionOpcionSeleccionada', (e) => {
+            const { action, publicacion } = e.detail;
+            this.#handleAction(action, publicacion);
+        });
         
         categoriesContainer.addEventListener('click', (e) => {
             const button = e.target.closest('.filter-pill');
@@ -98,6 +103,36 @@ export class MisPublicacionesPage extends HTMLElement {
                 this.#filterBy(tag, shadow);
             }
         });
+    }
+
+    #handleAction(action, publicacion) {
+        switch(action) {
+            case 'editar':
+                page(`/editar-publicacion?id=${publicacion.id}`);
+                break;
+                
+            case 'marcar':
+                const publicacionActualizada = PublicacionService.cambiarEstadoVenta(publicacion.id);
+                if (publicacionActualizada) {
+                    alert(`Publicación marcada como ${publicacionActualizada.vendido ? 'vendida' : 'disponible'}`);
+                    this.#cargarPublicaciones();
+                    this.#render(this.shadow);
+                    this.#setupEventListeners(this.shadow);
+                }
+                break;
+                
+            case 'eliminar':
+                if (confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
+                    const eliminada = PublicacionService.eliminarPublicacion(publicacion.id);
+                    if (eliminada) {
+                        alert('Publicación eliminada correctamente');
+                        this.#cargarPublicaciones();
+                        this.#render(this.shadow);
+                        this.#setupEventListeners(this.shadow);
+                    }
+                }
+                break;
+        }
     }
 
     #filterBy(tag, shadow) {

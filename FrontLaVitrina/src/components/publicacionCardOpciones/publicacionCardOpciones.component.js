@@ -103,20 +103,6 @@ export class PublicacionOpcionesComponent extends HTMLElement {
             detail: { action, publicacion }
         });
         this.dispatchEvent(event);
-
-        switch(action) {
-            case 'editar':
-                page('/editar-publicacion');
-                break;
-            case 'marcar':
-                console.log('Cambiar estado de venta');
-                break;
-            case 'eliminar':
-                if (confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
-                    console.log('Eliminar publicación');
-                }
-                break;
-        }
     }
 
     #handleCardClick(publicacion) {

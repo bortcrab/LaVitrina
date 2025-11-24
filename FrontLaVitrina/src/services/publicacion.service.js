@@ -1,5 +1,6 @@
 import { Publicacion } from '../models/publicacion.js';
 import { Usuario } from '../models/usuario.js';
+
 export class PublicacionService {
     static getPublicaciones() {
 
@@ -28,6 +29,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Venta",
+                false,
                 userMaria
             ),
             new Publicacion(
@@ -38,6 +40,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop",
                 ["Electrónica", "Hogar"],
                 "Venta",
+                true,
                 userTech
             ),
             new Publicacion(
@@ -48,6 +51,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=500&fit=crop",
                 ["Inmuebles", "Hogar"],
                 "Venta",
+                false,
                 userTech
             ),
             new Publicacion(
@@ -58,6 +62,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=500&h=500&fit=crop",
                 ["Deportes", "Vehículos"],
                 "Venta",
+                false,
                 userJuan
             ),
             new Publicacion(
@@ -68,6 +73,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Electrónica"],
                 "Subasta",
+                false,
                 userJuan
             ),
             new Publicacion(
@@ -78,6 +84,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
                 ["Moda", "Vehículos"],
                 "Venta",
+                true,
                 userTech
             ),
             new Publicacion(
@@ -88,6 +95,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&h=500&fit=crop",
                 ["Hogar", "Inmuebles"],
                 "Venta",
+                false,
                 userTech
             ),
             new Publicacion(
@@ -98,6 +106,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=500&h=500&fit=crop",
                 ["Vehículos"],
                 "Venta",
+                false,
                 userMaria
             ),
             new Publicacion(
@@ -108,6 +117,7 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&h=500&fit=crop",
                 ["Moda", "Deportes"],
                 "Venta",
+                false,
                 userMaria
             ),
             new Publicacion(
@@ -118,10 +128,10 @@ export class PublicacionService {
                 "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=500&h=500&fit=crop",
                 ["Electrónica", "Hogar"],
                 "Subasta",
+                false,
                 userPedro
             )
         ];
-
 
         return PublicacionList;
     }
@@ -134,37 +144,66 @@ export class PublicacionService {
     static crearPublicacion(datosPublicacion) {
         console.log('PublicacionService: Recibiendo datos para crear:', {
             ...datosPublicacion,
-            // Mostrar solo nombres y tamaños de las imágenes para el log
             imagenes: datosPublicacion.imagenes.map(f => ({ nombre: f.name, tamaño: f.size }))
         });
 
         return new Promise((resolve, reject) => {
-            // Simular un tiempo de espera de 500ms para la red/servidor
             setTimeout(() => {
-                // Validación MOCK: Si no hay título, simular un error
                 if (!datosPublicacion.titulo) {
                     console.error('PublicacionService: Error simulado - Título vacío.');
                     reject({ message: "El título de la publicación es obligatorio." });
                     return;
                 }
 
-                // Generar la publicación simulada con un ID
                 const publicacionCreada = {
                     id: Date.now(),
                     ...datosPublicacion,
+                    vendido: false,
                     fechaCreacion: new Date().toISOString()
                 };
 
-                // En un entorno real, aquí se enviarían los datos (incluyendo archivos) a la API.
                 console.log('✅ PublicacionService: Creación simulada exitosa.');
                 resolve(publicacionCreada);
 
-            }, 500); // 0.5 segundos de latencia simulada
+            }, 500);
         });
     }
 
     static getPublicacionesPorUsuario(nombreUsuario) {
         const todas = this.getPublicaciones();
         return todas.filter(p => p.usuario.nombres === nombreUsuario);
+    }
+
+    static cambiarEstadoVenta(id) {
+        const publicaciones = this.getPublicaciones();
+        const publicacion = publicaciones.find(p => p.id === parseInt(id));
+        if (publicacion) {
+            publicacion.vendido = !publicacion.vendido;
+            console.log(`Publicación ${id} marcada como ${publicacion.vendido ? 'vendida' : 'disponible'}`);
+            return publicacion;
+        }
+        return null;
+    }
+
+    static eliminarPublicacion(id) {
+        console.log(`Eliminando publicación ${id} (simulado)`);
+        return { success: true, id };
+    }
+
+    static filtrarPorEtiqueta(etiqueta) {
+        if (etiqueta === 'Todo') {
+            return this.publicaciones;
+        }
+        return this.publicaciones.filter(pub => 
+            pub.etiquetas.includes(etiqueta)
+        );
+    }
+
+    static filtrarPorEstado(estado) {
+        return this.publicaciones.filter(pub => pub.estado === estado);
+    }
+
+    static filtrarPorDisponibilidad(vendido) {
+        return this.publicaciones.filter(pub => pub.vendido === vendido);
     }
 }
