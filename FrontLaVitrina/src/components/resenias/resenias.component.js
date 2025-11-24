@@ -7,7 +7,6 @@ export class ReseniasComponent extends HTMLElement {
         super();
         this.resenias = [];
         this.cssUrl = new URL('./resenias.component.css', import.meta.url).href;
-        this.imgUrl = new URL('../../assets/pedrito.png', import.meta.url).href;
     }
 
     async connectedCallback() {
@@ -15,11 +14,15 @@ export class ReseniasComponent extends HTMLElement {
 
         await this.#cargarResenias();
 
-        const nombres = this.getAttribute('nombres');
-        const puntuacion = this.getAttribute('puntuacion');
-        const fotoPerfil = this.getAttribute('fotoPerfil');
+        const nombres = this.getAttribute('nombres') || 'Usuario';
+        const puntuacion = this.getAttribute('puntuacion') || '0.0';
+        const fotoPerfil = this.getAttribute('fotoPerfil') || 'https://i.pravatar.cc/150?img=default';
 
-        const usuario = new Usuario(nombres, fotoPerfil, puntuacion)
+        const usuario = {
+            nombres: nombres,
+            fotoPerfil: fotoPerfil,
+            puntuacion: puntuacion
+        };
 
         this.#agregaEstilo(shadow);
         this.#render(shadow, usuario);
