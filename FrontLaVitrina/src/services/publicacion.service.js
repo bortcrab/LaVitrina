@@ -1,41 +1,6 @@
 import { Publicacion } from '../models/publicacion.js';
 import { Usuario } from '../models/usuario.js';
 
-const publicacionesMock = [
-    {
-        id: "1",
-        titulo: "Playera Oversize Negra",
-        descripcion: "Playera estilo streetwear, talla L, algodón suave.",
-        precio: 250,
-        categoria: 3,
-        tipo: "subasta",
-        inicio_subasta: "2025-11-25T10:00",
-        fin_subasta: "2025-11-30T18:00",
-        etiquetas: ["ropa", "negro", "oversize"],
-        imagenes: [
-            "https://picsum.photos/300?random=1",
-            "https://picsum.photos/300?random=2"
-        ]
-    },
-    {
-        id: "2",
-        titulo: "Tenis Nike Dunk Low",
-        descripcion: "Edición limitada, talla 27.5 MX.",
-        precio: 2500,
-        categoria: 5,
-        tipo: "venta",
-        etiquetas: ["tenis", "nike", "streetwear"],
-        imagenes: [
-            "https://picsum.photos/300?random=3",
-            "https://picsum.photos/300?random=4"
-        ]
-    }
-];
-
-// Utilidad para simular tiempo de red
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 export class PublicacionService {
     static getPublicaciones() {
 
@@ -168,7 +133,6 @@ export class PublicacionService {
             )
         ];
 
-
         return PublicacionList;
     }
 
@@ -286,15 +250,11 @@ export class PublicacionService {
                     return;
                 }
 
-                // Generar la publicación simulada con un ID
                 const publicacionCreada = {
                     id: Date.now(),
                     ...datosPublicacion,
-                    fechaCreacion: new Date().toISOString(),
-                    // Convertir las imágenes a URLs simuladas (en un backend real serían URLs del servidor)
-                    imagenes: datosPublicacion.imagenes.map((file, index) =>
-                        URL.createObjectURL(file) // URL temporal para la simulación
-                    )
+                    vendido: false,
+                    fechaCreacion: new Date().toISOString()
                 };
 
                 console.log('✅ PublicacionService: Creación simulada exitosa.');
@@ -331,5 +291,38 @@ export class PublicacionService {
     static getPublicacionesPorUsuario(nombreUsuario) {
         const todas = this.getPublicaciones();
         return todas.filter(p => p.usuario.nombres === nombreUsuario);
+    }
+
+    static cambiarEstadoVenta(id) {
+        const publicaciones = this.getPublicaciones();
+        const publicacion = publicaciones.find(p => p.id === parseInt(id));
+        if (publicacion) {
+            publicacion.vendido = !publicacion.vendido;
+            console.log(`Publicación ${id} marcada como ${publicacion.vendido ? 'vendida' : 'disponible'}`);
+            return publicacion;
+        }
+        return null;
+    }
+
+    static eliminarPublicacion(id) {
+        console.log(`Eliminando publicación ${id} (simulado)`);
+        return { success: true, id };
+    }
+
+    static filtrarPorEtiqueta(etiqueta) {
+        if (etiqueta === 'Todo') {
+            return this.publicaciones;
+        }
+        return this.publicaciones.filter(pub => 
+            pub.etiquetas.includes(etiqueta)
+        );
+    }
+
+    static filtrarPorEstado(estado) {
+        return this.publicaciones.filter(pub => pub.estado === estado);
+    }
+
+    static filtrarPorDisponibilidad(vendido) {
+        return this.publicaciones.filter(pub => pub.vendido === vendido);
     }
 }

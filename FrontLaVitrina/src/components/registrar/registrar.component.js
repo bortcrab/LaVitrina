@@ -280,7 +280,7 @@ export class RegistrarUsuarioComponent extends HTMLElement {
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/registrar/registrar.component.css");
+        link.setAttribute("href", this.cssUrl);
         console.log(link);
         shadow.appendChild(link);
     }
