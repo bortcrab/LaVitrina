@@ -3,6 +3,7 @@ import { Publicacion } from "../../models/publicacion.js";
 export class PublicacionComponent extends HTMLElement {
     constructor() {
         super();
+        this.cssUrl = new URL('./publicacionCard.component.css', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -54,7 +55,7 @@ export class PublicacionComponent extends HTMLElement {
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "./src/components/publicacionCard/publicacionCard.component.css");
+        link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
     }
 }
