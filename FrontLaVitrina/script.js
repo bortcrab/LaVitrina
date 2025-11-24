@@ -70,9 +70,10 @@ document.addEventListener('DOMContentLoaded', function () {
         showContent('registrar-page');
     });
 
-    page('/resenias', () => {
+    page('/resenias', (ctx) => {
         toggleNav(true);
-        showContent('resenias-info');
+        const datos = ctx.state || {}; 
+        showContent('resenias-info', datos);
     })
 
     page('*', () => {
@@ -83,8 +84,17 @@ document.addEventListener('DOMContentLoaded', function () {
     page();
 });
 
-function showContent(contentId) {
-    document.querySelector('.derecha').innerHTML = `<${contentId}></${contentId}>`;
+function showContent(contentId, data = {}) {
+    const container = document.querySelector('.derecha');
+    container.innerHTML = '';
+    
+    const element = document.createElement(contentId);
+    
+    if (data.nombres) element.setAttribute('nombres', data.nombres);
+    if (data.puntuacion) element.setAttribute('puntuacion', data.puntuacion);
+    if (data.fotoPerfil) element.setAttribute('fotoPerfil', data.fotoPerfil);
+
+    container.appendChild(element);
 }
 
 function toggleNav(visible) {
