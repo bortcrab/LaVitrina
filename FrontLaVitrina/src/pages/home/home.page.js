@@ -5,16 +5,16 @@ export class HomePage extends HTMLElement {
         super();
         this.allProducts = [];
         this.filteredProducts = [];
-        this.uniqueTags = [];     
-        this.activeTag = 'Todo';  
+        this.uniqueTags = [];
+        this.activeTag = 'Todo';
     }
 
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-        
+
         this.allProducts = PublicacionService.getPublicaciones();
-        this.filteredProducts = [...this.allProducts]; 
-        
+        this.filteredProducts = [...this.allProducts];
+
         this.#extractUniqueTags();
 
         this.#agregarEstilos(shadow);
@@ -24,8 +24,8 @@ export class HomePage extends HTMLElement {
 
     #extractUniqueTags() {
         const allTags = this.allProducts.flatMap(product => product.etiquetas);
-        
-        this.uniqueTags = ['Todo', ...new Set(allTags)]; 
+
+        this.uniqueTags = ['Todo', ...new Set(allTags)];
     }
 
     #render(shadow) {
@@ -49,7 +49,7 @@ export class HomePage extends HTMLElement {
                 </div>
             </section>
         `;
-        
+
         this.#agregarEstilos(shadow);
     }
 
@@ -76,10 +76,14 @@ export class HomePage extends HTMLElement {
 
     #setupEventListeners(shadow) {
         const categoriesContainer = shadow.querySelector('.categories-container');
-        
+        const productsGrid = shadow.getElementById('productsGrid');
+        productsGrid.addEventListener('publicacionClick', (e) => {
+            const idPublicacion = e.detail.publicacion.id;
+            page(`/detalle-publicacion/${idPublicacion}`);
+        });
         categoriesContainer.addEventListener('click', (e) => {
             const button = e.target.closest('.filter-pill');
-            
+
             if (button) {
                 const tag = button.dataset.tag;
                 this.#filterBy(tag, shadow);
@@ -93,7 +97,7 @@ export class HomePage extends HTMLElement {
         if (tag === 'Todo') {
             this.filteredProducts = this.allProducts;
         } else {
-            this.filteredProducts = this.allProducts.filter(product => 
+            this.filteredProducts = this.allProducts.filter(product =>
                 product.etiquetas.includes(tag)
             );
         }

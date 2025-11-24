@@ -95,6 +95,12 @@ export class PublicacionService {
             )
         ];
 
+        
         return PublicacionList;
+    }
+
+    static obtenerPublicacionesPorId(id) {
+        const productos = this.getPublicaciones();
+        return productos.find(p => p.id == id);
     }
 }
