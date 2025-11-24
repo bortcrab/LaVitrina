@@ -31,7 +31,7 @@ export class SidebarComponent extends HTMLElement {
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="side-bar-button" data-route="/perfil"> <img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones
+                            <a href="#" class="side-bar-button" data-route="/detalle-publicacion"> <img src="./src/assets/misPublicacionesNegro.png" alt="Imagen mis publicaciones">Mis Publicaciones
                             </a>
                         </li>
                     </ul>

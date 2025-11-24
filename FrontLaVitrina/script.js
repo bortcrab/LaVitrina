@@ -74,7 +74,12 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleNav(true);
         const datos = ctx.state || {}; 
         showContent('resenias-info', datos);
-    })
+    });
+
+    page('/detalle-publicacion', () => {
+        toggleNav(true);
+        showContent('detalle-publicacion-info');
+    });
 
     page('*', () => {
         toggleNav(false);

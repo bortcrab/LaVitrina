@@ -11,6 +11,18 @@ body {
     margin-top: 13vh;
     padding-top: 1rem;
     padding-inline: 1rem;
+    margin-bottom: 5vh;
+}
+
+.disponibilidad-fecha {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#fechaPublicacion {
+    color: #E62634;
+    margin: 0;
 }
 
 .publicacion-container {
@@ -32,11 +44,11 @@ body {
 }
 
 #titulo {
-    margin-top: -0.5rem;
+    margin: 0;
 }
 
 #disponibilidad {
-    margin-top: -1rem;
+    margin: 0;
     color: #E62634;
 }
 
