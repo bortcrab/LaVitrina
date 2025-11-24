@@ -10,6 +10,7 @@ import { IniciarSesionComponent } from "./src/components/iniciarSesion/iniciarSe
 import { ReseniasComponent } from "./src/components/resenias/resenias.component.js";
 import { DetallePublicacionComponent } from "./src/components/detallePublicacion/detallepublicacion.component.js";
 import { ReseniaCardComponent } from "./src/components/reseniaCard/reseniacard.component.js";
+import { SubastaCardComponent } from "./src/components/subastaCard/subastacard.component.js";
 
 //Pages
 import { HomePage } from './src/pages/home/home.page.js';
@@ -27,13 +28,14 @@ window.customElements.define('sidebar-info', SidebarComponent);
 window.customElements.define('header-info', HeaderComponent);
 window.customElements.define('registrar-usuario-info', RegistrarUsuarioComponent);
 window.customElements.define('publicacion-info', PublicacionComponent);
-window.customElements.define('publicacionOpciones-info', PublicacionOpcionesComponent);
+window.customElements.define('publicacion-opciones-info', PublicacionOpcionesComponent);
 window.customElements.define('perfil-info', PerfilComponent);
 window.customElements.define('chats-info', ChatsComponent);
 window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
 window.customElements.define('resenias-info', ReseniasComponent);
 window.customElements.define('detalle-publicacion-info', DetallePublicacionComponent);
 window.customElements.define('resenia-card-info', ReseniaCardComponent);
+window.customElements.define('subasta-card-info', SubastaCardComponent);
 
 //definir pages
 window.customElements.define('home-page', HomePage);

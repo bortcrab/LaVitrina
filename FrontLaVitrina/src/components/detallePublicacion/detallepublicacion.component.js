@@ -42,19 +42,23 @@ export class DetallePublicacionComponent extends HTMLElement {
                         ${publicacion.descripcion}
                     </p>
                 </div>
-                <div class="mensaje-container">
-                    <div class="perfil-info">
-                        <img class="profile-pic" src="${publicacion.usuario.fotoPerfil}" alt="">
-                        <div class="user-data">
-                            <h3 id="nombre-perfil">${publicacion.usuario.nombres}</h3>
-                            <div class="resenias">
-                                <h5 id="calificacion"><span class="estrella">★</span>${publicacion.usuario.puntuacion} (1,204 reseñas)</h5>
+                <div class="derecha">
+                    ${publicacion.estado === 'Subasta' ? '<subasta-card-info></subasta-card-info>' : ''}
+
+                    <div class="mensaje-container">
+                        <div class="perfil-info">
+                            <img class="profile-pic" src="${publicacion.usuario.fotoPerfil}" alt="">
+                            <div class="user-data">
+                                <h3 id="nombre-perfil">${publicacion.usuario.nombres}</h3>
+                                <div class="resenias">
+                                    <h5 id="calificacion"><span class="estrella">★</span>${publicacion.usuario.puntuacion} (1,204 reseñas)</h5>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <hr class="line">
-                    <div class="button">
-                        <button id="btn-enviar-mensaje">Enviar mensaje</button>
+                        <hr class="line">
+                        <div class="button">
+                            <button id="btn-enviar-mensaje">Enviar mensaje</button>
+                        </div>
                     </div>
                 </div>
             </div>
