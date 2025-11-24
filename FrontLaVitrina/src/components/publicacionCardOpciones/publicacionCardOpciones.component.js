@@ -33,7 +33,7 @@ export class PublicacionOpcionesComponent extends HTMLElement {
     }
 
     #render(shadow, publicacion) {
-        shadow.innerHTML = `
+        shadow.innerHTML += `
         <div class="card-container">
             <div class="menu-container">
                 <button class="menu-button" id="menuButton">⋮</button>
