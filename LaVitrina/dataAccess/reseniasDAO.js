@@ -166,18 +166,33 @@ class ReseniasDAO {
 
     async calcularPuntuacionUsuario(idUsuario) {
         try {
-            const resenias = Resenia.findAll({
+            const resenias = await Resenia.findAll({ 
                 where: {
                     idUsuarioReseniado: idUsuario
                 }
             });
 
-            let sumPuntuaciones;
-            for(const resenia of Array.from(resenias)) {
+            if (resenias.length === 0) return 0;
+
+            let sumPuntuaciones = 0; 
+            for(const resenia of resenias) {
                 sumPuntuaciones += resenia.calificacion; 
             }
 
             return sumPuntuaciones / resenias.length;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async contarReseniasPorUsuario(idUsuario) {
+        try {
+            const total = await Resenia.count({
+                where: {
+                    idUsuarioReseniado: idUsuario
+                }
+            });
+            return total;
         } catch (error) {
             throw error;
         }
