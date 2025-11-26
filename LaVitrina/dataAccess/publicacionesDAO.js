@@ -13,6 +13,8 @@ const { Usuario } = require('../models')
 // Importa operadores de consulta de Sequelize para búsquedas avanzadas
 const { Op } = require('sequelize');
 
+const { sequelize } = require('../models');
+
 /**
  * Clase para gestionar operaciones relacionadas con publicaciones, incluyendo creación,
  * obtención, actualización y eliminación de publicaciones.
@@ -271,6 +273,7 @@ class PublicacionesDAO {
             throw error;
         }
     }
+    
     /**
      * Obtiene una lista de publicaciones que contienen alguna de las etiquetas especificadas.
      * 
@@ -281,31 +284,38 @@ class PublicacionesDAO {
     async obtenerPublicacionesPorEtiquetas(etiquetas, offset) {
         try {
             const publicacionesObtenidas = await Publicacion.findAll({
-                include: [{
-                    model: EtiquetasPublicacion, 
-                    where: {
-                        etiqueta: {
-                            [Op.in]: etiquetas 
-                        }
+                include: [
+                    {
+                        model: EtiquetasPublicacion,
+                        required: false // Esto hace un LEFT JOIN para obtener TODAS las etiquetas
+                    },
+                    {
+                        model: Subasta,
+                        as: "Subastum"
+                    },
+                    {
+                        model: Categoria,
+                        as: "Categorium"
+                    },
+                    {
+                        model: Usuario,
+                        as: "Usuario"
+                    },
+                    {
+                        model: ImagenesPublicacion,
+                        as: "ImagenesPublicacions"
+                    }
+                ],
+                where: {
+                    // Filtramos publicaciones que tengan AL MENOS una etiqueta del array
+                    id: {
+                        [Op.in]: sequelize.literal(`(
+                        SELECT DISTINCT idPublicacion
+                        FROM etiquetaspublicaciones 
+                        WHERE etiqueta IN (${etiquetas.map(e => `'${e}'`).join(',')})
+                    )`)
                     }
                 },
-                {
-                    model: Subasta,
-                    as: "Subastum"
-                },
-                {
-                    model: Categoria,
-                    as: "Categorium"
-                },
-                {
-                    model: Usuario,
-                    as: "Usuario"
-                },
-                {
-                    model: ImagenesPublicacion,
-                    as: "ImagenesPublicacions"
-                }
-                ],
                 limit: 20,
                 offset
             });

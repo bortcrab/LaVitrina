@@ -430,7 +430,7 @@ function formatearRespuestaJSON(publicacionData) {
             apellidoPaterno: publicacionData.Usuario.apellidoPaterno,
             apellidoMaterno: publicacionData.Usuario.apellidoMaterno,
             fotoPerfil: publicacionData.Usuario.fotoPerfil,
-            puntuacion: publicacionData.Usuario.puntuacion
+            puntuacion: (publicacionData.Usuario.puntuacion) ? publicacionData.Usuario.puntuacion : '0.0'
         },
         imagenes: publicacionData.ImagenesPublicacions.map(imagen => imagen.url),
         etiquetas: publicacionData.EtiquetasPublicacions.map(etiqueta => etiqueta.etiqueta)
