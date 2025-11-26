@@ -4,6 +4,12 @@ const { Publicacion } = require('../models');
 const { ImagenesPublicacion } = require('../models')
 // Importa el modelo de etiquetas asociadas a publicaciones
 const { EtiquetasPublicacion } = require('../models')
+// Importa el modelo de subastas asociadas a publicaciones
+const { Subasta } = require('../models')
+// Importa el modelo de categorias asociadas a publicaciones
+const { Categoria } = require('../models')
+// Importa el modelo de usuarios asociados a publicaciones
+const { Usuario } = require('../models')
 // Importa operadores de consulta de Sequelize para búsquedas avanzadas
 const { Op } = require('sequelize');
 
@@ -59,6 +65,27 @@ class PublicacionesDAO {
     async obtenerPublicaciones(offset) {
         try {
             const publicionesObtenidas = await Publicacion.findAll({
+                include: [{
+                    model: Subasta,
+                    as: "Subastum"
+                },
+                {
+                    model: Categoria,
+                    as: "Categorium"
+                },
+                {
+                    model: Usuario,
+                    as: "Usuario"
+                },
+                {
+                    model: ImagenesPublicacion,
+                    as: "ImagenesPublicacions"
+                },
+                {
+                    model: EtiquetasPublicacion,
+                    as: "EtiquetasPublicacions"
+                }
+                ],
                 limit: 20,
                 offset
             });
@@ -77,9 +104,37 @@ class PublicacionesDAO {
      */
     async obtenerPublicacionPorId(idPublicacion) {
         try {
-            const publicacionObtenida = await Publicacion.findByPk(idPublicacion);
+            const publicacionObtenida = await Publicacion.findOne({
+                where: {
+                    id: {
+                        [Op.eq]: idPublicacion
+                    }
+                },
+                include: [{
+                    model: Subasta,
+                    as: "Subastum"
+                },
+                {
+                    model: Categoria,
+                    as: "Categorium"
+                },
+                {
+                    model: Usuario,
+                    as: "Usuario"
+                },
+                {
+                    model: ImagenesPublicacion,
+                    as: "ImagenesPublicacions"
+                },
+                {
+                    model: EtiquetasPublicacion,
+                    as: "EtiquetasPublicacions"
+                }
+                ]
+            });
             return publicacionObtenida;
         } catch (error) {
+            console.log(error);
             throw error;
         }
     }
@@ -97,6 +152,28 @@ class PublicacionesDAO {
                 where: {
                     idUsuario: idUsuario,
                 },
+                include: [{
+                    model: Subasta,
+                    as: "Subastum"
+                },
+                {
+                    model: Categoria,
+                    as: "Categorium"
+                },
+                {
+                    model: Usuario,
+                    as: "Usuario"
+                },
+                {
+                    model: ImagenesPublicacion,
+                    as: "ImagenesPublicacions"
+                },
+                {
+                    model: EtiquetasPublicacion,
+                    as: "EtiquetasPublicacions"
+                }
+                ],
+                distinct: true,
                 limit: 20,
                 offset
             });
@@ -121,6 +198,27 @@ class PublicacionesDAO {
                         [Op.like]: `%${titulo}%` //Se usa el operador like para los titulos que coincidan con el mandado en el parámetro
                     }
                 },
+                include: [{
+                    model: Subasta,
+                    as: "Subastum"
+                },
+                {
+                    model: Categoria,
+                    as: "Categorium"
+                },
+                {
+                    model: Usuario,
+                    as: "Usuario"
+                },
+                {
+                    model: ImagenesPublicacion,
+                    as: "ImagenesPublicacions"
+                },
+                {
+                    model: EtiquetasPublicacion,
+                    as: "EtiquetasPublicacions"
+                }
+                ],
                 limit: 20,
                 offset
             });
@@ -143,6 +241,28 @@ class PublicacionesDAO {
                 where: {
                     idCategoria: idCategoria
                 },
+                include: [{
+                    model: Subasta,
+                    as: "Subastum"
+                },
+                {
+                    model: Categoria,
+                    as: "Categorium"
+                },
+                {
+                    model: Usuario,
+                    as: "Usuario"
+                },
+                {
+                    model: ImagenesPublicacion,
+                    as: "ImagenesPublicacions"
+                },
+                {
+                    model: EtiquetasPublicacion,
+                    as: "EtiquetasPublicacions"
+                }
+                ],
+                distinct: true,
                 limit: 20,
                 offset
             });
@@ -162,12 +282,30 @@ class PublicacionesDAO {
         try {
             const publicacionesObtenidas = await Publicacion.findAll({
                 include: [{
-                    model: EtiquetasPublicacion, where: {
+                    model: EtiquetasPublicacion, 
+                    where: {
                         etiqueta: {
-                            [Op.in]: etiquetas //Se usa el operador in para las etiquetas que coincidan con las mandadas en el parámetro
+                            [Op.in]: etiquetas 
                         }
                     }
-                }],
+                },
+                {
+                    model: Subasta,
+                    as: "Subastum"
+                },
+                {
+                    model: Categoria,
+                    as: "Categorium"
+                },
+                {
+                    model: Usuario,
+                    as: "Usuario"
+                },
+                {
+                    model: ImagenesPublicacion,
+                    as: "ImagenesPublicacions"
+                }
+                ],
                 limit: 20,
                 offset
             });
@@ -193,6 +331,27 @@ class PublicacionesDAO {
                         [Op.between]: [fechaInicio, fechaFin] //Se usa el operador between para las fechas que están dentro del periodo
                     }
                 },
+                include: [{
+                    model: Subasta,
+                    as: "Subastum"
+                },
+                {
+                    model: Categoria,
+                    as: "Categorium"
+                },
+                {
+                    model: Usuario,
+                    as: "Usuario"
+                },
+                {
+                    model: ImagenesPublicacion,
+                    as: "ImagenesPublicacions"
+                },
+                {
+                    model: EtiquetasPublicacion,
+                    as: "EtiquetasPublicacions"
+                }
+                ],
                 limit: 20,
                 offset
             });
