@@ -1,4 +1,5 @@
 const UsuarioDAO = require('../dataAccess/usuariosDAO.js');
+const ReseniaDAO = require('../dataAccess/reseniasDAO.js');
 const { AppError } = require('../utils/appError.js');
 const jwt = require('jsonwebtoken');
 class UsuariosController {
@@ -56,15 +57,39 @@ class UsuariosController {
     static async obtenerUsuarioPorId(req, res, next) {
         try {
             const id = req.params.id;
+            
             const usuario = await UsuarioDAO.obtenerUsuarioPorId(id);
 
             if (!usuario) {
-                next(new AppError('No se encontró el usuarios', 404));
+                return next(new AppError('No se encontró el usuario', 404));
             }
 
-            res.status(200).json(usuario);
+            const [calificacion, totalResenias] = await Promise.all([
+                ReseniaDAO.calcularPuntuacionUsuario(id),
+                ReseniaDAO.contarReseniasPorUsuario(id)
+            ]);
+
+            const fechaCreacion = new Date(usuario.createdAt).toLocaleDateString('es-MX');
+
+            const perfilData = {
+                id: usuario.id,
+                nombres: usuario.nombres,
+                apellidoPaterno: usuario.apellidoPaterno,
+                apellidoMaterno: usuario.apellidoMaterno,
+                fechaNacimiento: usuario.fechaNacimiento,
+                ciudad: usuario.ciudad,
+                correo: usuario.correo,
+                telefono: usuario.telefono,
+                fotoPerfil: usuario.fotoPerfil,
+                fechaCreacion: fechaCreacion,
+                calificacion: calificacion ? parseFloat(calificacion.toFixed(1)) : 0.0,
+                totalReseñas: totalResenias || 0
+            };
+
+            res.status(200).json(perfilData);
+
         } catch (error) {
-            next(new AppError('Ocurrio un error al obtener el usuario', 500));
+            next(new AppError('Ocurrió un error al obtener el perfil del usuario', 500));
         }
     }
 
@@ -132,36 +157,30 @@ class UsuariosController {
 
     static async iniciarSesion(req, res, next) {
         try {
-
             const { correo, contrasenia } = req.body;
+            
             const usuario = await UsuarioDAO.iniciarSesion(correo, contrasenia);
 
             if (!usuario) {
-                return next(new AppError('Credenciales inválidas', 401)); // Se corrigió el return
+                return next(new AppError('Credenciales inválidas', 401));
             }
 
-            // 1. Crea el Payload (la información que guardará el token)
             const payload = {
                 id: usuario.id,
-                correo: usuario.correo,
+                correo: correo 
             };
 
-            // 2. Firma el token
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
-                expiresIn: '1h' // El token expirará en 1 hora
+                expiresIn: '1h'
             });
 
-            // 3. Envía el token al cliente (ESTA ES LA ÚNICA RESPUESTA)
             res.status(200).json({
                 message: 'Usuario iniciado correctamente',
                 token: token,
-                usuario: usuario // El `toJSON` del modelo ya le quitó la contraseña
+                usuario: usuario
             });
 
-            // YA NO HAY NADA AQUÍ
-
         } catch (error) {
-            // Si algo falla (ej. !usuario es true), el error se captura aquí
             next(new AppError(`Error en el proceso de inicio de sesión: ${error.message}`, 500));
         }
     }

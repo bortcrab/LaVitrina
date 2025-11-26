@@ -137,37 +137,30 @@ class UsuarioDAO {
         }
     }
 
-    /**
-     * Valida las credenciales de un usuario para iniciar sesión.
-     * @param {string} correo - Correo electrónico del usuario.
-     * @param {string} contrasenia - Contraseña del usuario.
-     * @returns {Promise<Object|null>} El usuario si las credenciales son válidas, null en caso contrario.
-     * @throws {Error} Si hay un error durante la validación.
-     */
     async iniciarSesion(correo, contrasenia) {
         try {
             const usuario = await Usuario.findOne({ where: { correo } });
 
             if (!usuario) {
-                console.log("Intento de inicio de sesión fallido: correo no encontrado");
-                return null;
-            }
-            const esConstraseniaValida = bcrypt.compareSync(contrasenia, usuario.contrasenia);
-
-            if (esConstraseniaValida) {
-                console.log(`Inicio de sesión exitoso para el usuario: ${usuario.correo}`);
-                return usuario;
-            }
-            else {
-                console.log(`Intengo de inicio de sesióni fallido para: ${usuario.correo}`);
                 return null;
             }
 
+            const esValida = bcrypt.compareSync(contrasenia, usuario.contrasenia);
+
+            if (esValida) {
+                return {
+                    id: usuario.id,
+                    nombres: usuario.nombres
+                };
+            } else {
+                return null;
+            }
         } catch (error) {
             console.error("Error en el proceso de inicio de sesión", error);
             throw error;
         }
     }
+
     /**
      * Cambia la contraseña de un usuario, verificando primero la contraseña actual.
      * @param {string} correo - Correo del usuario cuya contraseña se cambiará.
@@ -197,6 +190,20 @@ class UsuarioDAO {
 
         } catch (error) {
             console.log("Error en el proceso de cambiar contraseña");
+            throw error;
+        }
+    }
+
+    async obtenerNombreCompletoPorId(idUsuario) {
+        try {
+            const usuario = await Usuario.findByPk(idUsuario, {
+                attributes: ['nombres', 'apellidoPaterno', 'apellidoMaterno']
+            });
+
+            if (!usuario) return null;
+
+            return `${usuario.nombres} ${usuario.apellidoPaterno} ${usuario.apellidoMaterno}`.trim();
+        } catch (error) {
             throw error;
         }
     }

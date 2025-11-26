@@ -3,8 +3,8 @@ dotenv.config();
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
-
-const jwt = require('jsonwebtoken');
+const http = require('http'); 
+const { Server } = require('socket.io');
 const validateJWT = require('./utils/validateJWT.js');
 const corsConfig = require('./utils/validateCORS.js');
 const publicacionesRouter = require('./routes/publicacionesRouter.js');
@@ -15,17 +15,26 @@ const reseniasRouter = require('./routes/reseniasRouter.js');
 const categoriasRouter = require('./routes/categoriasRouter.js');
 const pujasRouter = require('./routes/pujasRouter.js');
 const { AppError, globalErrorHandler } = require('./utils/appError.js');
+const SocketController = require('./controllers/socketController.js');
 
 const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : "*",
+        methods: ["GET", "POST"]
+    }
+});
+new SocketController(io);
 
 app.use(corsConfig);
 app.use(express.json());
 app.use(morgan('combined'));
 
-//Eso es para conectar con el front
+
 const frontendPath = path.join(__dirname, '../FRONTLAVITRINA');
 app.use(express.static(frontendPath));
-
 
 app.use('/api/publicaciones', validateJWT, publicacionesRouter);
 app.use('/api/subastas', validateJWT, subastasRouter);
@@ -50,6 +59,6 @@ app.use((req, res, next) => {
 app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`El servidor esta corriendo en el puerto ${PORT}`);
 });
