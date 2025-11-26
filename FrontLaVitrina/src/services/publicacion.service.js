@@ -1,154 +1,47 @@
 import { Publicacion } from '../models/publicacion.js';
 import { Usuario } from '../models/usuario.js';
 
+const API_URL = '/api/publicaciones';
+
 export class PublicacionService {
-    static getPublicaciones() {
-
-        const userMaria = new Usuario(101, "María", "González");
-        userMaria.fotoPerfil = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop";
-        userMaria.puntuacion = 4.8;
-
-        const userTech = new Usuario(102, "Tech", "Store");
-        userTech.fotoPerfil = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop";
-        userTech.puntuacion = 5.0;
-
-        const userJuan = new Usuario(103, "Juan", "Pérez");
-        userJuan.fotoPerfil = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop";
-        userJuan.puntuacion = 3.5;
-
-        const userPedro = new Usuario(1, "Pedro", "Sola");
-        userPedro.fotoPerfil = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop";
-        userPedro.puntuacion = 4.9;
-
-        const PublicacionList = [
-            new Publicacion(
-                1,
-                "iPhone 11 en muy buen estado",
-                "iPhone 11 color verde, 128GB, batería al 85%, con caja y accesorios originales.",
-                "$10,000",
-                "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&h=500&fit=crop",
-                ["Electrónica"],
-                "Disponible",
-                false,
-                userMaria,
-                new Date(2025, 10, 20)
-            ),
-            new Publicacion(
-                2,
-                "MacBook Pro 2020",
-                "MacBook Pro 13 pulgadas, 16GB RAM, 512GB SSD, ideal para trabajo pesado.",
-                "$18,500",
-                "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop",
-                ["Electrónica", "Hogar"],
-                "Venta",
-                false,
-                userTech,
-                new Date(2025, 10, 20)
-            ),
-            new Publicacion(
-                3,
-                "Departamento en renta zona centro",
-                "2 recámaras, 1 baño, cocina integral, estacionamiento incluido.",
-                "$8,000/mes",
-                "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=500&fit=crop",
-                ["Inmuebles", "Hogar"],
-                "Venta",
-                false,
-                userTech,
-                new Date(2025, 10, 20)
-            ),
-            new Publicacion(
-                4,
-                "Bicicleta de montaña Trek",
-                "Rodada 29, frenos de disco, suspensión delantera. Lista para la aventura.",
-                "$7,500",
-                "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=500&h=500&fit=crop",
-                ["Deportes", "Vehículos"],
-                "Venta",
-                false,
-                userJuan,
-                new Date(2025, 10, 20)
-            ),
-            new Publicacion(
-                5,
-                "PlayStation 5 Edición Digital",
-                "Consola nueva en caja sellada con 2 controles DualSense.",
-                "$12,000",
-                "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
-                ["Electrónica"],
-                "Subasta",
-                false,
-                userJuan,
-                new Date(2025, 10, 20)
-            ),
-            new Publicacion(
-                6,
-                "Chamarra de Cuero Vintage",
-                "Talla M, excelente estado, estilo clásico para motociclistas.",
-                "$1,200",
-                "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&h=500&fit=crop",
-                ["Moda", "Vehículos"],
-                "Venta",
-                false,
-                userTech,
-                new Date(2025, 10, 20)
-            ),
-            new Publicacion(
-                7,
-                "Sala Moderna Gris",
-                "Sala de 3 piezas, incluye sofá de 3 plazas y 2 sillones individuales.",
-                "$15,000",
-                "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&h=500&fit=crop",
-                ["Hogar", "Inmuebles"],
-                "Venta",
-                false,
-                userTech,
-                new Date(2025, 10, 20)
-            ),
-            new Publicacion(
-                8,
-                "Honda Civic 2018",
-                "Seminuevo, automático, único dueño, factura original, todos los servicios.",
-                "$180,000",
-                "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=500&h=500&fit=crop",
-                ["Vehículos"],
-                "Venta",
-                false,
-                userMaria,
-                new Date(2025, 10, 20)
-            ),
-            new Publicacion(
-                9,
-                "Tenis Nike Running",
-                "Talla 27 MX, tecnología Air Max, ideales para correr o gimnasio.",
-                "$2,500",
-                "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&h=500&fit=crop",
-                ["Moda", "Deportes"],
-                "",
-                false,
-                userMaria,
-                new Date(2025, 10, 20)
-            ),
-            new Publicacion(
-                10,
-                "Tablet Samsung Galaxy Tab S6",
-                "Incluye S Pen, 128GB de almacenamiento, color azul nube. Poco uso.",
-                "$6,800",
-                "https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=500&h=500&fit=crop",
-                ["Electrónica", "Hogar"],
-                "Subasta",
-                false,
-                userPedro,
-                new Date(2025, 10, 20)
-            )
-        ];
-
-        return PublicacionList;
+    static getHeaders() {
+        //const token = localStorage.getItem('token');
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjQxMjYxMjksImV4cCI6MTc2NDEyOTcyOX0.hpk1XLRR5b13kW-RD1QjzOkhIwj08BhiwT-qK0XjzwM` // Tu backend usa validateJWT, así que esto es obligatorio
+        };
     }
 
-    static async obtenerPublicacionesPorId(id) {
-        const publicaciones = this.getPublicaciones();
-        return publicaciones.find(p => p.id == id);
+    static async getPublicaciones() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'GET',
+                headers: this.getHeaders() 
+            });
+
+            if (!response.ok) throw new Error('Error al obtener publicaciones');
+            
+            const datos = await response.json();
+            return datos; 
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+    static async obtenerPublicacion(id) {
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) throw new Error('Publicación no encontrada');
+
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     }
 
     static crearPublicacion(datosPublicacion) {
@@ -159,7 +52,6 @@ export class PublicacionService {
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                // ✅ VALIDACIONES EN EL SERVICIO (Backend simulado)
                 const errores = [];
 
                 // Validar título

@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 
@@ -21,6 +22,10 @@ app.use(corsConfig);
 app.use(express.json());
 app.use(morgan('combined'));
 
+//Eso es para conectar con el front
+const frontendPath = path.join(__dirname, '../FRONTLAVITRINA');
+app.use(express.static(frontendPath));
+
 
 app.use('/api/publicaciones', validateJWT, publicacionesRouter);
 app.use('/api/subastas', validateJWT, subastasRouter);
@@ -29,6 +34,13 @@ app.use('/api/resenias', validateJWT, reseniasRouter);
 app.use('/api/chats', validateJWT, chatsRouter);
 app.use('/api/categorias', validateJWT, categoriasRouter);
 app.use('/api/pujas',validateJWT, pujasRouter);
+
+app.get(/(.*)/, (req, res, next) => {
+    if (req.originalUrl.startsWith('/api')) {
+        return next();
+    }
+    res.sendFile(path.join(frontendPath, 'index.html'));
+});
 
 app.use((req, res, next) => {
     const error = new AppError(`No se ha podido acceder a ${req.originalUrl} en el servidor`, 404);

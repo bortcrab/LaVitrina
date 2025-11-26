@@ -5,22 +5,27 @@ export class HomePage extends HTMLElement {
         super();
         this.allPublicaciones = [];
         this.filteredProducts = [];
-        this.uniqueTags = [];     
+        this.uniqueTags = [];
         this.activeTag = 'Todo';
-        this.cssUrl = new URL('./home.page.css', import.meta.url).href;  
+        this.cssUrl = new URL('./home.page.css', import.meta.url).href;
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
+        try {
+            this.allPublicaciones = await PublicacionService.getPublicaciones();
 
-        this.allPublicaciones = PublicacionService.getPublicaciones();
-        this.filteredProducts = [...this.allPublicaciones];
+            this.filteredProducts = [...this.allPublicaciones];
 
-        this.#extractUniqueTags();
+            this.#extractUniqueTags();
 
-        this.#agregarEstilos(shadow);
-        this.#render(shadow);
-        this.#setupEventListeners(shadow);
+            this.#render(shadow);
+            this.#setupEventListeners(shadow);
+        } catch (error) {
+            console.error("Error cargando home:", error);
+            shadow.innerHTML = `<div class="error">Error al cargar datos</div>`;
+        }
+
     }
 
     #extractUniqueTags() {
