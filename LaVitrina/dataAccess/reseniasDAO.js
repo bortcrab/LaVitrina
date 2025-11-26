@@ -1,5 +1,5 @@
 const { Resenia } = require('../models');
-
+const { Usuario } = require('../models');
 class ReseniasDAO {
     constructor() { }
 
@@ -9,12 +9,12 @@ class ReseniasDAO {
             include: [
                 {
                     model: Usuario,
-                    as: 'usuarioReseniado', 
+                    as: 'UsuarioReseniado', 
                     attributes: ['id', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'fotoPerfil']
                 },
                 {
                     model: Usuario,
-                    as: 'usuarioCreador',   
+                    as: 'UsuarioCreador',   
                     attributes: ['id', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'fotoPerfil']
                 }
             ]
@@ -28,10 +28,10 @@ class ReseniasDAO {
     async crearResenia(datosResenia) {
         try {
             // Usamos todos los datos del objeto
-            const resenia = await Resenia.create({
+            const nuevaResenia = await Resenia.create({
                 ...datosResenia
             });
-            return resenia;
+            return await this.obtenerReseniaPorId(nuevaResenia.id);
         } catch (error) {
             throw error;
         }
@@ -43,8 +43,7 @@ class ReseniasDAO {
      */
     async obtenerResenias() {
         try {
-            const resenias = await Resenia.findAll();
-            return resenias;
+            return await Resenia.findAll(this._configuracionConsulta);
         } catch (error) {
             throw error;
         }
@@ -57,7 +56,7 @@ class ReseniasDAO {
      */
     async obtenerReseniaPorId(idResenia) {
         try {
-            const resenia = await Resenia.findByPk(idResenia);
+            const resenia = await Resenia.findByPk(idResenia, this._configuracionConsulta);
             return resenia;
         } catch (error) {
             throw error;
@@ -71,10 +70,10 @@ class ReseniasDAO {
      */
     async obtenerReseniasPorUsuarioReseniado(idUsuarioReseniado) {
         try {
-            const resenias = await Resenia.findAll({
-                where: { idUsuarioReseniado }
+            return await Resenia.findAll({
+                where: { idUsuarioReseniado },
+                ...this._configuracionConsulta
             });
-            return resenias;
         } catch (error) {
             throw error;
         }
@@ -87,11 +86,12 @@ class ReseniasDAO {
      */
     async obtenerReseniasMasAltas(idUsuarioReseniado) {
         try {
-            const resenias = await Resenia.findAll({
+            return await Resenia.findAll({
                 where: { idUsuarioReseniado },
-                order: [['calificacion', 'DESC']]
+                order: [['calificacion', 'DESC']],
+                ...this._configuracionConsulta
             });
-            return resenias;
+      
         } catch (error) {
             throw error;
         }
@@ -104,11 +104,11 @@ class ReseniasDAO {
      */
     async obtenerReseniasMasBajas(idUsuarioReseniado) {
         try {
-            const resenias = await Resenia.findAll({
+            return await Resenia.findAll({
                 where: { idUsuarioReseniado },
-                order: [['calificacion', 'ASC']]
+                order: [['calificacion', 'ASC']],
+                ...this._configuracionConsulta
             });
-            return resenias;
         } catch (error) {
             throw error;
         }
@@ -121,10 +121,10 @@ class ReseniasDAO {
      */
     async obtenerReseniasPorUsuarioCreador(idUsuarioCreador) {
         try {
-            const resenias = await Resenia.findAll({
-                where: { idUsuarioCreador }
+            return await Resenia.findAll({
+                where: { idUsuarioCreador },
+                ...this._configuracionConsulta
             });
-            return resenias;
         } catch (error) {
             throw error;
         }
@@ -140,7 +140,7 @@ class ReseniasDAO {
         try {
             await Resenia.update(datosResenia, { where: { id: idResenia } });
             const reseniaActualizada = await Resenia.findByPk(idResenia);
-            return reseniaActualizada;
+            return await this.obtenerReseniaPorId(idResenia);
         } catch (error) {
             throw error;
         }
