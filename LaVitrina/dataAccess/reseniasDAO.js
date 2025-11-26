@@ -3,6 +3,23 @@ const { Resenia } = require('../models');
 class ReseniasDAO {
     constructor() { }
 
+    get _configuracionConsulta(){
+        return{
+            attributes: { exclude: ['createdAt', 'updatedAt', 'idUsuarioCreador', 'idUsuarioReseniado'] },
+            include: [
+                {
+                    model: Usuario,
+                    as: 'usuarioReseniado', 
+                    attributes: ['id', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'fotoPerfil']
+                },
+                {
+                    model: Usuario,
+                    as: 'usuarioCreador',   
+                    attributes: ['id', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'fotoPerfil']
+                }
+            ]
+        }
+    }
     /**
      * Crea una nueva reseña en la base de datos.
      * @param {Object} datosResenia - Objeto con los datos de la reseña a crear.
@@ -146,6 +163,26 @@ class ReseniasDAO {
             throw error;
         }
     }
+
+    async calcularPuntuacionUsuario(idUsuario) {
+        try {
+            const resenias = Resenia.findAll({
+                where: {
+                    idUsuarioReseniado: idUsuario
+                }
+            });
+
+            let sumPuntuaciones;
+            for(const resenia of resenias) {
+                sumPuntuaciones += resenia.calificacion; 
+            }
+
+            return sumPuntuaciones / resenias.length;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }
 
 module.exports = new ReseniasDAO();
