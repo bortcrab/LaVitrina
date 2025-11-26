@@ -273,6 +273,7 @@ class PublicacionesDAO {
             throw error;
         }
     }
+    
     /**
      * Obtiene una lista de publicaciones que contienen alguna de las etiquetas especificadas.
      * 
