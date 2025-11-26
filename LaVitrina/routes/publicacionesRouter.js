@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post('/', publicacionesController.crearPublicacion);
 router.get('/', publicacionesController.obtenerPublicaciones);
+router.get('/:id', publicacionesController.obtenerPublicacionPorId);
 router.get('/usuario/:id', publicacionesController.obtenerPublicacionesPorUsuario);
 router.get('/buscar', publicacionesController.obtenerPublicacionesPorTitulo);
 router.get('/categoria/:id', publicacionesController.obtenerPublicacionesPorCategoria);
