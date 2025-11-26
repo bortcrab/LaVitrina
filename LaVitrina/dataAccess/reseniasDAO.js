@@ -166,7 +166,7 @@ class ReseniasDAO {
 
     async calcularPuntuacionUsuario(idUsuario) {
         try {
-            const resenias = Resenia.findAll({
+            const resenias = await Resenia.findAll({
                 where: {
                     idUsuarioReseniado: idUsuario
                 }
