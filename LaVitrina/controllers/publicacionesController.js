@@ -1,4 +1,5 @@
 const publicacionesDAO = require("../dataAccess/publicacionesDAO.js");
+const reseniasDAO = require("../dataAccess/reseniasDAO.js");
 const usuariosDAO = require('../dataAccess/usuariosDAO.js');
 const { AppError } = require("../utils/appError.js");
 
@@ -69,9 +70,20 @@ class PublicacionesController {
             const pagina = parseInt(req.query.pagina) || 1;
             const offset = (pagina - 1) * 20;
 
-            const publicaciones = await publicacionesDAO.obtenerPublicaciones(offset);
+            const publicacionesObtenidas = await publicacionesDAO.obtenerPublicaciones(offset);
+
+            const publicaciones = [];
+            for (const publicacion of Array.from(publicacionesObtenidas)) {
+                const puntuacionUsuario = await reseniasDAO.calcularPuntuacionUsuario(publicacion.Usuario.id);
+
+                publicacion.Usuario.puntuacion = puntuacionUsuario;
+
+                publicaciones.push(formatearRespuestaJSON(publicacion));
+            }
+
             res.status(200).json(publicaciones);
         } catch (error) {
+            console.log(error);
             next(new AppError('Ocurrió un error al obtener las publicaciones.', 500));
         }
     }
@@ -92,8 +104,19 @@ class PublicacionesController {
             const id = req.params.id;
 
             const publicacion = await publicacionesDAO.obtenerPublicacionPorId(id);
-            res.status(200).json(publicacion);
+
+            if (!publicacion) {
+                next(new AppError('La publicación no existe.', 404));
+            }
+
+            const puntuacionUsuario = await reseniasDAO.calcularPuntuacionUsuario(publicacion.Usuario.id);
+
+            publicacion.Usuario.puntuacion = puntuacionUsuario;
+
+            const respuesta = formatearRespuestaJSON(publicacion);
+            res.status(200).json(respuesta);
         } catch (error) {
+            console.log(error);
             next(new AppError('Ocurrió un error al obtener la publicación.', 500));
         }
     }
@@ -128,7 +151,17 @@ class PublicacionesController {
                 next('El usuario no existe', 400);
             }
 
-            const publicaciones = await publicacionesDAO.obtenerPublicacionesPorUsuario(idUsuario, offset);
+            const publicacionesObtenidas = await publicacionesDAO.obtenerPublicacionesPorUsuario(idUsuario, offset);
+
+            const publicaciones = [];
+            for (const publicacion of Array.from(publicacionesObtenidas)) {
+                const puntuacionUsuario = await reseniasDAO.calcularPuntuacionUsuario(idUsuario);
+
+                publicacion.Usuario.puntuacion = puntuacionUsuario;
+
+                publicaciones.push(formatearRespuestaJSON(publicacion));
+            }
+
             res.status(200).json(publicaciones);
         } catch (error) {
             next(new AppError('Ocurrió un error al obtener las publicaciones', 500));
@@ -158,7 +191,17 @@ class PublicacionesController {
                 next(new AppError('Se debe especificar el titulo por el que se desea buscar las publicaciones.', 400));
             }
 
-            const publicaciones = await publicacionesDAO.obtenerPublicacionesPorTitulo(titulo, offset);
+            const publicacionesObtenidas = await publicacionesDAO.obtenerPublicacionesPorTitulo(titulo, offset);
+
+            const publicaciones = [];
+            for (const publicacion of Array.from(publicacionesObtenidas)) {
+                const puntuacionUsuario = await reseniasDAO.calcularPuntuacionUsuario(publicacion.Usuario.id);
+
+                publicacion.Usuario.puntuacion = puntuacionUsuario;
+
+                publicaciones.push(formatearRespuestaJSON(publicacion));
+            }
+
             res.status(200).json(publicaciones);
         } catch (error) {
             next(new AppError('Ocurrió un error al obtener las publicaciones', 500));
@@ -187,7 +230,17 @@ class PublicacionesController {
                 next(new AppError('Se debe especificar la categoría para realizar la búsqueda.', 400));
             }
 
-            const publicaciones = await publicacionesDAO.obtenerPublicacionesPorCategoria(idCategoria, offset);
+            const publicacionesObtenidas = await publicacionesDAO.obtenerPublicacionesPorCategoria(idCategoria, offset);
+
+            const publicaciones = [];
+            for (const publicacion of Array.from(publicacionesObtenidas)) {
+                const puntuacionUsuario = await reseniasDAO.calcularPuntuacionUsuario(publicacion.Usuario.id);
+
+                publicacion.Usuario.puntuacion = puntuacionUsuario;
+
+                publicaciones.push(formatearRespuestaJSON(publicacion));
+            }
+
             res.status(200).json(publicaciones);
         } catch (error) {
             next(new AppError('Ocurrió un error al obtener las publicaciones', 500));
@@ -216,15 +269,25 @@ class PublicacionesController {
             if (!etiquetas) {
                 next(new AppError('Se deben especificar las etiquetas para la búsqueda.', 400));
             }
-            
+
             etiquetas = etiquetas.split(',').map(etiqueta => etiqueta.trim());
-            
+
             //Se valida que haya al menos una etiqueta
             if (etiquetas.length < 1) {
                 next(new AppError('Se debe incluir al menos una etiqueta para la búsqueda.', 400));
             }
 
-            const publicaciones = await publicacionesDAO.obtenerPublicacionesPorEtiquetas(etiquetas, offset);
+            const publicacionesObtenidas = await publicacionesDAO.obtenerPublicacionesPorEtiquetas(etiquetas, offset);
+
+            const publicaciones = [];
+            for (const publicacion of Array.from(publicacionesObtenidas)) {
+                const puntuacionUsuario = await reseniasDAO.calcularPuntuacionUsuario(publicacion.Usuario.id);
+
+                publicacion.Usuario.puntuacion = puntuacionUsuario;
+
+                publicaciones.push(formatearRespuestaJSON(publicacion));
+            }
+
             res.status(200).json(publicaciones);
         } catch (error) {
             console.log(error);
@@ -263,9 +326,20 @@ class PublicacionesController {
                 next(new AppError('Las fechas deben crear un periodo válido.', 400));
             }
 
-            const publicaciones = await publicacionesDAO.obtenerPublicacionesPorPeriodo(fechaInicio, fechaFin, offset);
+            const publicacionesObtenidas = await publicacionesDAO.obtenerPublicacionesPorPeriodo(fechaInicio, fechaFin, offset);
+
+            const publicaciones = [];
+            for (const publicacion of Array.from(publicacionesObtenidas)) {
+                const puntuacionUsuario = await reseniasDAO.calcularPuntuacionUsuario(publicacion.Usuario.id);
+
+                publicacion.Usuario.puntuacion = puntuacionUsuario;
+
+                publicaciones.push(formatearRespuestaJSON(publicacion));
+            }
+
             res.status(200).json(publicaciones);
         } catch (error) {
+            console.log(error);
             next(new AppError('Ocurrió un error al obtener las publicaciones.', 500));
         }
     }
@@ -335,6 +409,34 @@ class PublicacionesController {
             next(new AppError('Ocurrió un error al eliminar la publicacion', 500));
         }
     }
+
+}
+
+function formatearRespuestaJSON(publicacionData) {
+    const respuestaJSON = {
+        id: publicacionData.id,
+        titulo: publicacionData.titulo,
+        descripcion: publicacionData.descripcion,
+        fechaPublicacion: (publicacionData.fechaPublicacion.getDate()) + '-' + (publicacionData.fechaPublicacion.getMonth() + 1) + '-' + publicacionData.fechaPublicacion.getFullYear(),
+        precio: publicacionData.precio,
+        estado: publicacionData.estado,
+        tipo: publicacionData.Subastum ? 'Subasta' : "Venta",
+        categoria: {
+            nombre: publicacionData.Categorium.nombre
+        },
+        usuario: {
+            id: publicacionData.Usuario.id,
+            nombres: publicacionData.Usuario.nombres,
+            apellidoPaterno: publicacionData.Usuario.apellidoPaterno,
+            apellidoMaterno: publicacionData.Usuario.apellidoMaterno,
+            fotoPerfil: publicacionData.Usuario.fotoPerfil,
+            puntuacion: publicacionData.Usuario.puntuacion
+        },
+        imagenes: publicacionData.ImagenesPublicacions.map(imagen => imagen.url),
+        etiquetas: publicacionData.EtiquetasPublicacions.map(etiqueta => etiqueta.etiqueta)
+    }
+
+    return respuestaJSON;
 }
 
 module.exports = new PublicacionesController();

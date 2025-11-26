@@ -173,7 +173,7 @@ class ReseniasDAO {
             });
 
             let sumPuntuaciones;
-            for(const resenia of resenias) {
+            for(const resenia of Array.from(resenias)) {
                 sumPuntuaciones += resenia.calificacion; 
             }
 
