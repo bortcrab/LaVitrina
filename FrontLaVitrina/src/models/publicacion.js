@@ -1,27 +1,44 @@
 export class Publicacion {
-    constructor(id, titulo, descripcion, precio, imagen, etiquetas = [], estado = 'Venta', vendido = false, usuario = null, fecha = null) {
-        this.id = id;
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.precio = precio;
-        this.imagen = imagen;
-        this.etiquetas = etiquetas;
-        this.estado = estado;
-        this.vendido = vendido;
-        this.usuario = usuario;
+    /**
+     * @param {Object} datos - El objeto JSON que viene del backend
+     */
+    constructor(datos) {
+        this.id = datos.id;
+        this.titulo = datos.titulo;
+        this.descripcion = datos.descripcion;
         
-        this.fechaPublicacion = fecha ? fecha : new Date();
+        // Convertimos precio a número para evitar errores matemáticos
+        this.precio = Number(datos.precio) || 0; 
+        
+        this.imagenes = datos.imagenes || [];
+        this.etiquetas = datos.etiquetas || [];
+        
+        this.estado = datos.estado || 'Disponible';
+        this.tipo = datos.tipo || 'Venta';
+        
+        this.categoria = datos.categoria || { nombre: 'Sin categoría' };
+        
+        this.usuario = datos.usuario || null;
+        
+        this.fechaPublicacion = datos.fechaPublicacion || new Date().toLocaleDateString();
+
+        this.vendido = this.estado === 'Vendido';
     }
 
     marcarComoVendido() {
         this.vendido = true;
+        this.estado = 'Vendido';
     }
 
     marcarComoDisponible() {
         this.vendido = false;
+        this.estado = 'Disponible';
     }
 
     cambiarEstadoVenta() {
         this.vendido = !this.vendido;
+        this.estado = this.vendido ? 'Vendido' : 'Disponible';
     }
+    
+
 }

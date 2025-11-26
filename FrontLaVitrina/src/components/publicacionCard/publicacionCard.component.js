@@ -13,10 +13,18 @@ export class PublicacionComponent extends HTMLElement {
         const titulo = this.getAttribute('titulo');
         const descripcion = this.getAttribute('descripcion');
         const precio = this.getAttribute('precio');
-        const imagen = this.getAttribute('imagen');
-        const estado = this.getAttribute('estado');
+        const imagenUrl = this.getAttribute('imagen') || this.getAttribute('imagenes');
+        const tipo = this.getAttribute('tipo');
+        const datosParaLaClase = {
+            id: id,
+            titulo: titulo,
+            descripcion: descripcion,
+            precio: precio,
+            imagenes: imagenUrl ? [imagenUrl] : [], 
+            tipo: tipo
+        };
 
-        const publicacion = new Publicacion(id, titulo, descripcion, precio, imagen, [], estado);
+        const publicacion = new Publicacion(datosParaLaClase);
         this.#agregarEstilos(shadow);
         this.#render(shadow, publicacion);
     }
@@ -25,14 +33,14 @@ export class PublicacionComponent extends HTMLElement {
         shadow.innerHTML += `
         <div class="card-container">
             <div class="card-image">
-                <img src="${publicacion.imagen}" alt="Imagen no disponible" >
+                <img src="${publicacion.imagenes[0]}" alt="Imagen no disponible" >
             </div>
 
             <div class="card-details">
                 <h4>${publicacion.titulo}</h4>
                 <div class="card-footer">
-                    <span class="price">${publicacion.precio}</span>
-                    <span class="tag">${publicacion.estado}</span>
+                    <span class="price">$${publicacion.precio}</span>
+                    <span class="tag">${publicacion.tipo}</span>
                 </div>
                 
             </div>
