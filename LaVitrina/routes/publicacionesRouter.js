@@ -5,12 +5,12 @@ const router = express.Router();
 
 router.post('/', publicacionesController.crearPublicacion);
 router.get('/', publicacionesController.obtenerPublicaciones);
-router.get('/:id', publicacionesController.obtenerPublicacionPorId);
-router.get('/usuario/:id', publicacionesController.obtenerPublicacionesPorUsuario);
 router.get('/buscar', publicacionesController.obtenerPublicacionesPorTitulo);
-router.get('/categoria/:id', publicacionesController.obtenerPublicacionesPorCategoria);
 router.get('/etiquetas', publicacionesController.obtenerPublicacionesPorEtiquetas);
 router.get('/periodo', publicacionesController.obtenerPublicacionesPorPeriodo);
+router.get('/usuario/:id', publicacionesController.obtenerPublicacionesPorUsuario);
+router.get('/categoria/:id', publicacionesController.obtenerPublicacionesPorCategoria);
+router.get('/:id', publicacionesController.obtenerPublicacionPorId);
 router.put('/:id', publicacionesController.actualizarPublicacion);
 router.delete('/:id', publicacionesController.eliminarPublicacion);
 
