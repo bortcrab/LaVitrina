@@ -54,7 +54,39 @@ class ReseniasController {
             const idUsuarioReseniado = req.params.idUsuarioReseniado;
             const resenias = await ReseniaDAO.obtenerReseniasPorUsuarioReseniado(idUsuarioReseniado);
 
-            res.status(200).json(resenias);
+            let datosUsuario = null;
+            let puntuacion = 0;
+
+            if(resenias.length>0){
+                const primerResenia = resenias[0];
+
+                datosUsuario = primerResenia.UsuarioReseniado;
+
+                const sumaCalificaciones = resenias.reduce((acumulador, r) => acumulador + r.calificacion, 0);
+                puntuacion = sumaCalificaciones / resenias.length;
+
+                puntuacion = parseFloat(puntuacion.toFixed(1));
+            }else{
+                return res.status(200).json({ 
+                    usuario: null, 
+                    puntuacion: 0, 
+                    resenias: [] 
+                });
+            }
+
+            const respuesta = {
+                usuario: {
+                    id: datosUsuario.id,
+                    nombres: datosUsuario.nombres,
+                    apellidoPaterno: datosUsuario.apellidoPaterno,
+                    apellidoMaterno: datosUsuario.apellidoMaterno,
+                    fotoPerfil: datosUsuario.fotoPerfil,
+                    puntuacion: puntuacion 
+                },
+                resenias: resenias
+            };
+
+            res.status(200).json(respuesta);
         } catch (error) {
             next(new AppError('Ocurrió un error al obtener las reseñas', 500));
         }
@@ -81,7 +113,7 @@ class ReseniasController {
             const resenias = await ReseniaDAO.obtenerReseniasMasBajas(id);
             if (resenias.length === 0) {
                 return next(new AppError('No se encontraron reseñas', 404));
-            }   
+            }
             res.status(200).json(resenias);
         } catch (error) {
             next(new AppError('Ocurrió un error al obtener las reseñas', 500));
@@ -91,7 +123,7 @@ class ReseniasController {
     static async actualizarResenia(req, res, next) {
         try {
             const id = req.params.id;
-            const { titulo, descripcion, calificacion } = req.body;     
+            const { titulo, descripcion, calificacion } = req.body;
             const reseniaExistente = await ReseniaDAO.obtenerReseniaPorId(id);
             if (!reseniaExistente) {
                 return next(new AppError('Reseña no encontrada', 404));
@@ -108,7 +140,7 @@ class ReseniasController {
         }
     }
 
-    static async eliminarResenia(req, res, next) {  
+    static async eliminarResenia(req, res, next) {
         try {
             const id = req.params.id;
             const reseniaExistente = await ReseniaDAO.obtenerReseniaPorId(id);
@@ -119,8 +151,13 @@ class ReseniasController {
             res.status(200).json({ message: 'Reseña eliminada correctamente' });
         } catch (error) {
             next(new AppError('Ocurrió un error al eliminar la reseña', 500));
-        }   
+        }
     }
+
+
+    
+
+        
 }
 
 module.exports = ReseniasController;
