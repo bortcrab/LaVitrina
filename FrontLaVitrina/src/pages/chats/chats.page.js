@@ -10,6 +10,7 @@ export class ChatsPage extends HTMLElement {
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
         this.#render(shadow);
+        ChatService.initSocket();
         this.#inicializar(shadow);
         this.#agregarListeners(shadow);
     }
@@ -35,9 +36,16 @@ export class ChatsPage extends HTMLElement {
     async #cargarMensajesDeChat(chatId, component) {
         try {
             this.chatActual = this.chats.find(c => c.id === chatId);
+            ChatService.unirseAlChat(chatId);
             const mensajes = await ChatService.obtenerMensajes(chatId);
-            
             component.setChatActivo(this.chatActual, mensajes);
+
+            ChatService.escucharNuevosMensajes((nuevoMensaje) => {
+                if (this.chatActual && this.chatActual.id === nuevoMensaje.idChat) {
+                    component.agregarMensaje(nuevoMensaje);
+                }
+            });
+
         } catch (error) {
             console.error(error);
         }
@@ -53,12 +61,7 @@ export class ChatsPage extends HTMLElement {
 
         component.addEventListener('enviar-mensaje', async (e) => {
             const { chatId, texto } = e.detail;
-            try {
-                await ChatService.enviarMensaje(chatId, texto);
-                await this.#cargarMensajesDeChat(chatId, component);
-            } catch (error) {
-                console.error("Error enviando mensaje", error);
-            }
+            ChatService.enviarMensaje(chatId, texto);
         });
     }
 }

@@ -53,6 +53,29 @@ export class ChatsComponent extends HTMLElement {
         if(this.#chatActual) this.#scrollToBottom(shadow);
     }
 
+    agregarMensaje(mensaje) {
+        this.#mensajes.push(mensaje);
+        
+        const shadow = this.shadowRoot;
+        const container = shadow.getElementById('mensajesContainer');
+        
+        if (container) {
+            const divMensaje = document.createElement('div');
+            divMensaje.className = `mensaje ${mensaje.enviado ? 'enviado' : 'recibido'}`;
+            divMensaje.innerHTML = `
+                <div class="mensaje-bubble">
+                    ${mensaje.texto ? `<div>${mensaje.texto}</div>` : ''}
+                    ${mensaje.imagenes && mensaje.imagenes.length > 0 ? 
+                        `<div class="mensaje-imagenes"><img src="${mensaje.imagenes[0]}" class="mensaje-imagen"></div>` : ''}
+                </div>
+                <div class="mensaje-hora">${mensaje.hora}</div>
+            `;
+            container.appendChild(divMensaje);
+            
+            this.#scrollToBottom(shadow);
+        }
+    }
+
     #renderChatsLista() {
         if (!this.#chats.length) return '<div class="chat-vacio"><p>No tienes chats.</p></div>';
 
