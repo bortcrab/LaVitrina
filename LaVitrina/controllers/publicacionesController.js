@@ -77,6 +77,28 @@ class PublicacionesController {
     }
 
     /**
+     * Obtiene una publicación específica por su ID.
+     *
+     * Params:
+     * - `req.params.id`: ID de la publicación a obtener.
+     *
+     * @param {import('express').Request} req - Request de Express. Usa `req.params.id`.
+     * @param {import('express').Response} res - Response de Express.
+     * @param {import('express').NextFunction} next - Next function para manejo de errores.
+     * @returns {Promise<void>} Responde con status 200 y los datos de la publicación.
+     */
+    async obtenerPublicacionPorId(req, res, next) {
+        try {
+            const id = req.params.id;
+
+            const publicacion = await publicacionesDAO.obtenerPublicacionPorId(id);
+            res.status(200).json(publicacion);
+        } catch (error) {
+            next(new AppError('Ocurrió un error al obtener la publicación.', 500));
+        }
+    }
+
+    /**
      * Obtiene publicaciones de un usuario específico (paginado).
      *
      * Params:
