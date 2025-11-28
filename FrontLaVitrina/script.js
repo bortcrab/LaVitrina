@@ -7,8 +7,6 @@ import { PublicacionOpcionesComponent } from "./src/components/publicacionCardOp
 import { PerfilComponent } from './src/components/perfil/perfil.component.js';
 import { ChatsComponent } from './src/components/chats/chats.component.js';
 import { IniciarSesionComponent } from "./src/components/iniciarSesion/iniciarSesion.component.js";
-import { ReseniasComponent } from "./src/components/resenias/resenias.component.js";
-import { DetallePublicacionComponent } from "./src/components/detallePublicacion/detallepublicacion.component.js";
 import { ReseniaCardComponent } from "./src/components/reseniaCard/reseniacard.component.js";
 import { SubastaCardComponent } from "./src/components/subastaCard/subastacard.component.js";
 
@@ -22,6 +20,8 @@ import { CrearPublicacionPage } from "./src/pages/crearPublicacion/crearPublicac
 import { EditarPublicacionPage } from "./src/pages/editarPublicacion/editarPublicacion.page.js";
 import { AgregarReseniaPage } from "./src/pages/agregarResenia/agregarResenia.page.js";
 import { MisPublicacionesPage } from './src/pages/misPublicaciones/misPublicaciones.page.js';
+import { ReseniasPage } from "./src/pages/resenias/resenias.page.js";
+import { DetallePublicacionPage } from "./src/pages/detallePublicacion/detallepublicacion.page.js";
 
 //definir componentes
 window.customElements.define('sidebar-info', SidebarComponent);
@@ -32,8 +32,7 @@ window.customElements.define('publicacion-opciones-info', PublicacionOpcionesCom
 window.customElements.define('perfil-info', PerfilComponent);
 window.customElements.define('chats-info', ChatsComponent);
 window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
-window.customElements.define('resenias-info', ReseniasComponent);
-window.customElements.define('detalle-publicacion-info', DetallePublicacionComponent);
+window.customElements.define('detalle-publicacion-info', DetallePublicacionPage);
 window.customElements.define('resenia-card-info', ReseniaCardComponent);
 window.customElements.define('subasta-card-info', SubastaCardComponent);
 
@@ -47,6 +46,7 @@ window.customElements.define('crear-publicacion-page', CrearPublicacionPage);
 window.customElements.define('editar-publicacion-page', EditarPublicacionPage);
 window.customElements.define('agregar-resenia-page', AgregarReseniaPage);
 window.customElements.define('mis-publicaciones-page', MisPublicacionesPage);
+window.customElements.define('resenias-info', ReseniasPage);
 
 document.addEventListener('DOMContentLoaded', function () {
 

@@ -45,54 +45,6 @@ export class PublicacionService {
         }
     }
 
-    static async obtenerPublicacionPorTitulo(titulo, pagina = 1){
-        try {
-            const params = new URLSearchParams({titulo,pagina})
-            const response = await fetch(`${API_URL}/buscar?${params}`, {
-                method: 'GET',
-                headers: this.getHeaders()
-            });
-
-            if (!response.ok) throw new Error('Publicación no encontrada');
-
-            if(!response.ok) return [];
-            return await response.json();
-        } catch (error) {
-            console.error(error);
-            return [];
-        }
-    }
-
-    static async obtenerPublicacionesPorCategoria(idCategoria, pagina=1){
-        try {
-            const response = await fetch(`${API_URL}/categoria/${idCategoria}?pagina=${pagina}`, {
-                method: 'GET',
-                headers: this.getHeaders()
-            });
-
-            if (!response.ok) throw new Error('Error al filtrar por categoria');
-            return await response.json();
-        } catch (error) {
-            console.error(error);
-            return [];
-        }
-    }
-
-    static async obtenerPublicacionPorUsuario(idUsuario, pagina=1){
-        try {
-            const response = await fetch(`${API_URL}/usuario/${idUsuario}?pagina=${pagina}`, {
-                method: 'GET',
-                headers: this.getHeaders()
-            });
-            if (!response.ok) throw new Error('Error al obtener publicaciones del usuario');
-            return await response.json();
-
-        } catch (error) {
-            console.error(error);
-            return [];
-        }
-    }
-
     static crearPublicacion(datosPublicacion) {
         console.log('PublicacionService: Recibiendo datos para crear:', {
             ...datosPublicacion,
@@ -269,4 +221,5 @@ export class PublicacionService {
     static filtrarPorDisponibilidad(vendido) {
         return this.publicaciones.filter(pub => pub.vendido === vendido);
     }
+    
 }
