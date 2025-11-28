@@ -48,16 +48,6 @@ window.customElements.define('agregar-resenia-page', AgregarReseniaPage);
 window.customElements.define('mis-publicaciones-page', MisPublicacionesPage);
 window.customElements.define('resenias-info', ReseniasPage);
 
-function verificarSesion(ctx, next) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        console.warn("Acceso denegado: No hay sesión activa.");
-        page.redirect('/iniciar-sesion');
-    } else {
-        next();
-    }
-}
-
 function esTokenValido(token) {
     if (!token) return false;
 
