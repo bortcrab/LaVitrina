@@ -1,6 +1,6 @@
 import { PublicacionService } from "../../services/publicacion.service.js";
 
-export class DetallePublicacionComponent extends HTMLElement {
+export class DetallePublicacionPage extends HTMLElement {
 
     constructor() {
         super();
@@ -12,7 +12,7 @@ export class DetallePublicacionComponent extends HTMLElement {
 
         const id = this.getAttribute('id');
     
-        const publicacion = await PublicacionService.obtenerPublicacionesPorId(id);
+        const publicacion = await PublicacionService.obtenerPublicacion(id);
 
         this.#agregaEstilo(shadow);
         
