@@ -1,28 +1,10 @@
-const { Chat } = require('../models');
-const { Mensaje } = require('../models');
-const { Usuario } = require('../models');
-const { MensajeTexto } = require('../models');
-const { MensajeImagen } = require('../models');
+const { Chat, Mensaje, Usuario, MensajeTexto, MensajeImagen, Publicacion, ImagenesPublicacion, UsuarioChat } = require('../models');
+const { Op } = require('sequelize');
 
-/**
- * Clase que gestiona el acceso a datos de los chats.
- * Proporciona métodos para crear, obtener y eliminar chats, así como
- * obtener los chats asociados a un usuario específico.
- */
 class ChatsDAO {
 
-    constructor() {
+    constructor() {}
 
-    }
-
-    /**
-     * Crea un nuevo chat en la base de datos.
-     * 
-     * @param {string} nombre Nombre del chat a crear
-     * @param {Date} fechaCreacion Fecha de creación del chat
-     * @returns {Promise<Chat>} Chat creado
-     * @throws {Error} Por si hay un error al crear el chat
-     */
     async crearChat(nombre, fechaCreacion, idPublicacion) {
         try {
             const chatCreado = await Chat.create({ nombre, fechaCreacion, idPublicacion });
@@ -32,13 +14,6 @@ class ChatsDAO {
         }
     }
 
-    /**
-     * Obtiene un chat por su id.
-     * 
-     * @param {number} id Id del chat a obtener
-     * @returns {Promise<Chat>} Chat encontrado
-     * @throws {Error} Por si hay un error al obtener el chat
-     */
     async obtenerChatPorId(id) {
         try {
             const chatObtenido = await Chat.findByPk(id);
@@ -48,24 +23,37 @@ class ChatsDAO {
         }
     }
 
-    /**
-     * Obtiene todos los chats asociados a un usuario específico.
-     * 
-     * @param {number} idUsuario Id del usuario
-     * @returns {Promise<Chat[]>} Array de chats del usuario, incluye el último mensaje de cada chat
-     * @throws {Error} Por si hay un error al obtener los chats
-     */
     async obtenerChatsPorUsuario(idUsuario, limit = 20, offset = 0) {
         try {
+            const relaciones = await UsuarioChat.findAll({
+                where: { idUsuario: idUsuario },
+                attributes: ['idChat']
+            });
+            
+            const chatIds = relaciones.map(r => r.idChat);
+
+            if (chatIds.length === 0) return [];
+
             const chats = await Chat.findAll({
+                where: {
+                    id: { [Op.in]: chatIds }
+                },
                 limit: limit,
                 offset: offset,
                 include: [
                     {
                         model: Usuario,
-                        where: { id: idUsuario },
-                        attributes: [],
+                        attributes: ['id', 'nombres', 'apellidoPaterno', 'fotoPerfil'],
                         through: { attributes: [] }
+                    },
+                    {
+                        model: Publicacion,
+                        attributes: ['id', 'titulo'], 
+                        include: [{
+                            model: ImagenesPublicacion,
+                            limit: 1,
+                            attributes: ['url']
+                        }]
                     },
                     {
                         model: Mensaje,
@@ -77,23 +65,18 @@ class ChatsDAO {
                         order: [['fechaEnviado', 'DESC']]
                     }
                 ],
-                order: [['updatedAt', 'DESC']],
+                order: [['updatedAt', 'DESC']], 
                 subQuery: false 
             });
+            
             return chats;
 
         } catch (error) {
+            console.log(error);
             throw error;
         }
     }
 
-    /**
-     * Elimina un chat por su identificador.
-     * 
-     * @param {number} id Id del chat a eliminar
-     * @returns {Promise<string>} Mensaje de confirmación
-     * @throws {Error} Por si el chat no existe o hay un error al eliminarlo
-     */
     async eliminarChat(id) {
         try {
             const chatObtenido = await Chat.findByPk(id);
