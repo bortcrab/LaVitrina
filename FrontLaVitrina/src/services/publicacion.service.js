@@ -5,10 +5,10 @@ const API_URL = '/api/publicaciones';
 
 export class PublicacionService {
     static getHeaders() {
-        //const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token');
         return {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjQzMDcyNDAsImV4cCI6MTc2NDMxMDg0MH0.-rFrVoOfJRfGblBWNRMIEGHCN0HLIAw2cdj-tg1xPmg` // Tu backend usa validateJWT, así que esto es obligatorio
+            'Authorization': `Bearer ${token}` 
         };
     }
 
@@ -24,7 +24,7 @@ export class PublicacionService {
             const datos = await response.json();
             return datos; 
         } catch (error) {
-            console.error(error);
+            console.error("Ha ocurrido un erro al obtener las publicaciones");
             return [];
         }
     }
