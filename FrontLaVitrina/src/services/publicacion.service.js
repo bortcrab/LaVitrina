@@ -2,8 +2,13 @@ import { Publicacion } from '../models/publicacion.js';
 import { Usuario } from '../models/usuario.js';
 
 const API_URL = '/api/publicaciones';
+const API_CATEGORIAS = 'http://localhost:3000/api/categorias';
 
 export class PublicacionService {
+    static #urlService = 'http://localhost:3000/api';
+    static #urlPublicaciones = '/publicaciones/';
+    static #urlSubastas = '/subastas/';
+
     static getHeaders() {
         const token = localStorage.getItem('token');
         return {
@@ -16,13 +21,13 @@ export class PublicacionService {
         try {
             const response = await fetch(API_URL, {
                 method: 'GET',
-                headers: this.getHeaders() 
+                headers: this.getHeaders()
             });
 
             if (!response.ok) throw new Error('Error al obtener publicaciones');
-            
+
             const datos = await response.json();
-            return datos; 
+            return datos;
         } catch (error) {
             console.error("Ha ocurrido un erro al obtener las publicaciones");
             return [];
@@ -45,126 +50,35 @@ export class PublicacionService {
         }
     }
 
-    static crearPublicacion(datosPublicacion) {
-        console.log('PublicacionService: Recibiendo datos para crear:', {
-            ...datosPublicacion,
-            imagenes: datosPublicacion.imagenes.map(f => ({ nombre: f.name, tamaño: f.size }))
-        });
+    static async crearPublicacion(datosPublicacion) {
+        try {
+            let fetchUrl;
+            if ('inicioSubasta' in datosPublicacion && 'finSubasta' in datosPublicacion) {
+                fetchUrl = this.#urlService + this.#urlSubastas;
+            } else {
+                fetchUrl = this.#urlService + this.#urlPublicaciones;
+            }
+            // Asegúrate de que API_URL sea el endpoint correcto para crear (e.g., '/publicaciones')
+            const response = await fetch(fetchUrl, {
+                // 1. Usa el método POST para crear recursos
+                method: 'POST',
+                headers: this.getHeaders(),
+                // 3. Convierte el objeto JavaScript a una cadena JSON para el cuerpo
+                body: JSON.stringify(datosPublicacion)
+            });
 
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                const errores = [];
+            const responseData = await response.json();
+            if (responseData.status === 'fail') {
+                throw new Error(responseData.message);
+            }
 
-                // Validar título
-                if (!datosPublicacion.titulo || datosPublicacion.titulo.trim() === '') {
-                    errores.push("El título es obligatorio.");
-                } else if (datosPublicacion.titulo.length < 5) {
-                    errores.push("El título debe tener al menos 5 caracteres.");
-                } else if (datosPublicacion.titulo.length > 100) {
-                    errores.push("El título no puede exceder 100 caracteres.");
-                }
+            console.log('Publicación creada con éxito:', responseData);
+            return responseData; // Retorna el objeto de la publicación creada
 
-                // Validar descripción
-                if (!datosPublicacion.descripcion || datosPublicacion.descripcion.trim() === '') {
-                    errores.push("La descripción es obligatoria.");
-                } else if (datosPublicacion.descripcion.length < 10) {
-                    errores.push("La descripción debe tener al menos 10 caracteres.");
-                } else if (datosPublicacion.descripcion.length > 1000) {
-                    errores.push("La descripción no puede exceder 1000 caracteres.");
-                }
-
-                // Validar precio
-                if (!datosPublicacion.precio || datosPublicacion.precio <= 0) {
-                    errores.push("El precio debe ser mayor a 0.");
-                } else if (datosPublicacion.precio > 1000000) {
-                    errores.push("El precio no puede exceder $1,000,000.");
-                }
-
-                // Validar categoría
-                if (!datosPublicacion.categoria || datosPublicacion.categoria === 'Seleccionar') {
-                    errores.push("Debes seleccionar una categoría válida.");
-                }
-
-                // Validar imágenes
-                if (!datosPublicacion.imagenes || datosPublicacion.imagenes.length === 0) {
-                    errores.push("Debes agregar al menos una imagen.");
-                } else if (datosPublicacion.imagenes.length > 10) {
-                    errores.push("No puedes agregar más de 10 imágenes.");
-                } else {
-                    // Validar tamaño de cada imagen (máx 5MB por imagen)
-                    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-                    const imagenesGrandes = datosPublicacion.imagenes.filter(img => img.size > MAX_SIZE);
-                    if (imagenesGrandes.length > 0) {
-                        errores.push(`Algunas imágenes exceden el tamaño máximo de 5MB.`);
-                    }
-
-                    // Validar tipo de archivo
-                    const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-                    const imagenesInvalidas = datosPublicacion.imagenes.filter(img => !tiposPermitidos.includes(img.type));
-                    if (imagenesInvalidas.length > 0) {
-                        errores.push("Solo se permiten imágenes en formato JPG, PNG, WEBP o GIF.");
-                    }
-                }
-
-                // Validar etiquetas
-                if (datosPublicacion.etiquetas && datosPublicacion.etiquetas.length > 10) {
-                    errores.push("No puedes agregar más de 10 etiquetas.");
-                }
-
-                // Validar tipo de publicación
-                if (!datosPublicacion.tipoPublicacion || !['venta', 'subasta'].includes(datosPublicacion.tipoPublicacion)) {
-                    errores.push("El tipo de publicación debe ser 'venta' o 'subasta'.");
-                }
-
-                // Validar fechas de subasta
-                if (datosPublicacion.tipoPublicacion === 'subasta') {
-                    if (!datosPublicacion.inicioSubasta) {
-                        errores.push("La fecha de inicio de subasta es obligatoria.");
-                    }
-                    if (!datosPublicacion.finSubasta) {
-                        errores.push("La fecha de fin de subasta es obligatoria.");
-                    }
-
-                    if (datosPublicacion.inicioSubasta && datosPublicacion.finSubasta) {
-                        const fechaInicio = new Date(datosPublicacion.inicioSubasta);
-                        const fechaFin = new Date(datosPublicacion.finSubasta);
-                        const ahora = new Date();
-
-                        if (isNaN(fechaInicio.getTime()) || isNaN(fechaFin.getTime())) {
-                            errores.push("Las fechas de subasta no son válidas.");
-                        } else {
-                            if (fechaInicio < ahora) {
-                                errores.push("La fecha de inicio debe ser futura.");
-                            }
-                            if (fechaFin <= fechaInicio) {
-                                errores.push("La fecha de fin debe ser posterior a la fecha de inicio.");
-                            }
-                        }
-                    }
-                }
-
-                // Si hay errores, rechazar
-                if (errores.length > 0) {
-                    console.error('❌ PublicacionService: Errores de validación:', errores);
-                    reject({
-                        message: errores.join(' '),
-                        errores: errores
-                    });
-                    return;
-                }
-
-                const publicacionCreada = {
-                    id: Date.now(),
-                    ...datosPublicacion,
-                    vendido: false,
-                    fechaCreacion: new Date().toISOString()
-                };
-
-                console.log('✅ PublicacionService: Creación simulada exitosa.');
-                resolve(publicacionCreada);
-
-            }, 500);
-        });
+        } catch (error) {
+            console.error('PublicacionService:', error.message);
+            throw error;
+        }
     }
 
     static async editarPublicacion(id, datosActualizados) {
@@ -221,5 +135,31 @@ export class PublicacionService {
     static filtrarPorDisponibilidad(vendido) {
         return this.publicaciones.filter(pub => pub.vendido === vendido);
     }
-    
+
+    /**
+     * Obtiene la lista de categorías desde la API.
+     * @returns {Promise<Array<{id: number, nombre: string}>>} Una promesa con el array de categorías.
+     */
+    static async obtenerCategorias() {
+        try {
+            const response = await fetch(`${API_CATEGORIAS}`, {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) {
+                // Lanza un error si el servidor responde con un status 4xx o 5xx
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al obtener las categorías de la API.');
+            }
+
+            const categorias = await response.json();
+            return categorias;
+
+        } catch (error) {
+            console.error('Error en PublicacionService.obtenerCategorias:', error);
+            // Relanzamos el error para que el componente pueda manejarlo (ej. mostrar un mensaje al usuario)
+            throw error;
+        }
+    }
 }

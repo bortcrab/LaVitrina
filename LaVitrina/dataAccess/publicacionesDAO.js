@@ -40,7 +40,16 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion>} La publicación creada.
      * @throws {Error} Si ocurre un error al crear la publicación.
      */
-    async crearPublicacion(titulo, descripcion, precio, etiquetas, imagenes, idCategoria, idUsuario) {
+    async crearPublicacion(publicacionData) {
+        const {
+            titulo,
+            descripcion,
+            precio,
+            etiquetas,
+            imagenes,
+            idCategoria,
+            idUsuario
+        } = publicacionData;
         try {
             const fechaPublicacion = new Date();
             const estado = 'Disponible';
@@ -273,7 +282,7 @@ class PublicacionesDAO {
             throw error;
         }
     }
-    
+
     /**
      * Obtiene una lista de publicaciones que contienen alguna de las etiquetas especificadas.
      * 

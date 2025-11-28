@@ -1,9 +1,11 @@
 import { PublicacionService } from '../../services/publicacion.service.js';
 
 export class CrearPublicacionPage extends HTMLElement {
+
     constructor() {
         super();
         this.archivosImagenes = [];
+        this.categorias = []; // Inicializar
     }
 
     connectedCallback() {
@@ -11,6 +13,7 @@ export class CrearPublicacionPage extends HTMLElement {
         this.#agregarEstilos(shadow);
         this.#render(shadow);
         this.#agregarEventListeners(shadow);
+        this.#cargarCategorias(shadow);
     }
 
     #render(shadow) {
@@ -45,10 +48,6 @@ export class CrearPublicacionPage extends HTMLElement {
                         <div class="contenedor-input-horizontal">
                             <label for="categoria">Categoría</label>
                             <select name="categoria" id="categoria">
-                                <option value="0">Seleccionar</option>
-                                <option value="1">Electrónica</option>
-                                <option value="2">Ropa</option>
-                                <option value="3">Hogar</option>
                             </select>
                         </div>
                     </div>
@@ -130,7 +129,7 @@ export class CrearPublicacionPage extends HTMLElement {
             event.target.value = '';
         });
 
-        // ✅ FORMATEO DE PRECIO EN TIEMPO REAL
+        // FORMATEO DE PRECIO EN TIEMPO REAL
         const precioInput = shadow.getElementById('precio');
 
         // Función para formatear el precio
@@ -210,8 +209,6 @@ export class CrearPublicacionPage extends HTMLElement {
             }
         });
 
-
-
         const etiquetasInput = shadow.getElementById('etiquetas');
         const tagContainer = shadow.getElementById('tag-container');
 
@@ -281,106 +278,32 @@ export class CrearPublicacionPage extends HTMLElement {
 
             const categoriaElement = shadow.getElementById('categoria');
             const categoriaValue = categoriaElement.value;
-            const categoria = categoriaElement.options[categoriaElement.selectedIndex].text;
             const tipoPublicacion = shadow.getElementById('venta').checked ? 'venta' : 'subasta';
 
             const etiquetasElementos = shadow.querySelectorAll('.tag-text');
             const etiquetas = Array.from(etiquetasElementos).map(el => el.textContent.replace(' | ', '').trim());
-
-            // VALIDACIONES EN EL FRONTEND
-            const errores = [];
-
-            // Validar título
-            if (!titulo) {
-                errores.push('El título es obligatorio.');
-            } else if (titulo.length < 5) {
-                errores.push('El título debe tener al menos 5 caracteres.');
-            } else if (titulo.length > 100) {
-                errores.push('El título no puede exceder 100 caracteres.');
-            }
-
-            // Validar descripción
-            if (!descripcion) {
-                errores.push('La descripción es obligatoria.');
-            } else if (descripcion.length < 10) {
-                errores.push('La descripción debe tener al menos 10 caracteres.');
-            } else if (descripcion.length > 1000) {
-                errores.push('La descripción no puede exceder 1000 caracteres.');
-            }
-
-            // Validar precio
-            if (precio <= 0) {
-                errores.push('El precio debe ser mayor a 0.');
-            } else if (precio > 1000000) {
-                errores.push('El precio no puede exceder $1,000,000.');
-            }
-
-            // Validar categoría
-            if (categoriaValue === '0') {
-                errores.push('Debes seleccionar una categoría.');
-            }
-
-            // Validar imágenes
-            if (this.archivosImagenes.length === 0) {
-                errores.push('Debes agregar al menos una imagen.');
-            } else if (this.archivosImagenes.length > 10) {
-                errores.push('No puedes agregar más de 10 imágenes.');
-            }
-
-            // Validar etiquetas (opcional, pero si hay, validar)
-            if (etiquetas.length > 10) {
-                errores.push('No puedes agregar más de 10 etiquetas.');
-            }
-
-            // Validar fechas de subasta
-            if (tipoPublicacion === 'subasta') {
-                const inicioSubasta = shadow.getElementById('inicio-subasta').value;
-                const finSubasta = shadow.getElementById('fin-subasta').value;
-
-                if (!inicioSubasta) {
-                    errores.push('La fecha de inicio de subasta es obligatoria.');
-                }
-                if (!finSubasta) {
-                    errores.push('La fecha de fin de subasta es obligatoria.');
-                }
-
-                if (inicioSubasta && finSubasta) {
-                    const fechaInicio = new Date(inicioSubasta);
-                    const fechaFin = new Date(finSubasta);
-                    const ahora = new Date();
-
-                    if (fechaInicio < ahora) {
-                        errores.push('La fecha de inicio debe ser futura.');
-                    }
-                    if (fechaFin <= fechaInicio) {
-                        errores.push('La fecha de fin debe ser posterior a la fecha de inicio.');
-                    }
-                }
-            }
-
-            // Si hay errores, mostrarlos y detener
-            if (errores.length > 0) {
-                alert('Por favor corrige los siguientes errores:\n\n• ' + errores.join('\n• '));
-                return;
-            }
 
             // 2. Preparar datos de la publicación
             let datosPublicacion = {
                 titulo,
                 descripcion,
                 precio,
-                categoria,
-                tipoPublicacion,
                 etiquetas,
                 imagenes: this.archivosImagenes,
+                idCategoria: categoriaValue,
+                idUsuario: 1
             };
 
             // 3. Agregar datos de subasta si aplica
+            let mensajeExito;
             if (tipoPublicacion === 'subasta') {
                 const inicioSubasta = shadow.getElementById('inicio-subasta').value;
                 const finSubasta = shadow.getElementById('fin-subasta').value;
                 datosPublicacion.inicioSubasta = inicioSubasta;
                 datosPublicacion.finSubasta = finSubasta;
+                mensajeExito = "Subasta creada con éxito.";
+            } else {
+                mensajeExito = "Publicación creada con éxito.";
             }
 
             // 4. Llamar al servicio para crear la publicación
@@ -388,23 +311,79 @@ export class CrearPublicacionPage extends HTMLElement {
                 // Deshabilitar el botón mientras se procesa
                 btnCrear.disabled = true;
                 btnCrear.textContent = 'Creando...';
-
+                console.log(JSON.stringify(datosPublicacion));
                 const publicacionCreada = await PublicacionService.crearPublicacion(datosPublicacion);
 
                 console.log('Publicación creada. Objeto de respuesta:', publicacionCreada);
-                alert('Publicación creada con éxito.');
+                alert(mensajeExito);
 
                 page('/home-page');
-
             } catch (error) {
-                console.error('Error al crear la publicación:', error);
-                alert(`Error al crear la publicación: ${error.message || 'Inténtelo de nuevo.'}`);
+                const mensaje = error.message;
+                // "AAAAAError: El título es obligatorio., La descripción es obligatoria., El precio debe ser mayor a 0."
+
+                // 1. Quitar "AAAAAError: "
+                const limpio = mensaje.replace(/^.*Error:\s*/, "");
+
+                // 2. Separar por comas
+                const lista = limpio.split(",").map(e => e.trim()).filter(e => e.length > 0);
+
+                // 3. Convertir a viñetas
+                const textoConViñetas = lista.map(e => "• " + e).join("\n");
+
+                alert('Por favor corrige los siguientes errores:\n\n' + textoConViñetas);
 
                 // Rehabilitar el botón
                 btnCrear.disabled = false;
                 btnCrear.textContent = 'Crear';
+                throw error;
             }
         });
+    }
+
+    /**
+     * @private
+     * Obtiene las categorías del servicio y las inyecta en el <select> del DOM.
+     * @param {ShadowRoot} shadow El Shadow DOM del componente.
+     */
+    async #cargarCategorias(shadow) {
+        try {
+            console.log('Iniciando carga de categorías...');
+
+            // 1. Llamar al servicio para obtener los datos
+            const categoriasObtenidas = await PublicacionService.obtenerCategorias();
+
+            // 2. Almacenar internamente
+            this.categorias = categoriasObtenidas;
+
+            // 3. Renderizar las opciones en el select
+            const selectCategoria = shadow.getElementById('categoria');
+
+            // Si hay categorías, llenar el select
+            if (categoriasObtenidas && categoriasObtenidas.length > 0) {
+                // Mapear el array de categorías a elementos <option>
+                const opcionesHTML = categoriasObtenidas.map(cat =>
+                    `<option value="${cat.id}">${cat.nombre}</option>`
+                ).join('');
+
+                // Agregar las nuevas opciones, manteniendo la primera opción 'Seleccionar'
+                selectCategoria.innerHTML += opcionesHTML;
+                console.log(`Categorías cargadas y renderizadas: ${this.categorias.length}`);
+            } else {
+                console.warn('El servicio no devolvió categorías o la lista está vacía.');
+                // Opcional: Mostrar un mensaje en el select
+                selectCategoria.innerHTML += `<option value="0" disabled>No hay categorías disponibles</option>`;
+            }
+
+        } catch (error) {
+            console.error('Error al cargar y renderizar categorías:', error);
+            // Mostrar un mensaje de error en el UI o dejar el select deshabilitado
+            const selectCategoria = shadow.getElementById('categoria');
+            selectCategoria.innerHTML = `<option value="0" disabled>Error de carga</option>`;
+            selectCategoria.disabled = true;
+            // Opcional: Mostrar un alert o un mensaje dentro de la página
+            // alert('Hubo un error al cargar la lista de categorías.');
+        }
     }
 
     #agregarEstilos(shadow) {
