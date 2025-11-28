@@ -5,10 +5,10 @@ const API_URL = '/api/publicaciones';
 
 export class PublicacionService {
     static getHeaders() {
-        //const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token');
         return {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjQxMjYxMjksImV4cCI6MTc2NDEyOTcyOX0.hpk1XLRR5b13kW-RD1QjzOkhIwj08BhiwT-qK0XjzwM` // Tu backend usa validateJWT, así que esto es obligatorio
+            'Authorization': `Bearer ${token}` 
         };
     }
 
@@ -24,10 +24,11 @@ export class PublicacionService {
             const datos = await response.json();
             return datos; 
         } catch (error) {
-            console.error(error);
+            console.error("Ha ocurrido un erro al obtener las publicaciones");
             return [];
         }
     }
+
     static async obtenerPublicacion(id) {
         try {
             const response = await fetch(`${API_URL}/${id}`, {
@@ -212,22 +213,6 @@ export class PublicacionService {
 
             }, 500);
         });
-    }
-
-
-    static async obtenerPublicacion(id) {
-        const publicaciones = this.getPublicaciones();
-
-        const idNumerico = parseInt(id);
-
-        const publicacion = publicaciones.find(p => p.id === idNumerico);
-
-        if (!publicacion) {
-            console.error(`No se encontró la publicación con id: ${id} (numérico: ${idNumerico})`);
-            throw new Error("Publicación no encontrada");
-        }
-
-        return JSON.parse(JSON.stringify(publicacion));
     }
 
     static async editarPublicacion(id, datosActualizados) {

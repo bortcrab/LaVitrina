@@ -1,3 +1,5 @@
+import { IniciarSesionService } from '../../services/iniciarSesion.service.js'
+
 export class IniciarSesionComponent extends HTMLElement {
     constructor() {
         super();
@@ -40,7 +42,7 @@ export class IniciarSesionComponent extends HTMLElement {
             <form id="formIniciarSesion" >
                 <div class="input-group">
                     <label>Correo electrónico</label>
-                    <input type="email" maxlength="100" id="correo" placeholder="ejemplo@direccion.com">
+                    <input type="email"name="email" autocomplete="username" maxlength="100" id="correo" placeholder="ejemplo@direccion.com">
                 </div>
 
                 <div class="input-group">
@@ -48,14 +50,14 @@ export class IniciarSesionComponent extends HTMLElement {
                         <label>Contraseña</label>
                         <a href="#" class="forgot-link" id="olvidoContrasenia">¿Olvidaste tu contraseña?</a>
                     </div>
-                    <input type="password" maxlength="30" id="contrasenia" placeholder="********">
+                    <input type="password" name="password" autocomplete="current-password" maxlength="30" id="contrasenia" placeholder="********">
                 </div>
 
                 <div class="error-message" id="errorMessage"></div>
                 <div class="success-message" id="successMessage"></div>
 
 
-                <a href="/home-page"><button type="submit">Entrar</button></a>
+                <button type="submit">Entrar</button>
 
                  
             </form>
@@ -88,33 +90,41 @@ export class IniciarSesionComponent extends HTMLElement {
             e.target.value = e.target.value.replace(/\s/g, '');
         });
 
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
 
             const correo = shadow.getElementById('correo').value.trim();
             const contrasenia = shadow.getElementById('contrasenia').value;
 
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
             if (!correo || !contrasenia) {
                 errorMessage.textContent = 'Por favor completa todos los campos';
                 errorMessage.style.display = 'block';
-                successMessage.style.display = 'none';
                 return;
             }
-            window.addEventListener('loginSuccess', (e) => {
-                successMessage.textContent = `¡Bienvenido de nuevo, ${e.detail.usuario.nombres}!`;
+
+            try {
+                const datos = await IniciarSesionService.iniciarSesion(correo, contrasenia);
+
+                console.log("Login exitoso, respuesta del server:", datos);
+
+                localStorage.setItem('token', datos.token);
+                localStorage.setItem('usuario', JSON.stringify(datos.usuario));
+
+                successMessage.textContent = `¡Bienvenido de nuevo, ${datos.usuario.nombres}!`;
                 successMessage.style.display = 'block';
-                errorMessage.style.display = 'none';
 
-                setTimeout(() => {
-                    page('/home-page');
-                }, 1500);
-            });
+                window.location.href = "/home-page"
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
 
-            this.dispatchEvent(new CustomEvent('loginSubmit', {
-                bubbles: true,
-                composed: true,
-                detail: { correo, contrasenia }
-            }));
+
         });
 
         linkRegistrarse.addEventListener('click', (e) => {
