@@ -48,70 +48,92 @@ window.customElements.define('agregar-resenia-page', AgregarReseniaPage);
 window.customElements.define('mis-publicaciones-page', MisPublicacionesPage);
 window.customElements.define('resenias-info', ReseniasPage);
 
+function verificarSesion(ctx, next) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.warn("Acceso denegado: No hay sesión activa.");
+        page.redirect('/iniciar-sesion');
+    } else {
+        next();
+    }
+}
+
+function redirigirSiEstaLogueado(ctx, next) {
+    const token = localStorage.getItem('token');
+    if (token) {
+        page.redirect('/home-page');
+    } else {
+        next();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
-    page('/home-page', () => {
+    page('/home-page',verificarSesion, () => {
         toggleNav(true);
         showContent('home-page');
     });
 
-    page('/perfil', () => {
+    page('/perfil', verificarSesion,() => {
         toggleNav(true);
         showContent('perfil-page');
     });
 
-    page('/chats', () => {
+    page('/chats', verificarSesion,() => {
         toggleNav(true);
         showContent('chats-page');
     });
 
-    page('/crear-publicacion', () => {
+    page('/crear-publicacion',verificarSesion, () => {
         toggleNav(true);
         showContent('crear-publicacion-page');
     });
 
-    page('/editar-publicacion/:id', (publicacion) => {
+    page('/editar-publicacion/:id', verificarSesion,(publicacion) => {
         toggleNav(true);
         const idPublicacion = publicacion.params.id;
         showContent('editar-publicacion-page', { id: idPublicacion });
     });
 
-    page('/agregar-resenia', () => {
+    page('/agregar-resenia', verificarSesion,() => {
         toggleNav(true);
         showContent('agregar-resenia-page');
     });
 
-    page('/iniciar-sesion', () => {
-        toggleNav(false);
-        showContent('iniciar-sesion-page');
-    });
 
-    page('/registrar', () => {
-        toggleNav(false);
-        showContent('registrar-page');
-    });
-
-    page('/resenias', (ctx) => {
+    page('/resenias',verificarSesion, (ctx) => {
         toggleNav(true);
         const datos = ctx.state || {};
         showContent('resenias-info', datos);
     });
 
-    page('/mis-publicaciones', () => {
+    page('/mis-publicaciones', verificarSesion,() => {
         toggleNav(true);
         showContent('mis-publicaciones-page');
     });
 
-    page('/detalle-publicacion/:id', (publicacion) => {
-        toggleNav(true); 
-        const idPublicacion = publicacion.params.id; 
+    page('/detalle-publicacion/:id',verificarSesion, (publicacion) => {
+        toggleNav(true);
+        const idPublicacion = publicacion.params.id;
         showContent('detalle-publicacion-info', { id: idPublicacion });
     });
 
-    page('/agregar-resenia/:id', (resenia) => {
+    page('/agregar-resenia/:id',verificarSesion, (resenia) => {
         toggleNav(true);
         const idUsuario = resenia.params.id;
         showContent('agregar-resenia-page', { id: idUsuario });
+    });
+
+    //RUTAS PUBLICAAAAS
+    
+    page('/iniciar-sesion',redirigirSiEstaLogueado, () => {
+        toggleNav(false);
+        showContent('iniciar-sesion-page');
+    });
+
+    page('/registrar',redirigirSiEstaLogueado, () => {
+        toggleNav(false);
+        showContent('registrar-page');
     });
 
     page('*', () => {

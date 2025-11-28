@@ -67,8 +67,7 @@ export class HomePage extends HTMLElement {
                 </div>
             `;
         }
-
-        return publicaciones.map(publicacion => 
+        return publicaciones.map(publicacion =>
             `
             <publicacion-info 
                 id="${publicacion.id}"
