@@ -10,10 +10,10 @@ export class PublicacionService {
     static #urlSubastas = '/subastas/';
 
     static getHeaders() {
-        //const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token');
         return {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjQzMTk5ODgsImV4cCI6MTc2NDMyMzU4OH0.nD85dsf_wNqa08eLBMgeJNtUs3nz79gudd6PuIHBcY0` // Tu backend usa validateJWT, así que esto es obligatorio
+            'Authorization': `Bearer ${token}` 
         };
     }
 
@@ -29,7 +29,7 @@ export class PublicacionService {
             const datos = await response.json();
             return datos;
         } catch (error) {
-            console.error(error);
+            console.error("Ha ocurrido un erro al obtener las publicaciones");
             return [];
         }
     }

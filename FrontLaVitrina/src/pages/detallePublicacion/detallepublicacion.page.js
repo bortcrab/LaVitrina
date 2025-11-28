@@ -4,7 +4,7 @@ export class DetallePublicacionPage extends HTMLElement {
 
     constructor() {
         super();
-        this.cssUrl = new URL('./detallepublicacion.component.css', import.meta.url).href;
+        this.cssUrl = new URL('./detallepublicacion.page.css', import.meta.url).href;
     }
 
     async connectedCallback() {
@@ -13,6 +13,8 @@ export class DetallePublicacionPage extends HTMLElement {
         const id = this.getAttribute('id');
     
         const publicacion = await PublicacionService.obtenerPublicacion(id);
+        const datosFecha = publicacion.fechaPublicacion.split('-');
+        publicacion.fechaPublicacion = datosFecha[0] + '/' + datosFecha[1] + '/' + datosFecha[2];
 
         this.#agregaEstilo(shadow);
         
@@ -27,24 +29,25 @@ export class DetallePublicacionPage extends HTMLElement {
     #render(shadow, publicacion) {
         shadow.innerHTML += `
             <div class="container">
-                <div class="publicacion-container">
-                    <h2 id="titulo">${publicacion.titulo}</h2>
-                    <div class="disponibilidad-fecha">
-                        <h3 id="disponibilidad">${publicacion.estado}</h3>
-                        <h4 id="fechaPublicacion">${publicacion.fechaPublicacion.getDate() + '-' + (publicacion.fechaPublicacion.getMonth() + 1) + '-' + publicacion.fechaPublicacion.getFullYear()}</h4>
+                <div class="izquierda">
+                    <div class="publicacion-container">
+                        <h2 id="titulo">${publicacion.titulo}</h2>
+                        <div class="disponibilidad-fecha">
+                            <h3 id="disponibilidad">${publicacion.estado}</h3>
+                            <h4 id="fechaPublicacion">${publicacion.fechaPublicacion}</h4>
+                        </div>
+                        <img src="${publicacion.imagen}" alt="">
+                        <div class="descripcion-info">
+                            <h3>Descripción</h3>
+                            <h3 id="precio">$ ${publicacion.precio}.00</h3>
+                        </div>
+                        <p id="descripcion">
+                            ${publicacion.descripcion}
+                        </p>
                     </div>
-                    <img src="${publicacion.imagen}" alt="">
-                    <div class="descripcion-info">
-                        <h3>Descripción</h3>
-                        <h3 id="precio">${publicacion.precio}</h3>
-                    </div>
-                    <p id="descripcion">
-                        ${publicacion.descripcion}
-                    </p>
                 </div>
                 <div class="derecha">
                     ${publicacion.estado === 'Subasta' ? '<subasta-card-info></subasta-card-info>' : ''}
-
                     <div class="mensaje-container">
                         <div class="perfil-info">
                             <img class="profile-pic" src="${publicacion.usuario.fotoPerfil}" alt="">

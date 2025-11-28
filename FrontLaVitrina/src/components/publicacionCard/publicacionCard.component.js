@@ -8,19 +8,18 @@ export class PublicacionComponent extends HTMLElement {
 
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-        
         const id = this.getAttribute('id');
         const titulo = this.getAttribute('titulo');
         const descripcion = this.getAttribute('descripcion');
         const precio = this.getAttribute('precio');
-        const imagenUrl = this.getAttribute('imagen') || this.getAttribute('imagenes');
+        const imagenUrl = this.getAttribute('imagen');
         const tipo = this.getAttribute('tipo');
         const datosParaLaClase = {
             id: id,
             titulo: titulo,
             descripcion: descripcion,
             precio: precio,
-            imagenes: imagenUrl ? [imagenUrl] : [], 
+            imagenes: imagenUrl ? [imagenUrl] : [],
             tipo: tipo
         };
 
@@ -50,7 +49,7 @@ export class PublicacionComponent extends HTMLElement {
         card.addEventListener('click', () => this.#handleCardClick(publicacion));
     };
 
-    
+
     #handleCardClick(publicacion) {
         const publicacionClickEvent = new CustomEvent('publicacionClick', {
             bubbles: true,
@@ -58,7 +57,7 @@ export class PublicacionComponent extends HTMLElement {
             detail: { publicacion }
         });
         this.dispatchEvent(publicacionClickEvent);
-        
+
     }
     #agregarEstilos(shadow) {
         let link = document.createElement("link");

@@ -1,61 +1,31 @@
 import { RegistrarService } from './registrar.service.js';
 
+
+const API_URL = '/api/usuarios';
+
 export class IniciarSesionService {
-
-    static usuariosMock = [
-        {
-            idUsuario: 1,
-            nombres: "Abel Eduardo",
-            apellidoPaterno: "Sánchez",
-            apellidoMaterno: "Guerrero",
-            nombreCompleto: "Abel Eduardo Sánchez Guerrero",
-            correo: "abel@gmail.com",
-            contrasenia: "Abel123",
-            telefono: "5551234567",
-            ciudad: "CDMX",
-            fechaNacimiento: "2000-08-15",
-            edad: 24,
-            fotoPerfil: null,
-            puntuacion: 10
-        },
-        {
-            idUsuario: 2,
-            nombres: "María",
-            apellidoPaterno: "González",
-            apellidoMaterno: "López",
-            nombreCompleto: "María González López",
-            correo: "maria@gmail.com",
-            contrasenia: "Maria123",
-            telefono: "5559876543",
-            ciudad: "Guadalajara",
-            fechaNacimiento: "1995-03-20",
-            edad: 29,
-            fotoPerfil: null,
-            puntuacion: 8
-        }
-    ];
-
-    static usuarioActivo = null;
-
-    static iniciarSesion(correo, contrasenia) {
-        const usuariosRegistrados = this.obtenerUsuariosRegistrados();
-
-        const todosUsuarios = [...this.usuariosMock, ...usuariosRegistrados];
-
-        const usuarioEncontrado = todosUsuarios.find(u =>
-            u.correo === correo && u.contrasenia === contrasenia
-        );
-
-        if (usuarioEncontrado) {
-            this.usuarioActivo = usuarioEncontrado;
-        }
-
-        return usuarioEncontrado || null;
-
+    static getHeaders() {
+        return {
+            'Content-Type': 'application/json',
+        };
     }
 
-    static obtenerUsuariosRegistrados() {
-        return RegistrarService.obtenerUsuariosRegistrados();
+
+    static async iniciarSesion(correo, contrasenia) {
+        try {
+            const response = await fetch(`${API_URL}/iniciar-sesion`, {
+                method: 'POST',
+                headers: this.getHeaders(),
+                body: JSON.stringify({ correo, contrasenia })
+            });
+
+            if (!response.ok) {
+                throw new Error('Credenciales inválidas');
+            }
+            return await response.json();
+        } catch (error) {
+            throw error;
+        }
     }
 
     static cerrarSesion() {
