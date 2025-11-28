@@ -58,6 +58,48 @@ function verificarSesion(ctx, next) {
     }
 }
 
+function esTokenValido(token) {
+    if (!token) return false;
+
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const payload = JSON.parse(jsonPayload);
+
+        const ahora = Math.floor(Date.now() / 1000);
+
+        if (payload.exp < ahora) {
+            return false; 
+        }
+        
+        return true; 
+
+    } catch (error) {
+        console.error("Token corrupto o inválido");
+        return false;
+    }
+}
+
+function verificarSesion(ctx, next) {
+    const token = localStorage.getItem('token');
+    
+    if (!token || !esTokenValido(token)) {
+        console.warn("Acceso denegado: Sesión inexistente o expirada.");
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        
+        page.redirect('/iniciar-sesion');
+    } else {
+        next();
+    }
+}
+
 function redirigirSiEstaLogueado(ctx, next) {
     const token = localStorage.getItem('token');
     if (token) {
