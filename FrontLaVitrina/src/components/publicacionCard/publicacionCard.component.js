@@ -8,12 +8,11 @@ export class PublicacionComponent extends HTMLElement {
 
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-        
         const id = this.getAttribute('id');
         const titulo = this.getAttribute('titulo');
         const descripcion = this.getAttribute('descripcion');
         const precio = this.getAttribute('precio');
-        const imagenUrl = this.getAttribute('imagen') || this.getAttribute('imagenes');
+        const imagenUrl = this.getAttribute('imagenes') || this.getAttribute('imagenes');
         const tipo = this.getAttribute('tipo');
         const datosParaLaClase = {
             id: id,
