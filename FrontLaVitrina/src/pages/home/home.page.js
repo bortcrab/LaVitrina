@@ -59,8 +59,8 @@ export class HomePage extends HTMLElement {
         this.#agregarEstilos(shadow);
     }
 
-    #renderProducts(products) {
-        if (products.length === 0) {
+    #renderProducts(publicaciones) {
+        if (publicaciones.length === 0) {
             return `
                 <div class="no-results">
                     <p>No hay productos con esta etiqueta.</p>
@@ -68,14 +68,15 @@ export class HomePage extends HTMLElement {
             `;
         }
 
-        return products.map(product => `
+        return publicaciones.map(publicacion => 
+            `
             <publicacion-info 
-                id="${product.id}"
-                titulo="${product.titulo}"
-                descripcion="${product.descripcion}"
-                precio="${product.precio}"
-                imagen="${product.imagen}"
-                estado="${product.estado}" 
+                id="${publicacion.id}"
+                titulo="${publicacion.titulo}"
+                descripcion="${publicacion.descripcion}"
+                precio="${publicacion.precio}"
+                imagen="${publicacion.imagenes[0]}"
+                tipo="${publicacion.tipo}" 
             ></publicacion-info>
         `).join('');
     }

@@ -8,7 +8,7 @@ export class PublicacionService {
         //const token = localStorage.getItem('token');
         return {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjQxMjYxMjksImV4cCI6MTc2NDEyOTcyOX0.hpk1XLRR5b13kW-RD1QjzOkhIwj08BhiwT-qK0XjzwM` // Tu backend usa validateJWT, así que esto es obligatorio
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiY29ycmVvIjoicmljYXJkbzEyM0BnbWFpbC5jb20iLCJpYXQiOjE3NjQzMDcyNDAsImV4cCI6MTc2NDMxMDg0MH0.-rFrVoOfJRfGblBWNRMIEGHCN0HLIAw2cdj-tg1xPmg` // Tu backend usa validateJWT, así que esto es obligatorio
         };
     }
 
@@ -28,6 +28,7 @@ export class PublicacionService {
             return [];
         }
     }
+
     static async obtenerPublicacion(id) {
         try {
             const response = await fetch(`${API_URL}/${id}`, {
@@ -166,22 +167,6 @@ export class PublicacionService {
         });
     }
 
-
-    static async obtenerPublicacion(id) {
-        const publicaciones = this.getPublicaciones();
-
-        const idNumerico = parseInt(id);
-
-        const publicacion = publicaciones.find(p => p.id === idNumerico);
-
-        if (!publicacion) {
-            console.error(`No se encontró la publicación con id: ${id} (numérico: ${idNumerico})`);
-            throw new Error("Publicación no encontrada");
-        }
-
-        return JSON.parse(JSON.stringify(publicacion));
-    }
-
     static async editarPublicacion(id, datosActualizados) {
         const publicaciones = this.getPublicaciones();
 
@@ -236,4 +221,5 @@ export class PublicacionService {
     static filtrarPorDisponibilidad(vendido) {
         return this.publicaciones.filter(pub => pub.vendido === vendido);
     }
+    
 }

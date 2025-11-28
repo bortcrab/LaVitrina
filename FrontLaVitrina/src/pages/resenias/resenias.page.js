@@ -1,12 +1,12 @@
 import { Usuario } from "../../models/usuario.js";
 import { ReseniasService } from "../../services/resenias.service.js";
 
-export class ReseniasComponent extends HTMLElement {
+export class ReseniasPage extends HTMLElement {
 
     constructor() {
         super();
         this.resenias = [];
-        this.cssUrl = new URL('./resenias.component.css', import.meta.url).href;
+        this.cssUrl = new URL('./resenias.page.css', import.meta.url).href;
     }
 
     async connectedCallback() {
