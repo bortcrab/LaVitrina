@@ -157,6 +157,63 @@ export class PerfilComponent extends HTMLElement {
         if(formPerfil) {
             formPerfil.addEventListener('submit', (e) => {
                 e.preventDefault();
+                const inputsRequeridos = ['nombres', 'apellidoPaterno', 'apellidoMaterno', 'correo', 'telefono', 'fechaNacimiento'];
+                for (const id of inputsRequeridos) {
+                    const input = shadow.getElementById(id);
+                    if (!input.value.trim()) {
+                        alert(`El campo "${id}" no puede estar vacío.`);
+                        input.focus();
+                        return;
+                    }
+                }
+
+                const soloLetrasRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+                const inputsTexto = ['nombres', 'apellidoPaterno', 'apellidoMaterno'];
+                
+                for (const id of inputsTexto) {
+                    const input = shadow.getElementById(id);
+                    if (!soloLetrasRegex.test(input.value.trim())) {
+                        alert(`El campo "${id}" solo debe contener letras y espacios.`);
+                        input.focus();
+                        return;
+                    }
+                }
+
+                const correo = shadow.getElementById('correo').value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(correo)) {
+                    alert("El formato del correo electrónico no es válido.");
+                    shadow.getElementById('correo').focus();
+                    return;
+                }
+
+                const telefono = shadow.getElementById('telefono').value.trim();
+                const phoneRegex = /^\d{10}$/;
+                if (!phoneRegex.test(telefono)) {
+                    alert("El teléfono debe tener exactamente 10 dígitos numéricos.");
+                    shadow.getElementById('telefono').focus();
+                    return;
+                }
+
+                const passInput = shadow.getElementById('contraseña');
+                const passValue = passInput.value;
+                
+                if (passValue !== '****************' && passValue.trim() !== '') {
+                    const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+                    if (!passRegex.test(passValue)) {
+                        alert("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.");
+                        passInput.focus();
+                        return;
+                    }
+                }
+
+                this.#emitirGuardado(shadow);
+            });
+        }
+
+        if(formPerfil) {
+            formPerfil.addEventListener('submit', (e) => {
+                e.preventDefault();
                 this.#emitirGuardado(shadow);
             });
         }
