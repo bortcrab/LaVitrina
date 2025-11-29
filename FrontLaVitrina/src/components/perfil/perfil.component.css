@@ -286,4 +286,16 @@
     .perfil-datos {
         padding: 1.5rem;
     }
+
+    .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    width: 100%;
+    color: #999;
+    font-size: 1.2rem;
+    background-color: #fff;
+    border-radius: 1.5rem;
+    }
 }

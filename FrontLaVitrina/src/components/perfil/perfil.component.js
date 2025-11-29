@@ -1,5 +1,6 @@
 export class PerfilComponent extends HTMLElement {
     #usuario = null;
+    #archivoSeleccionado = null;
 
     constructor() {
         super();
@@ -11,11 +12,22 @@ export class PerfilComponent extends HTMLElement {
 
     set usuario(data) {
         this.#usuario = data;
+        this.#archivoSeleccionado = null;
         this.render();
     }
 
-    get usuario() {
-        return this.#usuario;
+    setLoading(isLoading) {
+        const btnGuardar = this.shadowRoot.getElementById('btnGuardar');
+        if (btnGuardar) {
+            btnGuardar.disabled = isLoading;
+            btnGuardar.textContent = isLoading ? "Guardando..." : "Guardar cambios";
+            btnGuardar.style.backgroundColor = isLoading ? "#999" : "#E62634";
+        }
+        
+        if (!isLoading && this.editMode) {
+            this.editMode = false;
+            this.#toggleEditMode(this.shadowRoot);
+        }
     }
 
     connectedCallback() {
@@ -27,7 +39,7 @@ export class PerfilComponent extends HTMLElement {
     render() {
         const shadow = this.shadowRoot;
         if (!this.#usuario) {
-            shadow.innerHTML = '<div class="loading">Cargando perfil...</div>'; 
+            shadow.innerHTML = '<div style="padding:20px; text-align:center;">Cargando perfil...</div>'; 
             return;
         }
 
@@ -36,6 +48,7 @@ export class PerfilComponent extends HTMLElement {
                 <div class="perfil-info">
                     <div class="usuario-avatar">
                         <img src="${this.#usuario.avatar}" alt="Avatar" class="avatar-img" id="avatarImg">
+                        
                         <button class="editar-avatar" id="btnEditarAvatar">
                             <img src="${this.editarRojoIconUrl}" alt="Editar foto">
                         </button>
@@ -133,15 +146,10 @@ export class PerfilComponent extends HTMLElement {
         if(verResenias) {
             verResenias.addEventListener('click', (e) => {
                 e.preventDefault();
-                
                 this.dispatchEvent(new CustomEvent('ver-resenias', {
                     bubbles: true,
                     composed: true,
-                    detail: {
-                        nombres: `${this.#usuario.nombres} ${this.#usuario.apellidoPaterno}`,
-                        puntuacion: this.#usuario.rating,
-                        fotoPerfil: this.#usuario.avatar || this.#usuario.fotoPerfil
-                    }
+                    detail: { id: this.#usuario.id }
                 }));
             });
         }
@@ -155,12 +163,19 @@ export class PerfilComponent extends HTMLElement {
 
         if(btnEditarAvatar && fileAvatar) {
             btnEditarAvatar.addEventListener('click', () => fileAvatar.click());
+            
             fileAvatar.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
+                    this.#archivoSeleccionado = file;
+
                     const reader = new FileReader();
                     reader.onload = (event) => {
                         if(avatarImg) avatarImg.src = event.target.result;
+                        if(!this.editMode) {
+                            this.editMode = true;
+                            this.#toggleEditMode(shadow);
+                        }
                     };
                     reader.readAsDataURL(file);
                 }
@@ -184,12 +199,11 @@ export class PerfilComponent extends HTMLElement {
             telefono: shadow.getElementById('telefono').value,
             contrasenia: shadow.getElementById('contraseña').value !== '****************' 
                 ? shadow.getElementById('contraseña').value 
-                : undefined 
+                : undefined,
+            archivoFoto: this.#archivoSeleccionado 
         };
 
-        if (datos.contrasenia === undefined) delete datos.contrasenia;
-
-        this.editMode = false;
+        Object.keys(datos).forEach(key => datos[key] === undefined && delete datos[key]);
         
         this.dispatchEvent(new CustomEvent('guardar-cambios', {
             detail: datos,

@@ -1,3 +1,4 @@
+const { exec } = require('child_process');
 const dotenv = require('dotenv');
 dotenv.config();
 const path = require('path');
@@ -61,4 +62,13 @@ app.use(globalErrorHandler);
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`El servidor esta corriendo en el puerto ${PORT}`);
+
+    const url = `http://localhost:${PORT}`;
+    const start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
+    
+    exec(start + ' ' + url, (error) => {
+        if (error) {
+            console.error('No se pudo abrir el navegador automáticamente:', error);
+        }
+    });
 });
