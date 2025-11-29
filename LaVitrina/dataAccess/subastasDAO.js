@@ -14,15 +14,7 @@ class SubastasDAO {
      */
     async crearSubasta(datosSubasta) {
         try {
-            const publicacionCreada = await publicacionesDAO.crearPublicacion(
-                datosSubasta.titulo,
-                datosSubasta.descripcion,
-                datosSubasta.precio,
-                datosSubasta.etiquetas,
-                datosSubasta.imagenes,
-                datosSubasta.idCategoria,
-                datosSubasta.idUsuario
-            );
+            const publicacionCreada = await publicacionesDAO.crearPublicacion(datosSubasta);
 
             // Crea la subasta usando el id de la publicación creada
             const subastaCreada = await Subasta.create({
