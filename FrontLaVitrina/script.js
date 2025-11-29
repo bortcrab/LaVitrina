@@ -9,6 +9,7 @@ import { ChatsComponent } from './src/components/chats/chats.component.js';
 import { IniciarSesionComponent } from "./src/components/iniciarSesion/iniciarSesion.component.js";
 import { ReseniaCardComponent } from "./src/components/reseniaCard/reseniacard.component.js";
 import { SubastaCardComponent } from "./src/components/subastaCard/subastacard.component.js";
+import { ErrorMessageComponent } from "./src/components/errorMessage/errorMessage.component.js";
 
 //Pages
 import { HomePage } from './src/pages/home/home.page.js';
@@ -35,6 +36,7 @@ window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
 window.customElements.define('detalle-publicacion-info', DetallePublicacionPage);
 window.customElements.define('resenia-card-info', ReseniaCardComponent);
 window.customElements.define('subasta-card-info', SubastaCardComponent);
+window.customElements.define('error-message-info', ErrorMessageComponent);
 
 //definir pages
 window.customElements.define('home-page', HomePage);

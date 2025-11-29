@@ -28,31 +28,7 @@ export class PerfilPage extends HTMLElement {
     }
 
     #render(shadow) {
-        shadow.innerHTML = `
-            <style>
-                .error-container {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    height: 50vh;
-                    text-align: center;
-                    color: #666;
-                    font-family: sans-serif;
-                }
-                .error-icon { font-size: 3rem; margin-bottom: 1rem; }
-                .retry-btn {
-                    margin-top: 1rem;
-                    padding: 10px 20px;
-                    background-color: #E62634;
-                    color: white;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                }
-            </style>
-            <perfil-info id="perfilComponent"></perfil-info>
-        `;
+        shadow.innerHTML = `<perfil-info id="perfilComponent"></perfil-info>`;
     }
 
     async #inicializarDatos(shadow) {
@@ -68,21 +44,44 @@ export class PerfilPage extends HTMLElement {
             console.error('Error al cargar perfil:', error);
             
             if(error.message === 'Sesión expirada') {
-                alert("Tu sesión ha expirado, por favor ingresa nuevamente.");
-                if(window.page) page('/iniciar-sesion');
+                this.#mostrarError(shadow, 
+                    "Sesión expirada", 
+                    "Tu sesión ha caducado, por favor ingresa nuevamente.", 
+                    "Ir a Iniciar Sesión",
+                    () => page('/iniciar-sesion')
+                );
                 return;
             }
 
-            if(perfilComponent) {
-                shadow.innerHTML = `
-                    <div class="error-container">
-                        <h2>Hubo un problema al cargar el perfil, inténtalo de nuevo.</h2>
-                        <p><small>${error.message}</small></p>
-                        <button class="retry-btn" onclick="location.reload()">Reintentar</button>
-                    </div>
-                `;
-            }
+            this.#mostrarError(shadow, 
+                "No pudimos cargar el perfil", 
+                ``, 
+                "Intentar de nuevo",
+                () => location.reload()
+            );
         }
+    }
+
+    #mostrarError(shadow, titulo, mensaje, textoBoton, callback) {
+        shadow.innerHTML = `
+            <style>
+                :host {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 80vh; /* Centrado vertical */
+                }
+            </style>
+            <error-message-info 
+                titulo="${titulo}" 
+                mensaje="${mensaje}"
+                accion="${textoBoton}"
+                id="errorComp"
+            ></error-message-info>
+        `;
+
+        const errorComp = shadow.getElementById('errorComp');
+        errorComp.addEventListener('retry-click', callback);
     }
 
     #agregarEventListeners(shadow) {
