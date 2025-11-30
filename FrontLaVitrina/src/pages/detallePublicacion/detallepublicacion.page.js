@@ -1,4 +1,5 @@
 import { PublicacionService } from "../../services/publicacion.service.js";
+import { ChatService } from "../../services/chat.service.js";
 
 export class DetallePublicacionPage extends HTMLElement {
 
@@ -70,11 +71,28 @@ export class DetallePublicacionPage extends HTMLElement {
 
     #agregarEventListeners(shadow) {
         const btnEnviarMensaje = shadow.getElementById('btn-enviar-mensaje');
+        const idPublicacion = this.getAttribute('id');
 
-        btnEnviarMensaje.addEventListener('click', (e) => {
-            e.preventDefault();
-            page("/chats");
-        });
+        if(btnEnviarMensaje){
+            btnEnviarMensaje.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                btnEnviarMensaje.disabled = true;
+                btnEnviarMensaje.textContent = "Iniciando chat...";
+
+                try {
+                    const chat = await ChatService.crearChat(idPublicacion);
+                    localStorage.setItem('chatAbiertoId', chat.id); 
+                    
+                    page("/chats");
+                } catch (error) {
+                    console.error(error);
+                    alert("No se pudo iniciar el chat. Intenta iniciar sesión nuevamente.");
+                    btnEnviarMensaje.disabled = false;
+                    btnEnviarMensaje.textContent = "Enviar mensaje";
+                }
+            });
+        }
     }
 
     #agregaEstilo(shadow) {
