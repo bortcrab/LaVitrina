@@ -231,11 +231,15 @@ export class ChatsComponent extends HTMLElement {
                 }
             };
             
-            inputTexto.oninput = (e) => {
-                if(inputTexto.value.trim().length > 0) {
+            inputTexto.oninput = () => {
+                const texto = inputTexto.value.trim();
+                
+                if (texto.length > 0) {
                     btnAdjunto.classList.add('disabled');
+                    btnAdjunto.disabled = true;
                 } else {
                     btnAdjunto.classList.remove('disabled');
+                    btnAdjunto.disabled = false;
                 }
             };
         }
@@ -249,14 +253,19 @@ export class ChatsComponent extends HTMLElement {
         const fileInput = shadow.getElementById('fileInput');
         const btnAdjunto = shadow.getElementById('btnAdjunto');
 
-        previewContainer.style.display = 'none';
-        fileInput.value = '';
+        if(previewContainer) previewContainer.style.display = 'none';
+        if(fileInput) fileInput.value = '';
         
-        inputTexto.disabled = false;
-        inputTexto.placeholder = "Escribe aquí...";
-        inputTexto.focus();
+        if(inputTexto) {
+            inputTexto.disabled = false;
+            inputTexto.placeholder = "Escribe aquí...";
+            inputTexto.focus();
+        }
         
-        btnAdjunto.classList.remove('disabled');
+        if(btnAdjunto) {
+            btnAdjunto.classList.remove('disabled');
+            btnAdjunto.disabled = false;
+        }
     }
 
     #attachItemListeners(shadow) {

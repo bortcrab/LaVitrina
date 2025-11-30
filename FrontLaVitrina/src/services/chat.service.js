@@ -62,7 +62,6 @@ export class ChatService {
     static async enviarImagen(idChat, archivo) {
         try {
             const urlImagen = await this.subirImagen(archivo);
-            
             const token = localStorage.getItem('token');
             const res = await fetch(`${this.apiUrl}/chats/${idChat}/mensajes`, {
                 method: 'POST',
@@ -81,7 +80,7 @@ export class ChatService {
                 id: mensajeGuardado.id,
                 texto: null,
                 imagenes: [urlImagen],
-                hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true}),
                 enviado: true,
                 idChat: parseInt(idChat)
             };
@@ -121,20 +120,27 @@ export class ChatService {
             const res = await fetch(`${this.apiUrl}/chats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            
             const data = await res.json();
             
-            return data.map(c => ({
+            const chatsMapeados = data.map(c => ({
                 id: c.id,
                 nombre: c.nombre,
-                tituloPublicacion: c.Publicacion ? c.Publicacion.titulo : 'Artículo',
-                ultimoMensaje: this.#formatearUltimoMensaje(c.Mensajes?.[0]),
-                fotoPerfil: this.#obtenerAvatar(c.Usuarios, usuarioData.id),
-                productoImg: c.Publicacion?.ImagenesPublicacions?.[0]?.url || "https://via.placeholder.com/150",
-                noLeido: this.#verificarNoLeido(c.Mensajes?.[0], usuarioData.id),
-                fecha: c.Mensajes?.[0]?.fechaEnviado || c.createdAt
+                tituloPublicacion: c.tituloPublicacion,
+                
+                ultimoMensaje: c.ultimoMensaje, 
+                
+                fotoPerfil: c.fotoPerfil,
+                productoImg: c.productoImg,
+                noLeido: c.noLeido,
+                
+                fechaOrden: new Date(c.fecha) 
             }));
+
+            return chatsMapeados.sort((a, b) => b.fechaOrden - a.fechaOrden);
+
         } catch (e) {
-            console.error(e);
+            console.error("Error obteniendo chats:", e);
             return [];
         }
     }
@@ -152,7 +158,7 @@ export class ChatService {
             id: m.id,
             texto: m.texto,
             imagenes: m.imagenes || [],
-            hora: new Date(m.fechaEnviado).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            hora: new Date(m.fechaEnviado).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true}),
             enviado: m.enviado,
             idChat: m.idChat
         }));
@@ -169,7 +175,7 @@ export class ChatService {
                 id: msgBackend.id,
                 texto: msgBackend.MensajeTexto?.texto,
                 imagenes: msgBackend.MensajeImagen ? [msgBackend.MensajeImagen.imagen] : [],
-                hora: new Date(msgBackend.fechaEnviado).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                hora: new Date(msgBackend.fechaEnviado).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true}),
                 enviado: msgBackend.idUsuario === usuarioData.id,
                 idChat: msgBackend.idChat
             };
