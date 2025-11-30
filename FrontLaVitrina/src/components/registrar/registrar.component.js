@@ -1,3 +1,5 @@
+import { UbicacionService } from '../../services/ubicacion.service.js';
+
 export class RegistrarUsuarioComponent extends HTMLElement {
     constructor() {
         super();
@@ -7,20 +9,19 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         this.logoBlancoURL = new URL('../../assets/logoBlanco.png', import.meta.url).href;
         this.registrarURL = new URL('../../assets/registrar.png', import.meta.url).href;
         this.registrar2URL = new URL('../../assets/registrar2.png', import.meta.url).href;
+        this.debounceTimer = null;
     }
 
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-
         this.#render(shadow);
-        this.#agregarEstilos(shadow);
+        this.#agregarEstilosExternos(shadow); 
         this.#agregarEventListeners(shadow);
     }
 
     #render(shadow) {
         shadow.innerHTML = `
         <div class="all">
-            <!-- Paso 1: Datos personales -->
             <div class="login-form side-div paso-1 ${this.pasoActual === 1 ? 'activo' : ''}">
                 <div class="form-container">
                     <div class="header">
@@ -44,17 +45,13 @@ export class RegistrarUsuarioComponent extends HTMLElement {
                         </div>
 
                         <div class="input-row">
-                            <div class="input-group half">
+                            <div class="input-group half relative-container">
                                 <label>Ciudad</label>
-                                <select id="ciudad" required>
-                                    <option value="" disabled selected>Seleccione</option>
-                                    <option value="CDMX">Ciudad de México</option>
-                                    <option value="Guadalajara">Guadalajara</option>
-                                    <option value="Monterrey">Monterrey</option>
-                                    <option value="Tijuana">Tijuana</option>
-                                    <option value="Puebla">Puebla</option>
-                                </select>
+                                <input type="text" id="ciudad" placeholder="Busca tu ciudad..." autocomplete="off" required>
+                                
+                                <ul id="listaSugerencias" class="suggestions-list" style="display: none;"></ul>
                             </div>
+                            
                             <div class="input-group half">
                                 <label>Fecha de nacimiento</label>
                                 <input type="date" id="fechaNacimiento" required>
@@ -76,7 +73,6 @@ export class RegistrarUsuarioComponent extends HTMLElement {
                 </div>
             </div>
 
-            <!-- Paso 2: Credenciales -->
             <div class="login-form side-div paso-2 ${this.pasoActual === 2 ? 'activo' : ''}">
                 <div class="form-container">
                     <div class="header">
@@ -130,9 +126,8 @@ export class RegistrarUsuarioComponent extends HTMLElement {
                 </div>
             </div>
 
-            <!-- Imagen lateral -->
             <div class="image-side side-div">
-                <img src="./FrontLaVitrina/src/assets/${this.pasoActual === 1 ? 'registrar.png' : 'registrar2.png'}" 
+                <img src="${this.pasoActual === 1 ? this.registrarURL : this.registrar2URL}" 
                      alt="Imagen de registro" id="imagenLateral">
                 <div class="overlay"></div>
                 <div class="content-over-image">
@@ -157,6 +152,20 @@ export class RegistrarUsuarioComponent extends HTMLElement {
             this.#avanzarPaso2(shadow);
         })
 
+        const inputCiudad = shadow.getElementById('ciudad');
+        const listaSugerencias = shadow.getElementById('listaSugerencias');
+
+        inputCiudad?.addEventListener('input', (e) => {
+            const termino = e.target.value;
+            this.#manejarBusqueda(termino, listaSugerencias);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.composedPath && !e.composedPath().includes(inputCiudad)) {
+                listaSugerencias.style.display = 'none';
+            }
+        });
+
         const formPaso2 = shadow.getElementById('formPaso2');
         formPaso2?.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -171,20 +180,55 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         const linkIniciarSesion1 = shadow.getElementById('linkIniciarSesion1');
         const linkIniciarSesion2 = shadow.getElementById('linkIniciarSesion2');
 
-        linkIniciarSesion1?.addEventListener('click', (e) => {
-            e.preventDefault();
-            page('/iniciar-sesion');
-        });
-
-        linkIniciarSesion2?.addEventListener('click', (e) => {
-            e.preventDefault();
-            page('/iniciar-sesion');
-        });
+        linkIniciarSesion1?.addEventListener('click', (e) => this.#irALogin(e));
+        linkIniciarSesion2?.addEventListener('click', (e) => this.#irALogin(e));
 
         const photoInput = shadow.getElementById('photoInput');
         photoInput?.addEventListener('change', (e) => {
             this.#mostrarPreviewFoto(e, shadow);
         });
+    }
+
+    #irALogin(e) {
+        e.preventDefault();
+        page('/iniciar-sesion');
+    }
+
+    #manejarBusqueda(termino, listaUl) {
+        clearTimeout(this.debounceTimer);
+
+        if (termino.length < 3) {
+            listaUl.style.display = 'none';
+            return;
+        }
+
+        this.debounceTimer = setTimeout(async () => {
+            const ciudades = await UbicacionService.buscarCiudades(termino);
+            this.#mostrarSugerencias(ciudades, listaUl);
+        }, 300);
+    }
+
+    #mostrarSugerencias(ciudades, listaUl) {
+        listaUl.innerHTML = ''; 
+        if (!ciudades || ciudades.length === 0) {
+            listaUl.style.display = 'none';
+            return;
+        }
+
+        ciudades.forEach(nombreCiudad => {
+            const li = document.createElement('li');
+            li.textContent = nombreCiudad;
+            
+            li.addEventListener('click', () => {
+                const inputCiudad = this.shadowRoot.getElementById('ciudad');
+                inputCiudad.value = nombreCiudad; 
+                listaUl.style.display = 'none'; 
+            });
+
+            listaUl.appendChild(li);
+        });
+
+        listaUl.style.display = 'block';
     }
 
     #avanzarPaso2(shadow) {
@@ -235,34 +279,39 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         const errorMessage = shadow.getElementById('errorMessage');
         const successMessage = shadow.getElementById('successMessage');
 
-        // Validaciones
+        errorMessage.style.display = 'none';
+
         if (contrasenia !== confirmarContrasenia) {
-            errorMessage.textContent = 'Las contraseñas no coinciden';
-            errorMessage.style.display = 'block';
-            successMessage.style.display = 'none';
+            this.#mostrarError(shadow, 'Las contraseñas no coinciden');
             return;
         }
 
         if (contrasenia.length < 6) {
-            errorMessage.textContent = 'La contraseña debe tener al menos 6 caracteres';
-            errorMessage.style.display = 'block';
-            successMessage.style.display = 'none';
+            this.#mostrarError(shadow, 'La contraseña debe tener al menos 6 caracteres');
             return;
         }
 
         const photoInput = shadow.getElementById('photoInput');
-        const fotoPerfil = photoInput.files[0] ? URL.createObjectURL(photoInput.files[0]) : null;
+        const archivoFoto = photoInput.files[0] || null;
 
-        this.dispatchEvent(new CustomEvent('registroSubmit', {
+        this.dispatchEvent(new CustomEvent('registro-submit', {
             bubbles: true,
             composed: true,
             detail: {
                 ...this.datosRegistro,
                 correo,
                 contrasenia,
-                fotoPerfil
+                foto: archivoFoto
             }
         }));
+    }
+
+    #mostrarError(shadow, mensaje) {
+        const errorMessage = shadow.getElementById('errorMessage');
+        const successMessage = shadow.getElementById('successMessage');
+        errorMessage.textContent = mensaje;
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
     }
 
     #mostrarPreviewFoto(e, shadow) {
@@ -277,11 +326,10 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         }
     }
 
-    #agregarEstilos(shadow) {
+    #agregarEstilosExternos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
         link.setAttribute("href", this.cssUrl);
-        console.log(link);
         shadow.appendChild(link);
     }
 }

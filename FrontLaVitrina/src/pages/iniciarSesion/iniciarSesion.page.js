@@ -11,44 +11,37 @@ export class IniciarSesionPage extends HTMLElement {
         this.#agregarEventListeners(shadow);
     }
 
-
     #render(shadow) {
-        shadow.innerHTML += `
-            <iniciar-sesion-info></iniciar-sesion-info>
+        shadow.innerHTML = `
+            <iniciar-sesion-info id="loginComponent"></iniciar-sesion-info>
         `;
     }
 
-
     #agregarEventListeners(shadow) {
-        this.addEventListener('loginSubmit', (e) => {
-            this.#handleLogin(e.detail, shadow);
+        const loginComponent = shadow.getElementById('loginComponent');
+
+        loginComponent.addEventListener('login-submit', async (e) => {
+            const { correo, contrasenia } = e.detail;
+
+            loginComponent.toggleLoading(true);
+
+            try {
+                const datos = await IniciarSesionService.iniciarSesion(correo, contrasenia);
+
+                localStorage.setItem('token', datos.token);
+                localStorage.setItem('usuario', JSON.stringify(datos.usuario));
+
+                loginComponent.mostrarExito(`¡Bienvenido de nuevo, ${datos.usuario.nombres}!`);
+
+                setTimeout(() => {
+                    page('/home-page'); 
+                }, 1000);
+
+            } catch (error) {
+                console.error("Error login:", error);
+                loginComponent.mostrarError(error.message || 'Error al iniciar sesión');
+                loginComponent.toggleLoading(false); 
+            }
         });
     }
-
-    #handleLogin(datos, shadow) {
-        const { correo, contrasenia } = datos;
-        const resultado = IniciarSesionService.iniciarSesion(correo, contrasenia);
-
-        if (resultado) {
-            this.dispatchEvent(new CustomEvent('loginSuccess', {
-                bubbles: true,
-                composed: true,
-                detail: { usuario: resultado }
-            }));
-
-            setTimeout(() => {
-                page('/');
-            }, 1000);
-        }
-        else {
-            this.dispatchEvent(new CustomEvent('loginError', {
-                bubbles: true,
-                composed: true,
-                detail: { mensaje: 'Correo o contraseña incorrectos' }
-            }));
-        }
-    }
-
-
-    
 }

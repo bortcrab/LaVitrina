@@ -1,11 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
 
+/* =========================================
+   1. RESET Y ESTILOS GLOBALES
+   ========================================= */
 * {
     font-family: "Bree Serif", serif;
     box-sizing: border-box;
 }
-html, body, div, section, input{
-  box-sizing: border-box;
+
+html, body, div, section, input {
+    box-sizing: border-box;
 }
 
 .all {
@@ -13,8 +17,12 @@ html, body, div, section, input{
     height: 100vh;
     width: 100%;
     position: relative;
+    background-color: #f9f9f9; /* Un fondo base por si acaso */
 }
 
+/* =========================================
+   2. ESTRUCTURA DEL LAYOUT (Split Screen)
+   ========================================= */
 .side-div {
     flex: 1;
     display: flex;
@@ -22,6 +30,7 @@ html, body, div, section, input{
     justify-content: center;
 }
 
+/* --- LADO IZQUIERDO: FORMULARIO --- */
 .login-form {
     background-color: white;
     align-items: center;
@@ -41,7 +50,16 @@ html, body, div, section, input{
     opacity: 1;
     transform: translateX(0);
     pointer-events: all;
-    position: relative;
+    position: relative; 
+}
+
+.form-container {
+    width: 100%;
+    padding: 20px 100px;
+    display: flex;
+    flex-direction: column;
+    max-width: 650px; 
+    margin: 0 auto;
 }
 
 .image-side {
@@ -67,7 +85,7 @@ html, body, div, section, input{
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
     z-index: 2;
 }
 
@@ -103,29 +121,20 @@ html, body, div, section, input{
     line-height: 1.4;
     margin-bottom: 20px;
     transition: opacity 0.3s ease-in-out;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.login-form {
-    background-color: white;
-    align-items: center;
-    overflow-y: auto;
-}
-
-.form-container {
-    width: 100%;
-    padding: 20px 100px;
-    display: flex;
-    flex-direction: column;
+/* =========================================
+   3. TIPOGRAFÍA Y ENCABEZADOS
+   ========================================= */
+.header {
+    text-align: center;
 }
 
 .login-form h3 {
     font-size: 2.4rem;
     margin-bottom: 10px;
     color: #222;
-}
-
-.header {
-    text-align: center;
 }
 
 .subtitle {
@@ -135,9 +144,20 @@ html, body, div, section, input{
     font-size: 1.3rem;
 }
 
+label {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #333;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* =========================================
+   4. INPUTS Y CAMPOS
+   ========================================= */
 .input-group {
     margin-bottom: 20px;
-
+    position: relative; /* Asegura contexto para elementos absolutos dentro */
 }
 
 .input-row {
@@ -148,14 +168,6 @@ html, body, div, section, input{
 
 .input-group.half {
     flex: 1;
-}
-
-label {
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: #333;
-    display: block;
-    margin-bottom: 8px;
 }
 
 input,
@@ -173,8 +185,8 @@ select {
 input:focus,
 select:focus {
     background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 0 2px rgba(226, 13, 24, 0.1);
+    border-color: #ccc;
+    box-shadow: 0 0 0 3px rgba(230, 38, 52, 0.15); /* Sombra roja suave */
 }
 
 select {
@@ -190,6 +202,75 @@ input[type="date"] {
     cursor: pointer;
 }
 
+/* =========================================
+   5. AUTOCOMPLETADO / MODAL CIUDAD (NUEVO)
+   ========================================= */
+.relative-container {
+    position: relative; /* Clave para posicionar la lista */
+}
+
+.suggestions-list {
+    position: absolute; /* Flota sobre el contenido */
+    top: 100%; /* Justo debajo del input */
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* Efecto de elevación */
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+    z-index: 999; /* Asegura que tape los inputs de abajo */
+    max-height: 220px;
+    overflow-y: auto; /* Scroll si hay muchas ciudades */
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Scrollbar personalizada para la lista */
+.suggestions-list::-webkit-scrollbar {
+    width: 6px;
+}
+.suggestions-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.suggestions-list li {
+    padding: 12px 15px;
+    cursor: pointer;
+    color: #333;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+/* Icono opcional antes de la ciudad */
+.suggestions-list li::before {
+    content: '📍';
+    margin-right: 10px;
+    font-size: 1.1em;
+}
+
+.suggestions-list li:last-child {
+    border-bottom: none;
+}
+
+.suggestions-list li:hover {
+    background-color: #f0f4f8;
+    color: #E62634; /* Texto rojo al hacer hover */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   6. SUBIDA DE FOTO
+   ========================================= */
 .input-foto {
     display: flex;
     flex-direction: column;
@@ -212,7 +293,7 @@ input[type="date"] {
     width: 120px;
     height: 120px;
     border: 3px dashed #CECECE;
-    border-radius: 15px;
+    border-radius: 50%; /* Redondo se ve mejor para perfiles */
     background-color: #F5F5F5;
     display: flex;
     align-items: center;
@@ -230,6 +311,9 @@ input[type="date"] {
     stroke: #E62634;
 }
 
+/* =========================================
+   7. MENSAJES Y BOTONES
+   ========================================= */
 .error-message,
 .success-message {
     display: none;
@@ -238,6 +322,7 @@ input[type="date"] {
     margin-bottom: 15px;
     font-size: 0.9rem;
     text-align: center;
+    animation: fadeIn 0.3s;
 }
 
 .error-message {
@@ -251,6 +336,7 @@ input[type="date"] {
     color: #3c3;
     border: 1px solid #cfc;
 }
+
 .button-row {
     display: flex;
     gap: 15px;
@@ -277,6 +363,8 @@ button[type="submit"] {
 .btn-primary:hover,
 button[type="submit"]:hover {
     background-color: #c40b14;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(230, 38, 52, 0.3);
 }
 
 .btn-secondary {
@@ -286,7 +374,7 @@ button[type="submit"]:hover {
 }
 
 .btn-secondary:hover {
-    background-color: #CECECE;
+    background-color: #d4d4d4;
 }
 
 .registrarse {
@@ -308,7 +396,9 @@ button[type="submit"]:hover {
     color: #333;
 }
 
-/* Responsive */
+/* =========================================
+   8. RESPONSIVE
+   ========================================= */
 @media (max-width: 900px) {
     .image-side {
         display: none;
@@ -316,11 +406,14 @@ button[type="submit"]:hover {
 
     .login-form {
         width: 100%;
+        /* Quitamos la posición absoluta en móvil para flujo natural */
+        position: relative; 
+        transform: none;
     }
 
     .form-container {
         max-width: 100%;
-        padding: 40px;
+        padding: 40px 20px;
     }
 
     .input-row {
@@ -330,10 +423,6 @@ button[type="submit"]:hover {
 }
 
 @media (max-width: 500px) {
-    .form-container {
-        padding: 30px 20px;
-    }
-
     .login-form h3 {
         font-size: 2rem;
     }
