@@ -29,6 +29,11 @@ const io = new Server(server, {
 });
 new SocketController(io);
 
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
 app.use(corsConfig);
 app.use(express.json());
 app.use(morgan('combined'));

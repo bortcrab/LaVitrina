@@ -26,6 +26,10 @@ export class ChatsComponent extends HTMLElement {
     }
 
     agregarMensaje(mensaje) {
+        if (this.#mensajes.some(m => m.id === mensaje.id)) {
+            return;
+        }
+
         this.#mensajes.push(mensaje);
         const shadow = this.shadowRoot;
         const container = shadow.getElementById('mensajesContainer');
