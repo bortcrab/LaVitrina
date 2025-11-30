@@ -44,15 +44,7 @@ export class PerfilComponent extends HTMLElement {
         }
 
         shadow.innerHTML = `
-            <div class="modal-overlay" id="modalExito">
-                <exito-message-info 
-                    id="componenteExito"
-                    titulo="Perfil actualizado" 
-                    mensaje="Cambios guardados." 
-                    accion="Aceptar">
-                </exito-message-info>
-            </div>
-            <div class="modal-overlay" id="modalError">
+            <div class="modal-overlay" id="modalError" style="display: none;">
                 <error-message-info 
                     id="componenteError"
                     titulo="Atención" 
@@ -144,32 +136,20 @@ export class PerfilComponent extends HTMLElement {
         if(this.editMode) this.#toggleEditMode(shadow);
     }
 
-    mostrarExito(mensaje) {
-        const modal = this.shadowRoot.getElementById('modalExito');
-        const componenteExito = this.shadowRoot.getElementById('componenteExito');
-        
-        if(componenteExito) componenteExito.setAttribute('mensaje', mensaje);
-        
-        if(modal) modal.classList.add('visible');
-
-        const cerrar = () => {
-            modal.classList.remove('visible');
-            componenteExito.removeEventListener('exito-click', cerrar);
-        };
-
-        componenteExito.addEventListener('exito-click', cerrar);
-    }
-
     #mostrarError(mensaje, inputAFocusear = null) {
         const modal = this.shadowRoot.getElementById('modalError');
         const componenteError = this.shadowRoot.getElementById('componenteError');
         
-        componenteError.setAttribute('mensaje', mensaje);
+        if (componenteError) componenteError.setAttribute('mensaje', mensaje);
         
-        modal.classList.add('visible');
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('visible'), 10);
+        }
 
         const cerrar = () => {
             modal.classList.remove('visible');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
             componenteError.removeEventListener('retry-click', cerrar);
             if(inputAFocusear) inputAFocusear.focus();
         };
