@@ -17,6 +17,7 @@ const categoriasRouter = require('./routes/categoriasRouter.js');
 const pujasRouter = require('./routes/pujasRouter.js');
 const { AppError, globalErrorHandler } = require('./utils/appError.js');
 const SocketController = require('./controllers/socketController.js');
+const ubicacionRouter = require('./routes/ubicacionRouter.js');
 
 const app = express();
 const server = http.createServer(app);
@@ -44,6 +45,7 @@ app.use(express.static(frontendPath));
 
 app.use('/api/publicaciones', validateJWT, publicacionesRouter);
 app.use('/api/subastas', validateJWT, subastasRouter);
+app.use('/api/ubicacion', ubicacionRouter);
 app.use('/api/usuarios',  usuariosRouter);
 app.use('/api/resenias', validateJWT, reseniasRouter);
 app.use('/api/chats', validateJWT, chatsRouter);

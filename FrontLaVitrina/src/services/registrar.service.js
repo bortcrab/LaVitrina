@@ -1,52 +1,55 @@
 import { Usuario } from '../models/usuario.js';
+import { UsuariosService } from './usuario.service.js';
+
+const API_URL = '/api/usuarios';
 
 export class RegistrarService {
-    static usuariosRegistrados = [];
+    static getHeaders() {
+        return {
+            'Content-Type': 'application/json',
+        };
+    }
 
-    static registrarUsuario(datos) {
-        const { 
-            nombres, 
-            apellidoPaterno, 
-            apellidoMaterno, 
-            correo, 
-            contrasenia, 
-            telefono, 
-            ciudad, 
-            fechaNacimiento, 
-            fotoPerfil 
-        } = datos;
+    static async registrarUsuario(datosUsuario) {
 
-        if (this.existeCorreo(correo)) {
+        /*if (this.existeCorreo(correo)) {
             return {
                 exito: false,
                 mensaje: 'Este correo ya está registrado'
             };
         }
+        */
 
-        const nuevoId = this.usuariosRegistrados.length + 100;
-        
-        const nuevoUsuario = new Usuario(
-            nuevoId,
-            nombres,
-            apellidoPaterno,
-            apellidoMaterno,
-            correo,
-            contrasenia,
-            telefono,
-            ciudad,
-            fechaNacimiento,
-            fotoPerfil
-        );
+        const{foto, ...restoDatos} = datosUsuario;
 
-        this.usuariosRegistrados.push(nuevoUsuario);
+        let fotoURL = '';
+        try {
 
-        console.log('Usuario registrado:', nuevoUsuario);
-        console.log('Total usuarios:', this.usuariosRegistrados.length);
+            if(foto && foto instanceof File){
+                fotoURL = await UsuariosService.subirImagen(foto);
+            }
 
-        return {
-            exito: true,
-            usuario: nuevoUsuario
-        };
+            const payload = {
+                ...restoDatos,
+                fotoPerfil: fotoURL,
+            };
+
+            const response = await fetch(`${API_URL}/`,{
+                method:'POST',
+                headers: this.getHeaders(),
+                body: JSON.stringify(payload)
+            });
+
+            if(!response.ok){
+                const errorData = await response.json();
+                throw new Error('Credenciales inválidas');
+                
+            }
+
+            return await response.json();
+        } catch (error) {
+            throw error;
+        }
     }
 
     static existeCorreo(correo) {

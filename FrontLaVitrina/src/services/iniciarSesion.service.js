@@ -1,6 +1,3 @@
-import { RegistrarService } from './registrar.service.js';
-
-
 const API_URL = '/api/usuarios';
 
 export class IniciarSesionService {
@@ -10,7 +7,6 @@ export class IniciarSesionService {
         };
     }
 
-
     static async iniciarSesion(correo, contrasenia) {
         try {
             const response = await fetch(`${API_URL}/iniciar-sesion`, {
@@ -19,25 +15,20 @@ export class IniciarSesionService {
                 body: JSON.stringify({ correo, contrasenia })
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error('Credenciales inválidas');
+                throw new Error(data.message || 'Credenciales inválidas');
             }
-            return await response.json();
+            
+            return data;
         } catch (error) {
             throw error;
         }
     }
 
     static cerrarSesion() {
-        this.usuarioActivo = null;
-        page('/iniciar-sesion');
-    }
-
-    static obtenerUsuarioActivo() {
-        return this.usuarioActivo;
-    }
-
-    static estaAutenticado() {
-        return this.usuarioActivo !== null;
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
     }
 }

@@ -1,5 +1,3 @@
-import { IniciarSesionService } from '../../services/iniciarSesion.service.js'
-
 export class IniciarSesionComponent extends HTMLElement {
     constructor() {
         super();
@@ -18,113 +16,86 @@ export class IniciarSesionComponent extends HTMLElement {
     #render(shadow) {
         shadow.innerHTML += `
         <div class="all">
-    <div class="image-side side-div">
-        <img src="${this.iniciarSesionUrl}" alt="Gente empacando">
-
-        <div class="overlay"></div>
-
-        <div class="content-over-image">
-            <div class="logo-container">
-                <img class="brand-logo" src="${this.logoBlancoURL}">
-            </div>
-            <h2 class="brand-slogan">El Marketplace Donde Encontrarás<br>Todo lo que Necesitas.</h2>
-        </div>
-    </div>
-
-    <div class="login-form side-div">
-        <div class="form-container">
-            <div class="header">
-                <h3>¡Qué gusto tenerte de vuelta!</h3>
-                <span class="subtitle">Inicia sesión con tu cuenta.</span>
-            </div>
-
-
-            <form id="formIniciarSesion" >
-                <div class="input-group">
-                    <label>Correo electrónico</label>
-                    <input type="email"name="email" autocomplete="username" maxlength="100" id="correo" placeholder="ejemplo@direccion.com">
-                </div>
-
-                <div class="input-group">
-                    <div class="label-row">
-                        <label>Contraseña</label>
-                        <a href="#" class="forgot-link" id="olvidoContrasenia">¿Olvidaste tu contraseña?</a>
+            <div class="image-side side-div">
+                <img src="${this.iniciarSesionUrl}" alt="Imagen iniciar sesión">
+                <div class="overlay"></div>
+                <div class="content-over-image">
+                    <div class="logo-container">
+                        <img class="brand-logo" src="${this.logoBlancoURL}">
                     </div>
-                    <input type="password" name="password" autocomplete="current-password" maxlength="30" id="contrasenia" placeholder="********">
+                    <h2 class="brand-slogan">El Marketplace Donde Encontrarás<br>Todo lo que Necesitas.</h2>
                 </div>
+            </div>
 
-                <div class="error-message" id="errorMessage"></div>
-                <div class="success-message" id="successMessage"></div>
+            <div class="login-form side-div">
+                <div class="form-container">
+                    <div class="header">
+                        <h3>¡Qué gusto tenerte de vuelta!</h3>
+                        <span class="subtitle">Inicia sesión con tu cuenta.</span>
+                    </div>
 
+                    <form id="formIniciarSesion">
+                        <div class="input-group">
+                            <label>Correo electrónico</label>
+                            <input type="email" name="email" autocomplete="username" maxlength="100" id="correo" placeholder="ejemplo@direccion.com">
+                        </div>
 
-                <button type="submit">Entrar</button>
+                        <div class="input-group">
+                            <div class="label-row">
+                                <label>Contraseña</label>
+                                <a href="#" class="forgot-link" id="olvidoContrasenia">¿Olvidaste tu contraseña?</a>
+                            </div>
+                            <input type="password" name="password" autocomplete="current-password" maxlength="30" id="contrasenia" placeholder="********">
+                        </div>
 
-                 
-            </form>
+                        <div class="error-message" id="errorMessage" style="display: none;"></div>
+                        <div class="success-message" id="successMessage" style="display: none;"></div>
 
-            <p class="register-text">
-                ¿Aún no tienes una cuenta?
-                <a href="#" class="registrarse" id="linkRegistrarse">Regístrate</a>
-            </p>
+                        <button type="submit" id="btnLogin">Entrar</button>
+                    </form>
+
+                    <p class="register-text">
+                        ¿Aún no tienes una cuenta?
+                        <a href="#" class="registrarse" id="linkRegistrarse">Regístrate</a>
+                    </p>
+                </div>
+            </div>
         </div>
-    </div>
-    </div>
-        `
-    };
+        `;
+    }
 
     #agregarEventListeners(shadow) {
         const form = shadow.getElementById('formIniciarSesion');
         const olvidoContrasenia = shadow.getElementById('olvidoContrasenia');
-        const errorMessage = shadow.getElementById('errorMessage');
-        const successMessage = shadow.getElementById('successMessage');
         const linkRegistrarse = shadow.getElementById('linkRegistrarse');
         const inputCorreo = shadow.getElementById('correo');
 
         inputCorreo.addEventListener('keydown', (e) => {
-            if (e.key === ' ') {
-                e.preventDefault();
-            }
+            if (e.key === ' ') e.preventDefault();
         });
 
         inputCorreo.addEventListener('blur', (e) => {
             e.target.value = e.target.value.replace(/\s/g, '');
         });
 
-        form.addEventListener('submit', async (e) => {
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
-
 
             const correo = shadow.getElementById('correo').value.trim();
             const contrasenia = shadow.getElementById('contrasenia').value;
 
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
+            this.limpiarMensajes();
 
             if (!correo || !contrasenia) {
-                errorMessage.textContent = 'Por favor completa todos los campos';
-                errorMessage.style.display = 'block';
+                this.mostrarError('Por favor completa todos los campos');
                 return;
             }
 
-            try {
-                const datos = await IniciarSesionService.iniciarSesion(correo, contrasenia);
-
-                console.log("Login exitoso, respuesta del server:", datos);
-
-                localStorage.setItem('token', datos.token);
-                localStorage.setItem('usuario', JSON.stringify(datos.usuario));
-
-                successMessage.textContent = `¡Bienvenido de nuevo, ${datos.usuario.nombres}!`;
-                successMessage.style.display = 'block';
-
-                window.location.href = "/home-page"
-            } catch (error) {
-                errorMessage.textContent = error.message;
-                errorMessage.style.display = 'block';
-                successMessage.style.display = 'none';
-            }
-
-
+            this.dispatchEvent(new CustomEvent('login-submit', {
+                bubbles: true,
+                composed: true,
+                detail: { correo, contrasenia }
+            }));
         });
 
         linkRegistrarse.addEventListener('click', (e) => {
@@ -134,19 +105,7 @@ export class IniciarSesionComponent extends HTMLElement {
 
         olvidoContrasenia.addEventListener('click', (e) => {
             e.preventDefault();
-            alert('Funcionalidad de recuperación de contraseña próximamente');
-        });
-
-        window.addEventListener('loginSuccess', (e) => {
-            successMessage.textContent = `¡Bienvenido de nuevo, ${e.detail.usuario.nombres}!`;
-            successMessage.style.display = 'block';
-            errorMessage.style.display = 'none';
-        });
-
-        window.addEventListener('loginError', (e) => {
-            errorMessage.textContent = e.detail.mensaje;
-            errorMessage.style.display = 'block';
-            successMessage.style.display = 'none';
+            alert('Funcionalidad próximamente');
         });
     }
 
@@ -155,5 +114,38 @@ export class IniciarSesionComponent extends HTMLElement {
         link.setAttribute("rel", "stylesheet");
         link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
+    }
+
+
+    mostrarError(mensaje) {
+        const errorMessage = this.shadowRoot.getElementById('errorMessage');
+        const successMessage = this.shadowRoot.getElementById('successMessage');
+        errorMessage.textContent = mensaje;
+        errorMessage.style.display = 'block';
+        if(successMessage) successMessage.style.display = 'none';
+    }
+
+    mostrarExito(mensaje) {
+        const errorMessage = this.shadowRoot.getElementById('errorMessage');
+        const successMessage = this.shadowRoot.getElementById('successMessage');
+        successMessage.textContent = mensaje;
+        successMessage.style.display = 'block';
+        if(errorMessage) errorMessage.style.display = 'none';
+    }
+
+    limpiarMensajes() {
+        const errorMessage = this.shadowRoot.getElementById('errorMessage');
+        const successMessage = this.shadowRoot.getElementById('successMessage');
+        if(errorMessage) errorMessage.style.display = 'none';
+        if(successMessage) successMessage.style.display = 'none';
+    }
+
+    toggleLoading(cargando) {
+        const btn = this.shadowRoot.getElementById('btnLogin');
+        if (btn) {
+            btn.disabled = cargando;
+            btn.textContent = cargando ? 'Entrando...' : 'Entrar';
+            btn.style.opacity = cargando ? '0.7' : '1';
+        }
     }
 }
