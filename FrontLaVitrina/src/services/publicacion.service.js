@@ -17,19 +17,16 @@ export class PublicacionService {
         };
     }
 
-    static async getPublicaciones() {
+    static async getPublicaciones(pagina = 1) {
         try {
-            const response = await fetch(API_URL, {
+            // Pasamos los params en la URL
+            const response = await fetch(`${API_URL}?pagina=${pagina}`, {
                 method: 'GET',
                 headers: this.getHeaders()
             });
-
-            if (!response.ok) throw new Error('Error al obtener publicaciones');
-
-            const datos = await response.json();
-            return datos;
+            if (!response.ok) throw new Error('Error');
+            return await response.json();
         } catch (error) {
-            console.error("Ha ocurrido un erro al obtener las publicaciones");
             return [];
         }
     }
@@ -65,17 +62,14 @@ export class PublicacionService {
         }
     }
 
-    static async obtenerPublicacionesPorCategoria(idCategoria) {
+    static async obtenerPublicacionesPorCategoria(idCategoria, pagina = 1) {
         try {
-            const response = await fetch(`${API_URL}/categoria/${idCategoria}`, {
-                method: 'GET',
+            const response = await fetch(`${API_URL}/categoria/${idCategoria}?pagina=${pagina}`, {
                 headers: this.getHeaders()
             });
-
-            if (!response.ok) throw new Error('Error al filtrar por categoría');
+            if (!response.ok) return [];
             return await response.json();
         } catch (error) {
-            console.error(error);
             return [];
         }
     }
@@ -230,24 +224,11 @@ export class PublicacionService {
      */
     static async obtenerCategorias() {
         try {
-            const response = await fetch(`${API_CATEGORIAS_URL}`, {
-                method: 'GET',
-                headers: this.getHeaders()
-            });
-
-            if (!response.ok) {
-                // Lanza un error si el servidor responde con un status 4xx o 5xx
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Error al obtener las categorías de la API.');
-            }
-
-            const categorias = await response.json();
-            return categorias;
-
+            const response = await fetch('http://localhost:3000/api/categorias', { headers: this.getHeaders() });
+            if(!response.ok) return [];
+            return await response.json();
         } catch (error) {
-            console.error('Error en PublicacionService.obtenerCategorias:', error);
-            // Relanzamos el error para que el componente pueda manejarlo (ej. mostrar un mensaje al usuario)
-            throw error;
+            return [];
         }
     }
 }
