@@ -25,9 +25,17 @@ export class ChatsPage extends HTMLElement {
             this.chats = await ChatService.obtenerChats();
             component.chats = this.chats;
 
-            if (this.chats.length > 0) {
-                await this.#cargarMensajesDeChat(this.chats[0].id, component);
+            const chatAbiertoId = localStorage.getItem('chatAbiertoId');
+            
+            if (chatAbiertoId) {
+                localStorage.removeItem('chatAbiertoId');
+                await this.#cargarMensajesDeChat(parseInt(chatAbiertoId), component);
             }
+
+            ChatService.escucharNuevosMensajes((nuevoMensaje) => {
+                this.#manejarNuevoMensaje(nuevoMensaje, component);
+            });
+
         } catch (error) {
             console.error(error);
         }
@@ -39,15 +47,28 @@ export class ChatsPage extends HTMLElement {
             ChatService.unirseAlChat(chatId);
             const mensajes = await ChatService.obtenerMensajes(chatId);
             component.setChatActivo(this.chatActual, mensajes);
-
-            ChatService.escucharNuevosMensajes((nuevoMensaje) => {
-                if (this.chatActual && this.chatActual.id === nuevoMensaje.idChat) {
-                    component.agregarMensaje(nuevoMensaje);
-                }
-            });
-
         } catch (error) {
             console.error(error);
+        }
+    }
+
+    #manejarNuevoMensaje(nuevoMensaje, component) {
+        if (this.chatActual && this.chatActual.id === nuevoMensaje.idChat) {
+            component.agregarMensaje(nuevoMensaje);
+        }
+
+        const chatIndex = this.chats.findIndex(c => c.id === nuevoMensaje.idChat);
+        if (chatIndex !== -1) {
+            const chat = this.chats[chatIndex];
+            chat.ultimoMensaje = nuevoMensaje.texto || "📷 Foto";
+            
+            if (!this.chatActual || this.chatActual.id !== nuevoMensaje.idChat) {
+                chat.noLeido = true;
+            }
+
+            this.chats.splice(chatIndex, 1);
+            this.chats.unshift(chat);
+            component.chats = [...this.chats];
         }
     }
 
@@ -62,6 +83,20 @@ export class ChatsPage extends HTMLElement {
         component.addEventListener('enviar-mensaje', async (e) => {
             const { chatId, texto } = e.detail;
             ChatService.enviarMensaje(chatId, texto);
+        });
+
+        component.addEventListener('enviar-imagen', async (e) => {
+            const { chatId, archivo } = e.detail;
+            
+            try {
+                const mensajeEnviado = await ChatService.enviarImagen(chatId, archivo);
+                
+                this.#manejarNuevoMensaje(mensajeEnviado, component);
+                
+            } catch (error) {
+                alert("Error al enviar la imagen.");
+                console.error(error);
+            }
         });
     }
 }
