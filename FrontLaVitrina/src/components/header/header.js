@@ -10,6 +10,17 @@ export class HeaderComponent extends HTMLElement {
     }
 
     #render(shadow) {
+        const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?img=12';
+
+        const usuarioStorage = localStorage.getItem('usuario');
+        const usuario = usuarioStorage
+            ? JSON.parse(usuarioStorage)
+            : { nombres: 'Invitado', fotoPerfil: DEFAULT_AVATAR };
+
+        const avatarUrl = usuario?.fotoPerfil?.trim()
+            ? usuario.fotoPerfil
+            : DEFAULT_AVATAR;
+
         shadow.innerHTML += `
         <header class="main-header">
                 <div class="search-bar">
@@ -17,19 +28,123 @@ export class HeaderComponent extends HTMLElement {
                     <img class="search-icon" src="./src/assets/buscar.png" alt="icono buscar">
                 </div>
 
-                <div class="user-info" id="userInfo" style="cursor: pointer;">
-                    <span class="user-name">Pedro Sola</span>
-                    <img src="https://i.pravatar.cc/150?img=12" alt="Perfil" class="user-avatar">
+                <div class="user-menu-container">
+                    
+                    <div class="user-info" id="userInfo">
+                        <span class="user-name">${usuario.nombres}</span>
+                        <img src="${avatarUrl}" alt="Perfil" class="user-avatar">
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        
+                        <div class="dropdown-item" id="btnPerfil">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span>Ver perfil</span>
+                        </div>
+
+                        <div class="dropdown-separator"></div>
+
+                        <div class="dropdown-item" id="btnLogout">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span>Cerrar sesión</span>
+                        </div>
+
+                    </div>
                 </div>
         </header>
         `;
-        
+
+        this.#setupEventListeners(shadow);
+    }
+
+    #setupEventListeners(shadow) {
         const userInfo = shadow.getElementById('userInfo');
-        if (userInfo) {
-            userInfo.addEventListener('click', () => {
-                page('/perfil');
+        const dropdownMenu = shadow.getElementById('dropdownMenu');
+        const btnPerfil = shadow.getElementById('btnPerfil');
+        const btnLogout = shadow.getElementById('btnLogout');
+
+        const searchInput = shadow.querySelector('.search-input');
+        const searchIcon = shadow.querySelector('.search-icon');
+
+        userInfo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        });
+
+        btnPerfil.addEventListener('click', () => {
+            dropdownMenu.classList.remove('active');
+            if (window.page) page('/perfil');
+        });
+
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            dropdownMenu.classList.remove('active');
+            console.log('Sesión cerrada correctamente');
+            if (window.page) page('/iniciar-sesion');
+            else window.location.href = '/iniciar-sesion';
+        });
+
+
+        const dispararBusqueda = () => {
+            const termino = searchInput.value;
+            console.log('Buscando:', termino);
+
+            const enHomePage = window.location.pathname.includes('/home-page');
+
+            if (!enHomePage) {
+                if (window.page) {
+                    page('/home-page'); 
+
+                    setTimeout(() => {
+                        document.dispatchEvent(new CustomEvent('realizar-busqueda', {
+                            detail: { termino: termino },
+                            bubbles: true,
+                            composed: true
+                        }));
+                    }, 100);
+                    return; 
+                }
+            }
+
+            const eventoBusqueda = new CustomEvent('realizar-busqueda', {
+                detail: { termino: termino },
+                bubbles: true,
+                composed: true
             });
-        }
+            document.dispatchEvent(eventoBusqueda);
+        };
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                dispararBusqueda();
+            }
+        });
+
+        searchIcon.addEventListener('click', () => {
+            dispararBusqueda();
+        });
+
+
+        document.addEventListener('click', (e) => {
+            if (e.target !== this) {
+                dropdownMenu.classList.remove('active');
+            }
+        });
+
+        shadow.addEventListener('click', (e) => {
+            if (!userInfo.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('active');
+            }
+        });
     }
 
     #agregarEstilos(shadow) {

@@ -167,7 +167,8 @@ class UsuariosController {
 
             const payload = {
                 id: usuario.id,
-                correo: correo 
+                correo: correo,
+                fotoPerfil: usuario.fotoPerfil 
             };
 
             const token = jwt.sign(payload, process.env.JWT_SECRET, {

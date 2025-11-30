@@ -150,7 +150,8 @@ class UsuarioDAO {
             if (esValida) {
                 return {
                     id: usuario.id,
-                    nombres: usuario.nombres
+                    nombres: usuario.nombres,
+                    fotoPerfil: usuario.fotoPerfil
                 };
             } else {
                 return null;

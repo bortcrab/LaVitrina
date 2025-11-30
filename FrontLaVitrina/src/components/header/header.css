@@ -2,6 +2,7 @@
 
 * {
     font-family: "Bree Serif", serif;
+    box-sizing: border-box; 
 }
 
 .main-header {
@@ -10,9 +11,10 @@
     align-items: center;
     padding: 10px 20px;
     background-color: white;
-    border: 1px solid #ccc;
+    border-bottom: 1px solid #ccc; 
     height: 10vh;
-    
+    position: relative; 
+    z-index: 100;
 }
 
 .search-bar {
@@ -25,19 +27,10 @@
 .search-input {
     padding: 8px 15px 8px 45px;
     border-radius: 20px;
-    border: 1px solid #ccc;
+    border: 3px solid #D0D0D0;
     width: 100%;
     outline: none;
-    border: solid #D0D0D0 3px;
-    /*Para que no se me olivde ayuda a que el padding no deforme el ancho*/
     box-sizing: border-box;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: medium;
 }
 
 .search-icon {
@@ -48,6 +41,27 @@
     width: 18px;
     height: 18px;
     pointer-events: none;
+}
+
+.user-menu-container {
+    position: relative; 
+    display: flex;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: medium;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.user-info:hover {
+    background-color: #f0f0f0; 
 }
 
 .user-name {
@@ -64,4 +78,50 @@
     object-fit: cover;
     border: 3px solid #E62634;
     padding: 2px;
+}
+
+
+.dropdown-menu {
+    display: none; 
+    position: absolute;
+    top: 120%; 
+    right: 0;
+    width: 220px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+    border: 1px solid #e0e0e0;
+    padding: 8px 0;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.dropdown-menu.active {
+    display: flex;
+}
+
+.dropdown-item {
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #f2f2f2;
+}
+
+.dropdown-separator {
+    height: 1px;
+    background-color: #e5e5e5;
+    margin: 5px 0;
+}
+
+.menu-icon {
+    font-size: 1.2rem;
+    color: #606060;
 }
