@@ -13,16 +13,15 @@ export class HeaderComponent extends HTMLElement {
         const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?img=12';
 
         const usuarioStorage = localStorage.getItem('usuario');
-        const usuario = usuarioStorage 
-            ? JSON.parse(usuarioStorage) 
+        const usuario = usuarioStorage
+            ? JSON.parse(usuarioStorage)
             : { nombres: 'Invitado', fotoPerfil: DEFAULT_AVATAR };
 
         const avatarUrl = usuario?.fotoPerfil?.trim()
-        ? usuario.fotoPerfil
-        : DEFAULT_AVATAR;
+            ? usuario.fotoPerfil
+            : DEFAULT_AVATAR;
 
         shadow.innerHTML += `
-
         <header class="main-header">
                 <div class="search-bar">
                     <input class="search-input" placeholder="Buscar productos, servicios..." type="text">
@@ -61,7 +60,7 @@ export class HeaderComponent extends HTMLElement {
                 </div>
         </header>
         `;
-        
+
         this.#setupEventListeners(shadow);
     }
 
@@ -71,27 +70,69 @@ export class HeaderComponent extends HTMLElement {
         const btnPerfil = shadow.getElementById('btnPerfil');
         const btnLogout = shadow.getElementById('btnLogout');
 
+        const searchInput = shadow.querySelector('.search-input');
+        const searchIcon = shadow.querySelector('.search-icon');
+
         userInfo.addEventListener('click', (e) => {
-            e.stopPropagation(); 
+            e.stopPropagation();
             dropdownMenu.classList.toggle('active');
         });
 
         btnPerfil.addEventListener('click', () => {
             dropdownMenu.classList.remove('active');
-            if(window.page) page('/perfil');
+            if (window.page) page('/perfil');
         });
 
         btnLogout.addEventListener('click', () => {
             localStorage.removeItem('token');
             localStorage.removeItem('usuario');
-            
             dropdownMenu.classList.remove('active');
-            
             console.log('Sesión cerrada correctamente');
-
-            if(window.page) page('/iniciar-sesion');
+            if (window.page) page('/iniciar-sesion');
             else window.location.href = '/iniciar-sesion';
         });
+
+
+        const dispararBusqueda = () => {
+            const termino = searchInput.value;
+            console.log('Buscando:', termino);
+
+            const enHomePage = window.location.pathname.includes('/home-page');
+
+            if (!enHomePage) {
+                if (window.page) {
+                    page('/home-page'); 
+
+                    setTimeout(() => {
+                        document.dispatchEvent(new CustomEvent('realizar-busqueda', {
+                            detail: { termino: termino },
+                            bubbles: true,
+                            composed: true
+                        }));
+                    }, 100);
+                    return; 
+                }
+            }
+
+            const eventoBusqueda = new CustomEvent('realizar-busqueda', {
+                detail: { termino: termino },
+                bubbles: true,
+                composed: true
+            });
+            document.dispatchEvent(eventoBusqueda);
+        };
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                dispararBusqueda();
+            }
+        });
+
+        searchIcon.addEventListener('click', () => {
+            dispararBusqueda();
+        });
+
 
         document.addEventListener('click', (e) => {
             if (e.target !== this) {

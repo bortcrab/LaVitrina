@@ -50,6 +50,36 @@ export class PublicacionService {
         }
     }
 
+    static async buscarPublicaciones(titulo) {
+        try {
+            const response = await fetch(`${API_URL}/buscar?titulo=${encodeURIComponent(titulo)}`, {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) throw new Error('Error en la búsqueda');
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+
+    static async obtenerPublicacionesPorCategoria(idCategoria) {
+        try {
+            const response = await fetch(`${API_URL}/categoria/${idCategoria}`, {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) throw new Error('Error al filtrar por categoría');
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+
     static async obtenerSubasta(id) {
         try {
             const response = await fetch(`${API_SUBASTAS_URL}/${id}`, {
