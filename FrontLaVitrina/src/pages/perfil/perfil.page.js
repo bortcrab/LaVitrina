@@ -127,7 +127,7 @@ export class PerfilPage extends HTMLElement {
                     localStorage.setItem('usuario', JSON.stringify(usuarioSesion));
                 }
 
-                alert('¡Perfil actualizado con éxito!');
+                perfilComponent.mostrarExito('¡Tu perfil se actualizó correctamente!');
 
             } catch (error) {
                 console.error('Error al actualizar:', error);

@@ -44,6 +44,14 @@ export class PerfilComponent extends HTMLElement {
         }
 
         shadow.innerHTML = `
+            <div class="modal-overlay" id="modalExito">
+                <exito-message-info 
+                    id="componenteExito"
+                    titulo="Perfil actualizado" 
+                    mensaje="Cambios guardados." 
+                    accion="Aceptar">
+                </exito-message-info>
+            </div>
             <div class="modal-overlay" id="modalError">
                 <error-message-info 
                     id="componenteError"
@@ -134,6 +142,22 @@ export class PerfilComponent extends HTMLElement {
         this.#attachEventListeners(shadow);
         
         if(this.editMode) this.#toggleEditMode(shadow);
+    }
+
+    mostrarExito(mensaje) {
+        const modal = this.shadowRoot.getElementById('modalExito');
+        const componenteExito = this.shadowRoot.getElementById('componenteExito');
+        
+        if(componenteExito) componenteExito.setAttribute('mensaje', mensaje);
+        
+        if(modal) modal.classList.add('visible');
+
+        const cerrar = () => {
+            modal.classList.remove('visible');
+            componenteExito.removeEventListener('exito-click', cerrar);
+        };
+
+        componenteExito.addEventListener('exito-click', cerrar);
     }
 
     #mostrarError(mensaje, inputAFocusear = null) {
