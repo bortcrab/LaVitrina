@@ -355,6 +355,57 @@
     font-size: 1.2rem;
 }
 
+.preview-container {
+    position: absolute;
+    bottom: 80px; /* Ajustar para que flote sobre el input */
+    left: 20px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+    border: 1px solid #E0E0E0;
+}
+
+.preview-img {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.btn-cancel-preview {
+    background: #E62634;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.mensaje-input:disabled {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+.btn-adjunto.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 @media (max-width: 1024px) {
     .chats-lista {
         width: 320px;
