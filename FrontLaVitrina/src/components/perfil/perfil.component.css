@@ -71,6 +71,12 @@
     color: #333;
     margin: 0;
     text-align: center;
+    width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    padding: 0 15px;
+    line-height: 1.2;
 }
 
 .usuario-fecha {

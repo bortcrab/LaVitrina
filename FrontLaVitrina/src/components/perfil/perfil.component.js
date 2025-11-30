@@ -92,31 +92,31 @@ export class PerfilComponent extends HTMLElement {
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="nombres">Nombres</label>
-                                <input type="text" id="nombres" value="${this.#usuario.nombres}" disabled>
+                                <input type="text" id="nombres" value="${this.#usuario.nombres}" disabled maxlength="255">
                             </div>
                             <div class="form-group">
                                 <label for="apellidoPaterno">Apellido Paterno</label>
-                                <input type="text" id="apellidoPaterno" value="${this.#usuario.apellidoPaterno}" disabled>
+                                <input type="text" id="apellidoPaterno" value="${this.#usuario.apellidoPaterno}" disabled maxlength="255">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="apellidoMaterno">Apellido Materno</label>
-                                <input type="text" id="apellidoMaterno" value="${this.#usuario.apellidoMaterno}" disabled>
+                                <input type="text" id="apellidoMaterno" value="${this.#usuario.apellidoMaterno}" disabled maxlength="255">
                             </div>
                             <div class="form-group">
                                 <label for="correo">Correo</label>
-                                <input type="email" id="correo" value="${this.#usuario.correo}" disabled>
+                                <input type="email" id="correo" value="${this.#usuario.correo}" disabled maxlength="255">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="contraseña">Contraseña</label>
-                                <input type="password" id="contraseña" disabled placeholder="••••••••">
+                                <input type="password" id="contraseña" disabled placeholder="••••••••" maxlength="50">
                             </div>
                             <div class="form-group">
                                 <label for="telefono">Teléfono</label>
-                                <input type="tel" id="telefono" value="${this.#usuario.telefono}" disabled>
+                                <input type="tel" id="telefono" value="${this.#usuario.telefono}" disabled maxlength="10">
                             </div>
                         </div>
                         <div class="form-group full-width">
