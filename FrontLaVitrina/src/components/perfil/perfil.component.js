@@ -23,8 +23,10 @@ export class PerfilComponent extends HTMLElement {
             btnGuardar.textContent = isLoading ? "Guardando..." : "Guardar cambios";
             btnGuardar.style.backgroundColor = isLoading ? "#999" : "#E62634";
         }
-        
-        if (!isLoading && this.editMode) {
+    }
+
+    finalizarEdicion() {
+        if (this.editMode) {
             this.editMode = false;
             this.#toggleEditMode(this.shadowRoot);
         }
@@ -136,7 +138,7 @@ export class PerfilComponent extends HTMLElement {
         if(this.editMode) this.#toggleEditMode(shadow);
     }
 
-    #mostrarError(mensaje, inputAFocusear = null) {
+    mostrarError(mensaje, inputAFocusear = null) {
         const modal = this.shadowRoot.getElementById('modalError');
         const componenteError = this.shadowRoot.getElementById('componenteError');
         
@@ -192,7 +194,7 @@ export class PerfilComponent extends HTMLElement {
                 for (const id of inputsRequeridos) {
                     const input = shadow.getElementById(id);
                     if (!input.value.trim()) {
-                        this.#mostrarError(`Llena todos los datos antes de continuar.`, input);
+                        this.mostrarError(`Llena todos los datos antes de continuar.`, input);
                         return;
                     }
                 }
@@ -202,7 +204,7 @@ export class PerfilComponent extends HTMLElement {
                 for (const id of inputsTexto) {
                     const input = shadow.getElementById(id);
                     if (!soloLetrasRegex.test(input.value.trim())) {
-                        this.#mostrarError(`Los nombres y apellidos solo deben contener letras y espacios.`, input);
+                        this.mostrarError(`Los nombres y apellidos solo deben contener letras y espacios.`, input);
                         return;
                     }
                 }
@@ -210,14 +212,14 @@ export class PerfilComponent extends HTMLElement {
                 const correoInput = shadow.getElementById('correo');
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(correoInput.value.trim())) {
-                    this.#mostrarError("El formato del correo electrónico no es válido.", correoInput);
+                    this.mostrarError("El formato del correo electrónico no es válido.", correoInput);
                     return;
                 }
 
                 const telefonoInput = shadow.getElementById('telefono');
                 const phoneRegex = /^\d{10}$/;
                 if (!phoneRegex.test(telefonoInput.value.trim())) {
-                    this.#mostrarError("El teléfono debe tener exactamente 10 dígitos numéricos.", telefonoInput);
+                    this.mostrarError("El teléfono debe tener exactamente 10 dígitos numéricos.", telefonoInput);
                     return;
                 }
 
@@ -227,7 +229,7 @@ export class PerfilComponent extends HTMLElement {
                 if (passValue.trim() !== '') {
                     const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
                     if (!passRegex.test(passValue)) {
-                        this.#mostrarError("La contraseña debe tener mínimo 8 caracteres, mayúsculas, minúsculas, números y un caracter especial.", passInput);
+                        this.mostrarError("La contraseña debe tener mínimo 8 caracteres, mayúsculas, minúsculas, números y un caracter especial.", passInput);
                         return;
                     }
                 }
@@ -266,15 +268,20 @@ export class PerfilComponent extends HTMLElement {
     }
 
     #emitirGuardado(shadow) {
+        const passInput = shadow.getElementById('contraseña');
+        let passValue = passInput.value.trim();
+        
+        if (passValue === '****************' || passValue === '') {
+            passValue = undefined;
+        }
+
         const datos = {
             nombres: shadow.getElementById('nombres').value,
             apellidoPaterno: shadow.getElementById('apellidoPaterno').value,
             apellidoMaterno: shadow.getElementById('apellidoMaterno').value,
             correo: shadow.getElementById('correo').value,
             telefono: shadow.getElementById('telefono').value,
-            contrasenia: shadow.getElementById('contraseña').value !== '****************' 
-                ? shadow.getElementById('contraseña').value 
-                : undefined,
+            contrasenia: passValue,
             archivoFoto: this.#archivoSeleccionado 
         };
 

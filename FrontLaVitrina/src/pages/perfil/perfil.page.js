@@ -97,17 +97,15 @@ export class PerfilPage extends HTMLElement {
                 let urlFoto = undefined;
 
                 if (datosDelFormulario.archivoFoto) {
-                    try {
-                        if (datosDelFormulario.archivoFoto.size > 5 * 1024 * 1024) {
-                            throw new Error("La imagen es muy pesada, intenta subir una que pese menos de 5MB.");
-                        }
+                    if (datosDelFormulario.archivoFoto.size > 5 * 1024 * 1024) {
+                        throw new Error("IMAGEN_GRANDE");
+                    }
 
-                        console.log("Subiendo foto a Cloudinary...");
+                    console.log("Subiendo foto a Cloudinary...");
+                    try {
                         urlFoto = await UsuariosService.subirImagen(datosDelFormulario.archivoFoto);
-                    } catch (error) {
-                        alert(`Error con la imagen: ${error.message}`);
-                        perfilComponent.setLoading(false);
-                        return;
+                    } catch (uploadError) {
+                        throw new Error("ERROR_SUBIDA_IMAGEN");
                     }
                 }
 
@@ -127,9 +125,28 @@ export class PerfilPage extends HTMLElement {
                     localStorage.setItem('usuario', JSON.stringify(usuarioSesion));
                 }
 
+                perfilComponent.finalizarEdicion();
+
             } catch (error) {
                 console.error('Error al actualizar:', error);
-                alert(`Hubo un error al guardar: ${error.message || 'Inténtalo de nuevo.'}`);
+                
+                let titulo = "Ocurrió un problema inesperado. Por favor inténtalo de nuevo.";
+                let mensaje = "Por favor inténtalo nuevamente.";
+
+                if (error.message === "IMAGEN_GRANDE") {
+                    titulo = "La imagen seleccionada pesa más de 5MB. Por favor elige una más ligera.";
+                } else if (error.message === "ERROR_SUBIDA_IMAGEN") {
+                    titulo = "No pudimos subir tu foto de perfil, inténtalo de nuevo.";
+                } else if (error.message.includes("fetch") || error.message.includes("Network")) {
+                    titulo = "Parece que no tienes internet o el servidor no responde, inténtalo de nuevo más tarde.";
+                } else if (error.message.includes("correo")) {
+                    titulo = "Este correo electrónico se encuentra en uso, ingresa uno diferente o inicia sesión.";
+                } else if (error.message.includes("telefono")) {
+                    titulo = "Este número de teléfono se encuentra en uso, ingresa uno diferente o inicia sesión.";
+                }
+
+                perfilComponent.mostrarError(titulo, mensaje);
+
             } finally {
                 perfilComponent.setLoading(false);
             }
