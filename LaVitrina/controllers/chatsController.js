@@ -26,6 +26,12 @@ class ChatController {
                  return next(new AppError('No puedes crear un chat contigo mismo.', 400));
             }
 
+            const chatExistente = await ChatDAO.buscarChatExistente(idPublicacion, idCliente, idVendedor);
+            
+            if (chatExistente) {
+                return res.status(200).json(chatExistente);
+            }
+
             const cliente = await UsuarioDAO.obtenerUsuarioPorId(idCliente);
             const vendedor = await UsuarioDAO.obtenerUsuarioPorId(idVendedor);
 

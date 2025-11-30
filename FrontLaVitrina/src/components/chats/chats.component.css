@@ -162,8 +162,9 @@
 .mensaje {
     display: flex;
     flex-direction: column;
-    max-width: 70%;
+    max-width: 75%;
     width: fit-content;
+    min-width: 0;
 }
 
 .mensaje.recibido {
@@ -178,8 +179,17 @@
 .mensaje-bubble {
     padding: 0.8rem 1.2rem;
     border-radius: 1rem;
-    word-wrap: break-word;
+    max-width: 100%;
+}
+
+.mensaje-texto {
     line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;       
+    overflow-wrap: break-word;   
+    word-break: break-word;
+    overflow: hidden;            
+    min-width: 0;
 }
 
 .mensaje.recibido .mensaje-bubble {
@@ -207,12 +217,14 @@
 }
 
 .mensaje-imagen {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
+    max-width: 250px; 
+    max-height: 300px;
+    width: auto;
+    height: auto;
+    display: block; 
     border-radius: 0.8rem;
-    cursor: pointer;
-    transition: transform 0.2s;
+    margin-top: 5px;
+    object-fit: contain;
 }
 
 .mensaje-imagen:hover {
@@ -232,16 +244,18 @@
 
 .mensaje-input {
     flex: 1;
-    padding: 0 1.5rem;
+    padding: 12px 15px;
     border: 2px solid #CECECE;
-    border-radius: 2rem;
+    border-radius: 20px;
     font-size: 1rem;
     outline: none;
     resize: none;
     font-family: "Bree Serif", serif;
     background-color: #FFFFFF;
-    height: 50px;
-    line-height: 46px;
+    min-height: 45px;
+    max-height: 120px;
+    line-height: 1.4;
+    overflow-y: auto;
 }
 
 .mensaje-input:focus {

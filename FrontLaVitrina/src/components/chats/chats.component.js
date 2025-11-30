@@ -40,7 +40,7 @@ export class ChatsComponent extends HTMLElement {
             
             let contenidoBubble = '';
             if (mensaje.texto) {
-                contenidoBubble += `<div>${mensaje.texto}</div>`;
+                contenidoBubble += `<div class="mensaje-texto">${mensaje.texto}</div>`;
             }
             if (mensaje.imagenes && mensaje.imagenes.length > 0) {
                 contenidoBubble += `<div class="mensaje-imagenes"><img src="${mensaje.imagenes[0]}" class="mensaje-imagen"></div>`;
@@ -124,7 +124,7 @@ export class ChatsComponent extends HTMLElement {
                 ${this.#mensajes.map(m => `
                     <div class="mensaje ${m.enviado ? 'enviado' : 'recibido'}">
                         <div class="mensaje-bubble">
-                            ${m.texto ? `<div>${m.texto}</div>` : ''}
+                            ${m.texto ? `<div class="mensaje-texto">${m.texto}</div>` : ''}
                             ${m.imagenes && m.imagenes.length > 0 ? 
                                 `<div class="mensaje-imagenes"><img src="${m.imagenes[0]}" class="mensaje-imagen"></div>` : ''}
                         </div>
@@ -144,7 +144,7 @@ export class ChatsComponent extends HTMLElement {
                 </button>
                 <input type="file" id="fileInput" accept="image/*" style="display: none;">
                 
-                <textarea class="mensaje-input" id="mensajeInput" placeholder="Escribe aquí..." rows="1"></textarea>
+                <textarea class="mensaje-input" id="mensajeInput" placeholder="Escribe aquí..." rows="1" maxlength="255"></textarea>
                 
                 <button class="btn-enviar" id="btnEnviar">
                     <img src="${this.enviarIconUrl}" alt="Enviar">

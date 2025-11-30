@@ -33,6 +33,15 @@ class MensajesController {
                 return next(new AppError('Un mensaje tipo texto o imagen es requerido.', 400));
             }
 
+            if (tipoMensaje.texto) {
+                if (tipoMensaje.texto.length > 255) {
+                    return next(new AppError('El mensaje no puede exceder los 255 caracteres.', 400));
+                }
+                if (tipoMensaje.texto.trim().length === 0) {
+                    return next(new AppError('El mensaje no puede estar vacío.', 400));
+                }
+            }
+
             const mensaje = await MensajesDAO.crearMensaje(idChat, idUsuario, tipoMensaje);
 
             if (req.io) {
