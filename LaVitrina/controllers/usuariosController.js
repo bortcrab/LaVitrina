@@ -83,7 +83,7 @@ class UsuariosController {
                 fotoPerfil: usuario.fotoPerfil,
                 fechaCreacion: fechaCreacion,
                 calificacion: calificacion ? parseFloat(calificacion.toFixed(1)) : 0.0,
-                totalReseñas: totalResenias || 0
+                totalResenias: totalResenias || 0
             };
 
             res.status(200).json(perfilData);

@@ -10,6 +10,8 @@ const { Subasta } = require('../models')
 const { Categoria } = require('../models')
 // Importa el modelo de usuarios asociados a publicaciones
 const { Usuario } = require('../models')
+const etiquetasDAO = require('./etiquetasDAO');
+const imagenesDAO = require('./imagenesDAO');
 // Importa operadores de consulta de Sequelize para búsquedas avanzadas
 const { Op } = require('sequelize');
 
@@ -394,20 +396,40 @@ class PublicacionesDAO {
      * @returns {Promise<Publicacion>} La publicación actualizada.
      * @throws {Error} Si ocurre un error al actualizar la publicación.
      */
-    async actualizarPublicacion(idPublicacion, titulo, descripcion, precio, estado, idCategoria, etiquetas, imagenes) {
+    async actualizarPublicacion(idPublicacion, datosActualizados) {
         try {
-            //Busca la publicación para actualizarla
+            // 1. Buscar la publicación para actualizarla
             const publicacionObtenida = await Publicacion.findByPk(idPublicacion);
 
-            //Si la publicación no existe, tira una excepción
+            // Si la publicación no existe, tira una excepción
             if (!publicacionObtenida) {
-                throw new Error('La publicacion no existe.');
+                throw new Error(`La publicación con ID ${idPublicacion} no existe.`);
             }
 
-            //Actualiza la publicación con los datos mandados en los parámetros
-            const publicacionActualizada = await publicacionObtenida.update({ titulo, descripcion, precio, estado, idCategoria, etiquetas, imagenes }, { new: true });
+            // 2. Verificar si existe una subasta asociada
+            const subastaExistente = await Subasta.findByPk(idPublicacion);
+            console.log(" SUBASTA??????" + JSON.stringify(subastaExistente, null, 2));
+            // 3. Si había una subasta pero ahora el tipo es 'venta', eliminarla
+            if (subastaExistente) {
+                console.log(`Eliminando subasta ID ${idPublicacion} - conversión a venta normal`);
+                await subastaExistente.destroy();
+            }
+
+            // 6. Actualizar etiquetas
+            const etiquetas = datosActualizados.etiquetas || [];
+            await etiquetasDAO.actualizarEtiquetas(idPublicacion, etiquetas);
+
+            // 7. Actualizar imagenes
+            const imagenes = datosActualizados.imagenes || [];
+
+            await imagenesDAO.actualizarImagenes(idPublicacion, imagenes);
+
+            // 8. Actualizar la publicación
+            const publicacionActualizada = await publicacionObtenida.update(datosActualizados);
+
             return publicacionActualizada;
         } catch (error) {
+            console.error("Error al actualizar publicación:", error);
             throw error;
         }
     }

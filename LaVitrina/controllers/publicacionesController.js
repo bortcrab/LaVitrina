@@ -35,7 +35,7 @@ class PublicacionesController {
                 descripcion,
                 precio,
                 etiquetas,
-                /*imagenes,*/
+                imagenes,
                 idCategoria,
                 idUsuario,
             } = req.body;
@@ -65,33 +65,26 @@ class PublicacionesController {
             } else if (precio > 1000000) {
                 errores.push("El precio no puede exceder $1,000,000.");
             }
-            /*
-                        // Validar imágenes
-                        if (!imagenes || imagenes.length === 0) {
-                            errores.push("Debes agregar al menos una imagen.");
-                        } else if (imagenes.length > 10) {
-                            errores.push("No puedes agregar más de 10 imágenes.");
-                        } else {
-                            // Validar tamaño de cada imagen (máx 5MB por imagen)
-                            const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-                            const imagenesGrandes = imagenes.filter(img => img.size > MAX_SIZE);
-                            if (imagenesGrandes.length > 0) {
-                                errores.push(`Algunas imágenes exceden el tamaño máximo de 5MB.`);
-                            }
             
-                            // Validar tipo de archivo
-                            const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-                            const imagenesInvalidas = imagenes.filter(img => !tiposPermitidos.includes(img.type));
-                            if (imagenesInvalidas.length > 0) {
-                                errores.push("Solo se permiten imágenes en formato JPG, PNG, WEBP o GIF.");
-                            }
-                        }
-            */          // BORRAR ESTO ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-            const imagenes = ["https://picsum.photos/200", "https://picsum.photos/200"];
+            // Validar imágenes
+            if (!imagenes || imagenes.length === 0) {
+                errores.push("Debes agregar al menos una imagen.");
+            } else if (imagenes.length > 10) {
+                errores.push("No puedes agregar más de 10 imágenes.");
+            }
 
             // Validar etiquetas
             if (etiquetas && etiquetas.length > 10) {
                 errores.push("No puedes agregar más de 10 etiquetas.");
+            }
+
+            // Validar la categoría
+            if (!idCategoria) {
+                errores.push("La categoría es obligatoria.");
+            }
+
+            if (!idUsuario) {
+                errores.push("El usuario es obligatorio.");
             }
 
             // Si hay errores, rechazar
@@ -420,29 +413,86 @@ class PublicacionesController {
      * @returns {Promise<void>} Responde con status 200 y la publicación actualizada.
      */
     async actualizarPublicacion(req, res, next) {
+
+        // Obtenemos el ID de la publicación de los parámetros de la solicitud.
         try {
             const idPublicacion = req.params.id;
-            if (!idPublicacion) {
-                next(new AppError('Se debe especificar la publicación a actualizar.', 400));
+            const {
+                titulo,
+                descripcion,
+                precio,
+                etiquetas,
+                imagenes,
+                idCategoria,
+                idUsuario,
+            } = req.body;
+            const errores = [];
+
+            // Validar título
+            if (!titulo || titulo.trim() === '') {
+                errores.push("El título es obligatorio.");
+            } else if (titulo.length < 5) {
+                errores.push("El título debe tener al menos 5 caracteres.");
+            } else if (titulo.length > 100) {
+                errores.push("El título no puede exceder 100 caracteres.");
             }
 
-            const publicacionExists = await publicacionesDAO.obtenerPublicacionPorId(idPublicacion);
-            if (!publicacionExists) {
-                next(new AppError('La publicación que se desea actualizar no existe', 400));
+            // Validar descripción
+            if (!descripcion || descripcion.trim() === '') {
+                errores.push("La descripción es obligatoria.");
+            } else if (descripcion.length < 10) {
+                errores.push("La descripción debe tener al menos 10 caracteres.");
+            } else if (descripcion.length > 1000) {
+                errores.push("La descripción no puede exceder 1000 caracteres.");
             }
 
-            const { titulo, descripcion, precio, estado, idCategoria, etiquetas, imagenes } = req.body;
-            if (!titulo && !descripcion && !precio && !estado && !idCategoria && !etiquetas && !imagenes) {
-                next(new AppError('No se proporcionó ningún dato para actualizar la publicación.', 400));
+            // Validar precio
+            if (!precio || precio <= 0) {
+                errores.push("El precio debe ser mayor a 0.");
+            } else if (precio > 1000000) {
+                errores.push("El precio no puede exceder $1,000,000.");
             }
 
-            const publicacionActualizada = await publicacionesDAO.actualizarPublicacion(idPublicacion, titulo, descripcion, precio, estado, idCategoria, etiquetas, imagenes);
-            res.status(200).json(publicacionActualizada);
+            // Validar imágenes
+            if (!imagenes || imagenes.length === 0) {
+                errores.push("Debes agregar al menos una imagen.");
+            } else if (imagenes.length > 10) {
+                errores.push("No puedes agregar más de 10 imágenes.");
+            }
+
+            // Validar etiquetas
+            if (etiquetas && etiquetas.length > 10) {
+                errores.push("No puedes agregar más de 10 etiquetas.");
+            }
+
+            // Si hay errores, rechazar
+            if (errores.length > 0) {
+                console.error('PublicacionController: Errores de validación:', errores);
+                return next(new AppError(errores, 400));
+            }
+
+            const publicacionData = {
+                titulo,
+                descripcion,
+                precio,
+                etiquetas,
+                imagenes,
+                idCategoria,
+                idUsuario,
+            }
+
+            // Actualizamos la publicación.
+            const publicacion = await publicacionesDAO.actualizarPublicacion(idPublicacion, publicacionData);
+
+            // Devolvemos la publicacion obtenida.
+            res.status(200).json({
+                publicacion
+            });
         } catch (error) {
-            next(new AppError('Ocurrió un error al actualizar la publicación.', 500));
+            console.log(error);
+            next(new AppError('Ocurrió un error al actualizar la publicación', 500));
         }
     }
-
     /**
      * Elimina una publicación por su ID.
      *

@@ -2,18 +2,18 @@ import { Publicacion } from '../models/publicacion.js';
 import { Usuario } from '../models/usuario.js';
 
 const API_URL = '/api/publicaciones';
-const API_CATEGORIAS = 'http://localhost:3000/api/categorias';
+const API_CATEGORIAS_URL = '/api/categorias';
+const API_SUBASTAS_URL = '/api/subastas';
 
 export class PublicacionService {
-    static #urlService = 'http://localhost:3000/api';
-    static #urlPublicaciones = '/publicaciones/';
-    static #urlSubastas = '/subastas/';
+    static CLOUD_NAME = 'dfajliqq7';
+    static UPLOAD_PRESET = 'LAVITRINA';
 
     static getHeaders() {
         const token = localStorage.getItem('token');
         return {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` 
+            'Authorization': `Bearer ${token}`
         };
     }
 
@@ -50,13 +50,59 @@ export class PublicacionService {
         }
     }
 
+    static async obtenerSubasta(id) {
+        try {
+            const response = await fetch(`${API_SUBASTAS_URL}/${id}`, {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) throw new Error('Subasta no encontrada');
+
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    /**
+     * Sube una imagen a Cloudinary y regresa la URL
+     */
+    static async subirImagen(file) {
+        const url = `https://api.cloudinary.com/v1_1/${this.CLOUD_NAME}/image/upload`;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', this.UPLOAD_PRESET);
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al subir la imagen a cloudinary');
+            }
+
+            const data = await response.json();
+            return data.secure_url;
+
+        } catch (error) {
+            console.error('Error cloudinary:', error);
+            throw error;
+        }
+    }
+
+
     static async crearPublicacion(datosPublicacion) {
         try {
             let fetchUrl;
             if ('inicioSubasta' in datosPublicacion && 'finSubasta' in datosPublicacion) {
-                fetchUrl = this.#urlService + this.#urlSubastas;
+                fetchUrl = API_SUBASTAS_URL;
             } else {
-                fetchUrl = this.#urlService + this.#urlPublicaciones;
+                fetchUrl = API_URL;
             }
             // Asegúrate de que API_URL sea el endpoint correcto para crear (e.g., '/publicaciones')
             const response = await fetch(fetchUrl, {
@@ -72,7 +118,6 @@ export class PublicacionService {
                 throw new Error(responseData.message);
             }
 
-            console.log('Publicación creada con éxito:', responseData);
             return responseData; // Retorna el objeto de la publicación creada
 
         } catch (error) {
@@ -81,21 +126,34 @@ export class PublicacionService {
         }
     }
 
-    static async editarPublicacion(id, datosActualizados) {
-        const publicaciones = this.getPublicaciones();
+    static async editarPublicacion(idPublicacion, datosActualizados) {
+        console.log(JSON.stringify(datosActualizados, null, 2));
+        try {
+            let fetchUrl;
+            if ('inicioSubasta' in datosActualizados && 'finSubasta' in datosActualizados) {
+                fetchUrl = `${API_SUBASTAS_URL}/${idPublicacion}`;
+            } else {
+                fetchUrl = `${API_URL}/${idPublicacion}`;
+            }
+            // Asegúrate de que API_URL sea el endpoint correcto para crear (e.g., '/publicaciones')
+            const response = await fetch(fetchUrl, {
+                // 1. Usa el método POST para crear recursos
+                method: 'PUT',
+                headers: this.getHeaders(),
+                // 3. Convierte el objeto JavaScript a una cadena JSON para el cuerpo
+                body: JSON.stringify(datosActualizados)
+            });
 
-        const idNumerico = parseInt(id);
+            const responseData = await response.json();
+            if (responseData.status === 'fail') {
+                throw new Error(responseData.message);
+            }
 
-        const index = publicaciones.findIndex(p => p.id === idNumerico);
-
-        if (index === -1) throw new Error("Publicación no encontrada");
-
-        publicaciones[index] = {
-            ...publicaciones[index],
-            ...datosActualizados
-        };
-
-        return JSON.parse(JSON.stringify(publicaciones[index]));
+            return responseData; // Retorna el objeto de la publicación creada
+        } catch (error) {
+            console.error('PublicacionService:', error.message);
+            throw error;
+        }
     }
 
     static getPublicacionesPorUsuario(nombreUsuario) {
@@ -142,7 +200,7 @@ export class PublicacionService {
      */
     static async obtenerCategorias() {
         try {
-            const response = await fetch(`${API_CATEGORIAS}`, {
+            const response = await fetch(`${API_CATEGORIAS_URL}`, {
                 method: 'GET',
                 headers: this.getHeaders()
             });
