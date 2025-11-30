@@ -5,7 +5,10 @@ export class CrearPublicacionPage extends HTMLElement {
     constructor() {
         super();
         this.archivosImagenes = [];
-        this.categorias = []; // Inicializar
+        this.urlsImagenesPublicacion = [];
+        this.categorias = [];
+        this.cssUrl = new URL('./crearPublicacion.css', import.meta.url).href;
+        this.agregarImagenUrl = new URL('../../assets/agregarImagen.png', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -22,9 +25,9 @@ export class CrearPublicacionPage extends HTMLElement {
             <div class="contenedor">
                 <div class="imagenes" id="imagenes-contenedor">
                     <label class="agregar">
-                        <input type="file" id="input-subir-imagen" accept="image/*" multiple hidden> 
+                        <input type="file" id="input-subir-imagen" accept="image/*" multiple hidden required>
                         <div class="contenido">
-                            <img class="icono" src="FrontLaVitrina/src/assets/agregarImagen.png">
+                            <img class="icono" src='${this.agregarImagenUrl}'>
                             <span>Agregar</span>
                         </div>
                     </label>
@@ -33,27 +36,27 @@ export class CrearPublicacionPage extends HTMLElement {
                     <div class="contenedor-input">
                         <h1>Crear publicación</h1>
                         <label for="titulo">Título</label>
-                        <input type="text" name="titulo" id="titulo" placeholder='ej. "Playera vintage de algodón"' />
+                        <input type="text" name="titulo" id="titulo" placeholder='ej. "Playera vintage de algodón"' required />
                     </div>
                     <div class="contenedor-input">
                         <label for="descripcion">Descripción</label>
                         <textarea name="descripcion" id="descripcion"
-                            placeholder="Describe tu producto o servicio con detalle (características, tamaño, color, etc)"></textarea>
+                            placeholder="Describe tu producto o servicio con detalle (características, tamaño, color, etc)" required></textarea>
                     </div>
                     <div class="contenedor-horizontal">
                         <div class="contenedor-input-horizontal">
                             <label for="precio">Precio</label>
-                            <input type="text" name="precio" id="precio" placeholder='$0.00' />
+                            <input type="text" name="precio" id="precio" placeholder='$0.00' required />
                         </div>
                         <div class="contenedor-input-horizontal">
                             <label for="categoria">Categoría</label>
-                            <select name="categoria" id="categoria">
+                            <select name="categoria" id="categoria" required>
                             </select>
                         </div>
                     </div>
                     <div class="contenedor-input">
                         <label for="etiquetas">Etiquetas</label>
-                        <input type="text" name="etiquetas" id="etiquetas" placeholder='Agrega una etiqueta y presiona Enter...' />
+                        <input type="text" name="etiquetas" id="etiquetas" placeholder='Agrega una etiqueta y presiona Enter...' required />
                     </div>
                     <div class="tag-container" id="tag-container">
                     </div>
@@ -69,12 +72,12 @@ export class CrearPublicacionPage extends HTMLElement {
                     <div class="subasta-campos-escondidos" id="fechas-subasta">
                         <div class="contenedor-input">
                             <label for="inicio-subasta">Inicio de subasta</label>
-                            <input type="datetime-local" id="inicio-subasta" placeholder="">
+                            <input type="datetime-local" id="inicio-subasta" placeholder="" required>
                         </div>
 
                         <div class="contenedor-input">
                             <label for="fin-subasta">Fin de subasta</label>
-                            <input type="datetime-local" id="fin-subasta">
+                            <input type="datetime-local" id="fin-subasta" required>
                         </div>
                     </div>
                     <button type="submit" class="btn-crear">Crear</button>
@@ -89,44 +92,89 @@ export class CrearPublicacionPage extends HTMLElement {
         const imagenesContenedor = shadow.getElementById('imagenes-contenedor');
         const agregarBoton = shadow.querySelector('.agregar');
 
-        inputSubirImagen.addEventListener('change', (event) => {
+        inputSubirImagen.addEventListener('change', async (event) => {
             const files = event.target.files;
 
             if (files.length === 0) return;
-            // Almacenar los archivos en la propiedad del componente
-            this.archivosImagenes.push(...Array.from(files));
+
+            // Validar el tamaño de las imágenes antes de subir
+            for (let file of files) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Una o más imágenes pesan más de 5MB. Por favor elige imágenes más ligeras.');
+                    inputSubirImagen.value = '';
+                    return;
+                }
+            }
+
+            // Mostrar indicador de carga (opcional)
+            agregarBoton.classList.add('uploading');
 
             let imagesToLoad = files.length;
-            let imagesCurrentlyDisplayed = imagenesContenedor.querySelectorAll('.imagen-producto').length;
 
             for (let i = 0; i < imagesToLoad; i++) {
                 const file = files[i];
 
-                // Salir si ya no hay espacio
                 if (!file.type.startsWith('image/')) {
                     continue;
                 }
 
-                const reader = new FileReader();
+                try {
+                    // Subir imagen a Cloudinary
+                    console.log(`Subiendo imagen ${i + 1} de ${imagesToLoad} a Cloudinary...`);
+                    // Asegúrate de que PublicacionService.subirImagen(file) esté disponible aquí
+                    const urlCloudinary = await PublicacionService.subirImagen(file);
 
-                reader.onload = (e) => {
+                    // 📢 CAMBIO CLAVE: Agregar a las variables locales definidas arriba
+                    this.archivosImagenes.push(file);
+                    this.urlsImagenesPublicacion.push(urlCloudinary);
+
+                    // Crear preview de la imagen
                     const nuevaImagen = document.createElement('img');
                     nuevaImagen.classList.add('imagen-producto');
-                    nuevaImagen.src = e.target.result;
+                    nuevaImagen.src = urlCloudinary; // Usar la URL de Cloudinary
                     nuevaImagen.alt = 'Imagen subida';
 
+                    // Agregar evento de clic para eliminar
                     nuevaImagen.addEventListener('click', () => {
+                        // Remover del array de archivos (se usa la referencia al objeto 'file' del loop)
+                        const fileIndex = this.archivosImagenes.findIndex(f => f.name === file.name && f.size === file.size);
+                        if (fileIndex > -1) {
+                            this.archivosImagenes.splice(fileIndex, 1);
+                        }
+
+                        // 📢 CAMBIO CLAVE: Remover del array local de URLs
+                        const urlIndex = this.urlsImagenesPublicacion.indexOf(urlCloudinary);
+                        if (urlIndex > -1) {
+                            this.urlsImagenesPublicacion.splice(urlIndex, 1);
+                        }
+
                         imagenesContenedor.removeChild(nuevaImagen);
+                        console.log("URLs actuales:", this.urlsImagenesPublicacion);
                     });
 
                     imagenesContenedor.insertBefore(nuevaImagen, agregarBoton);
-                };
 
-                reader.readAsDataURL(file);
-                imagesCurrentlyDisplayed++;
+                } catch (error) {
+                    console.error(`Error al subir imagen ${file.name}:`, error);
+
+                    let mensaje = 'No pudimos subir una de las imágenes. ';
+
+                    if (error.message === "ERROR_SUBIDA_IMAGEN") {
+                        mensaje += 'Inténtalo de nuevo.';
+                    } else if (error.message.includes("fetch") || error.message.includes("Network")) {
+                        mensaje += 'Verifica tu conexión a internet.';
+                    } else {
+                        mensaje += 'Por favor inténtalo nuevamente.';
+                    }
+
+                    alert(mensaje);
+                }
             }
 
-            event.target.value = '';
+            // Quitar indicador de carga
+            agregarBoton.classList.remove('uploading');
+
+            inputSubirImagen.value = '';
         });
 
         // FORMATEO DE PRECIO EN TIEMPO REAL
@@ -289,7 +337,7 @@ export class CrearPublicacionPage extends HTMLElement {
                 descripcion,
                 precio,
                 etiquetas,
-                imagenes: this.archivosImagenes,
+                imagenes: this.urlsImagenesPublicacion,
                 idCategoria: categoriaValue,
                 idUsuario: 1
             };
@@ -311,7 +359,7 @@ export class CrearPublicacionPage extends HTMLElement {
                 // Deshabilitar el botón mientras se procesa
                 btnCrear.disabled = true;
                 btnCrear.textContent = 'Creando...';
-                console.log(JSON.stringify(datosPublicacion));
+                console.log(JSON.stringify(datosPublicacion, null, 2));
                 const publicacionCreada = await PublicacionService.crearPublicacion(datosPublicacion);
 
                 console.log('Publicación creada. Objeto de respuesta:', publicacionCreada);
@@ -320,9 +368,8 @@ export class CrearPublicacionPage extends HTMLElement {
                 page('/home-page');
             } catch (error) {
                 const mensaje = error.message;
-                // "AAAAAError: El título es obligatorio., La descripción es obligatoria., El precio debe ser mayor a 0."
 
-                // 1. Quitar "AAAAAError: "
+                // 1. Quitar "Error: "
                 const limpio = mensaje.replace(/^.*Error:\s*/, "");
 
                 // 2. Separar por comas
@@ -350,46 +397,47 @@ export class CrearPublicacionPage extends HTMLElement {
         try {
             console.log('Iniciando carga de categorías...');
 
-            // 1. Llamar al servicio para obtener los datos
             const categoriasObtenidas = await PublicacionService.obtenerCategorias();
+            this.categorias = categoriasObtenidas || [];
 
-            // 2. Almacenar internamente
-            this.categorias = categoriasObtenidas;
-
-            // 3. Renderizar las opciones en el select
             const selectCategoria = shadow.getElementById('categoria');
 
-            // Si hay categorías, llenar el select
-            if (categoriasObtenidas && categoriasObtenidas.length > 0) {
-                // Mapear el array de categorías a elementos <option>
-                const opcionesHTML = categoriasObtenidas.map(cat =>
+            // Siempre limpiamos para evitar duplicados
+            selectCategoria.innerHTML = `
+            <option value="" hidden>Selecciona una categoría</option>
+        `;
+
+            if (this.categorias.length > 0) {
+                const opcionesHTML = this.categorias.map(cat =>
                     `<option value="${cat.id}">${cat.nombre}</option>`
                 ).join('');
 
-                // Agregar las nuevas opciones, manteniendo la primera opción 'Seleccionar'
                 selectCategoria.innerHTML += opcionesHTML;
-                console.log(`Categorías cargadas y renderizadas: ${this.categorias.length}`);
+                console.log(`Categorías renderizadas: ${this.categorias.length}`);
             } else {
-                console.warn('El servicio no devolvió categorías o la lista está vacía.');
-                // Opcional: Mostrar un mensaje en el select
-                selectCategoria.innerHTML += `<option value="0" disabled>No hay categorías disponibles</option>`;
+                selectCategoria.innerHTML += `
+                <option value="" disabled>No hay categorías disponibles</option>
+            `;
             }
 
+            return this.categorias;
+
         } catch (error) {
-            console.error('Error al cargar y renderizar categorías:', error);
-            // Mostrar un mensaje de error en el UI o dejar el select deshabilitado
+            console.error('Error al cargar categorías:', error);
+
             const selectCategoria = shadow.getElementById('categoria');
-            selectCategoria.innerHTML = `<option value="0" disabled>Error de carga</option>`;
+            selectCategoria.innerHTML = `
+            <option value="" disabled>Error al cargar categorías</option>
+        `;
             selectCategoria.disabled = true;
-            // Opcional: Mostrar un alert o un mensaje dentro de la página
-            // alert('Hubo un error al cargar la lista de categorías.');
         }
     }
+
 
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "FrontLaVitrina/src/pages/crearPublicacion/crearPublicacion.css");
+        link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
     }
 }

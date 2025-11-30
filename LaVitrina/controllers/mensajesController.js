@@ -34,6 +34,11 @@ class MensajesController {
             }
 
             const mensaje = await MensajesDAO.crearMensaje(idChat, idUsuario, tipoMensaje);
+
+            if (req.io) {
+                req.io.to(`chat_${idChat}`).emit('nuevo_mensaje', mensaje.toJSON());
+            }
+
             res.status(201).json(mensaje);
 
         } catch (error) {

@@ -9,6 +9,7 @@ export class AgregarReseniaPage extends HTMLElement {
         // Nuevo estado para los datos del vendedor
         this.vendedor = null;
         this.usuarioId = null;
+        this.cssUrl = new URL('./agregarResenia.css', import.meta.url).href;
     }
 
     async connectedCallback() {
@@ -29,7 +30,11 @@ export class AgregarReseniaPage extends HTMLElement {
 
         // Ahora renderizar con los datos cargados
         this.#render(shadow);
-
+        this.usuarioReseniadoId = this.getAttribute('id');
+        if (!this.usuarioReseniadoId) {
+            console.error("No se proporcionó ID del usuario a reseñar.");
+            return;
+        }
         this.#agregarEventListeners(shadow);
     }
 
@@ -41,66 +46,45 @@ export class AgregarReseniaPage extends HTMLElement {
         try {
             // Obtener los datos del vendedor usando el ID recibido
             this.vendedor = await UsuariosService.getVendedor(usuarioId);
-
-            if (!this.vendedor) {
-                console.error("Vendedor no encontrado");
-                // Valores por defecto en caso de error
-                this.vendedor = {
-                    nombre: "Vendedor no encontrado",
-                    puntaje: 0,
-                    totalResenias: 0,
-                    imagenUrl: ""
-                };
-                return;
-            }
-
-            console.log("Datos del vendedor cargados:", this.vendedor);
         } catch (error) {
             console.error("Error al cargar datos del vendedor:", error);
             alert("Error al cargar los datos del vendedor");
-            this.vendedor = {
-                nombre: "Vendedor no encontrado",
-                puntaje: 0,
-                totalResenias: 0,
-                imagenUrl: ""
-            };
         }
     }
 
     /**
      * Genera las estrellas ★ de forma dinámica basado en la calificación.
-     * @param {number} puntaje - El puntaje del vendedor (e.g., 4.9).
+     * @param {number} puntuacion - La puntuacion del vendedor (e.g., 4.9).
      * @returns {string} HTML con las estrellas.
      */
-    #generarEstrellas(puntaje) {
+    #generarEstrellas(puntuacion) {
         const totalEstrellas = 5;
-        const estrellasLlenas = Math.round(puntaje);
+        const estrellasLlenas = Math.round(puntuacion);
         let estrellasHTML = '';
 
         for (let i = 0; i < totalEstrellas; i++) {
-            estrellasHTML += (i < estrellasLlenas) ? '★' : '☆'; // Usar ☆ para estrella vacía si quieres más precisión visual
+            estrellasHTML += (i < estrellasLlenas) ? '★' : '☆';
         }
         return `<span class="estrellas">${estrellasHTML}</span>`;
     }
 
     #render(shadow) {
         // Usar los datos del vendedor si están disponibles, si no, usar valores por defecto
-        const nombreVendedor = this.vendedor?.nombre || 'Vendedor';
-        const puntajeVendedor = this.vendedor?.puntaje.toFixed(1) || 'N/A';
+        const nombreVendedor = this.vendedor?.nombreCompleto || 'Vendedor';
+        const calificacionVendedor = this.vendedor?.rating.toFixed(1) || 'N/A';
         const totalResenias = this.vendedor?.totalResenias || 0;
-        const imagenUrl = this.vendedor?.imagenUrl || '';
-        console.log(imagenUrl);
-        const estrellasHTML = this.#generarEstrellas(this.vendedor?.puntaje || 0);
+        const imagenUrl = this.vendedor?.fotoPerfil || '';
+        const estrellasHTML = this.#generarEstrellas(this.vendedor?.rating || 0);
 
         shadow.innerHTML += `
         <div class="contenedor-main">
             <div class="contenedor">
                 <div class="datos-vendedor">
                     <h2>${nombreVendedor}</h2>
-                    <img class="imagen-vendedor" src="../${imagenUrl}" alt="Imagen de ${nombreVendedor}">
+                    <img class="imagen-vendedor" src="${imagenUrl}" alt="Imagen de ${nombreVendedor}">
                     <h4>Puntaje del vendedor</h4>
                     <div class="rating">
-                        <span class="rating-numero">${puntajeVendedor}</span>
+                        <span class="rating-numero">${calificacionVendedor}</span>
                         ${estrellasHTML} 
                     </div>
                     <p class="total-reseñas">Basado en ${totalResenias} reseñas</p>
@@ -164,7 +148,6 @@ export class AgregarReseniaPage extends HTMLElement {
             if (e.target.classList.contains('estrella')) {
                 this.calificacionSeleccionada = parseInt(e.target.getAttribute('data-value'));
                 actualizarEstrellas(this.calificacionSeleccionada);
-                console.log(`Calificación seleccionada: ${this.calificacionSeleccionada}`);
                 // Aquí puedes mostrar esta calificación en alguna parte o almacenarla para el envío
             }
         });
@@ -185,22 +168,33 @@ export class AgregarReseniaPage extends HTMLElement {
                 return;
             }
 
+            const datosResenia = {
+                idUsuarioCreador: JSON.parse(localStorage.getItem("usuario"))?.id,
+                titulo: titulo,
+                descripcion: descripcion,
+                calificacion: this.calificacionSeleccionada
+            }
+
             try {
                 // Llama al servicio para agregar la reseña
-                const nuevaResenia = await ReseniasService.agregarResenia(
-                    this.calificacionSeleccionada,
-                    titulo,
-                    descripcion
-                );
+                const nuevaResenia = await ReseniasService.agregarResenia(this.usuarioReseniadoId, datosResenia);
 
-                console.log('Reseña agregada con éxito:', nuevaResenia);
                 alert("¡Reseña agregada con éxito!");
 
-                page('/home-page');
-
+                page('/home-page'); // Redireccionar a reseñas del usuario
             } catch (error) {
-                console.error("Error al agregar la reseña:", error);
-                alert("Ocurrió un error al intentar agregar la reseña.");
+                const mensaje = error.message;
+
+                // 1. Quitar "Error: "
+                const limpio = mensaje.replace(/^.*Error:\s*/, "");
+
+                // 2. Separar por comas
+                const lista = limpio.split(",").map(e => e.trim()).filter(e => e.length > 0);
+
+                // 3. Convertir a viñetas
+                const textoConViñetas = lista.map(e => "• " + e).join("\n");
+
+                alert('Por favor corrige los siguientes errores:\n\n' + textoConViñetas);
             }
         });
     }
@@ -208,7 +202,7 @@ export class AgregarReseniaPage extends HTMLElement {
     #agregarEstilos(shadow) {
         let link = document.createElement("link");
         link.setAttribute("rel", "stylesheet");
-        link.setAttribute("href", "../FrontLaVitrina/src/pages/agregarResenia/agregarResenia.css");
+        link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
     }
 }

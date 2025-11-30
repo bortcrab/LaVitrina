@@ -1,18 +1,9 @@
 import { Resenia } from "../models/resenia.js";
 
+const API_URL = '/api/resenias';
+
 export class ReseniasService {
     // Inicializamos las reseñas estáticamente para que persistan las agregadas
-    static #resenias = [
-        new Resenia(
-            2,
-            "Me encantó",
-            "Mayonesa McCormick",
-            "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500&h=500&fit=crop",
-            "Pedrito nos vendió confianza, pero al recibir el pedido resultó ser de otra marca 😔. Muy amable, eso sí, pero nos quedamos con un sabor raro en la boca.",
-            0,
-            new Date(2025, 10, 20)
-        )];
-        
     static async getResenias() {
         const resenias = [
             new Resenia(
@@ -74,6 +65,15 @@ export class ReseniasService {
         return resenias;
     }
 
+    static getHeaders() {
+        const token = localStorage.getItem('token');
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+    }
+
+
     /**
      * Agrega una nueva reseña a la lista.
      * @param {number} calificacion - La calificación dada (1 a 5).
@@ -81,29 +81,24 @@ export class ReseniasService {
      * @param {string} descripcion - El texto de la reseña.
      * @returns {Promise<Resenia>} La nueva reseña agregada.
      */
-    static async agregarResenia(calificacion, titulo, descripcion) {
-        // En una app real, el vendedor/producto se obtendría del contexto
-        // y el ID se generaría en el backend. Aquí simulamos con valores fijos/autoincrementales.
+    static async agregarResenia(idUsuarioReseniado, datosResenia) {
+        try {
+            const response = await fetch(`${API_URL}/${idUsuarioReseniado}`, {
+                method: 'POST',
+                headers: this.getHeaders(),
+                body: JSON.stringify(datosResenia)
+            });
 
-        // Simular generación de ID (simple)
-        const newId = ReseniasService.#resenias.length > 0
-            ? Math.max(...ReseniasService.#resenias.map(r => r.id)) + 1
-            : 1;
+            const responseData = await response.json();
+            if (responseData.status === 'fail') {
+                throw new Error(responseData.message);
+            }
 
-        const nuevaResenia = new Resenia(
-            newId,
-            titulo,
-            "Producto/Vendedor Simulado", // Producto/Vendedor simulado
-            "FrontLaVitrina/src/assets/pedrito.png", // Imagen simulada
-            descripcion,
-            calificacion,
-            new Date() // Fecha actual
-        );
-
-        ReseniasService.#resenias.push(nuevaResenia);
-
-        console.log("Nueva reseña agregada en el servicio:", nuevaResenia);
-        return nuevaResenia;
+            return responseData; // Retorna el objeto de la reseña creada
+        } catch (error) {
+            console.error('ReseniaService:', error.message);
+            throw error;
+        }
     }
 
 }

@@ -1,15 +1,15 @@
 const express = require('express');
-const ReseniasController = require('../controllers/reseniasController.js');
+const reseniasController = require('../controllers/reseniasController.js');
 
 const router = express.Router();
 
-router.post('/', ReseniasController.crearResenia);
-router.get('/', ReseniasController.obtenerResenias);
-router.get('/:id', ReseniasController.obtenerReseniaPorId);
-router.get('/usuarioReseniado/:idUsuarioReseniado', ReseniasController.obtenerReseniasPorUsuarioReseniado);
-router.get('/resenias-altas/:idUsuarioReseniado', ReseniasController.obtenerReseniasMasAltas);
-router.get('/resenias-bajas/:idUsuarioReseniado', ReseniasController.obtenerReseniasMasBajas);
-router.put('/:id', ReseniasController.actualizarResenia);
-router.delete('/:id', ReseniasController.eliminarResenia);
+router.post('/:id', reseniasController.crearResenia);
+router.get('/', reseniasController.obtenerResenias);
+router.get('/:id', reseniasController.obtenerReseniaPorId);
+router.get('/usuarioReseniado/:idUsuarioReseniado', reseniasController.obtenerReseniasPorUsuarioReseniado);
+router.get('/resenias-altas/:idUsuarioReseniado', reseniasController.obtenerReseniasMasAltas);
+router.get('/resenias-bajas/:idUsuarioReseniado', reseniasController.obtenerReseniasMasBajas);
+router.put('/:id', reseniasController.actualizarResenia);
+router.delete('/:id', reseniasController.eliminarResenia);
 
 module.exports = router;
