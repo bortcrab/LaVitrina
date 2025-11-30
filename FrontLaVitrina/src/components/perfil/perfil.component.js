@@ -75,7 +75,7 @@ export class PerfilComponent extends HTMLElement {
                             <span class="estrellas">★ ★ ★ ★ ★</span>
                             <span class="rating-numero">${this.#usuario.rating}</span>
                         </div>
-                        <p class="total-reseñas">Basado en ${this.#usuario.totalReseñas} reseñas</p>
+                        <p class="total-reseñas">Basado en ${this.#usuario.totalResenias} reseñas</p>
                         <a href="#" class="ver-reseñas" id="verResenias">Ver todas las reseñas</a>
                     </div>
                 </div>

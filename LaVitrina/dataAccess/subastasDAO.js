@@ -1,5 +1,7 @@
 const { Subasta, Publicacion, EtiquetasPublicacion } = require('../models');
 const publicacionesDAO = require('./publicacionesDAO');
+const etiquetasDAO = require('./etiquetasDAO');
+const imagenesDAO = require('./imagenesDAO');
 const { Op } = require('sequelize');
 
 class SubastasDAO {
@@ -126,18 +128,67 @@ class SubastasDAO {
      */
     async actualizarSubasta(idSubasta, datosActualizados) {
         try {
-            const subasta = await Subasta.findByPk(idSubasta, {
+            console.log("Actualizando subasta ID:", idSubasta);
+
+            // 1. Buscar la subasta con su publicación
+            let subasta = await Subasta.findByPk(idSubasta, {
                 include: [{ model: Publicacion }]
             });
 
-            if (!subasta || !subasta.Publicacion) {
-                throw new Error('La subasta o su publicación asociada no existen.');
+            // 2. Si NO existe la subasta
+            if (!subasta) {
+                // Verificar si al menos existe la publicación
+                const publicacion = await Publicacion.findByPk(idSubasta);
+
+                if (!publicacion) {
+                    throw new Error('La publicación no existe. No se puede crear la subasta.');
+                }
+
+                // Si existe la publicación, crear la subasta
+                console.log("Publicación existe. Creando nueva subasta...");
+                await Subasta.create({
+                    id: idSubasta,
+                    fechaInicio: datosActualizados.fechaInicio,
+                    fechaFin: datosActualizados.fechaFin
+                });
+
+                // Recargar la subasta recién creada con su publicación
+                subasta = await Subasta.findByPk(idSubasta, {
+                    include: [{ model: Publicacion }]
+                });
             }
 
-            await subasta.Publicacion.update(datosActualizados);
-            await subasta.update(datosActualizados);
+            // 3. Actualizar etiquetas
+            const etiquetas = datosActualizados.etiquetas || [];
+            await etiquetasDAO.actualizarEtiquetas(idSubasta, etiquetas);
+
+            // 4. Actualizar la publicación
+            await subasta.Publicacion.update({
+                titulo: datosActualizados.titulo,
+                descripcion: datosActualizados.descripcion,
+                precio: datosActualizados.precio,
+                idCategoria: datosActualizados.idCategoria,
+                imagenes: datosActualizados.imagenes
+            });
+
+            // 5. Actualizar la subasta (solo fechas)
+            await subasta.update({
+                fechaInicio: datosActualizados.fechaInicio,
+                fechaFin: datosActualizados.fechaFin
+            });
+
+            // 7. Actualizar imagenes
+            const imagenes = datosActualizados.imagenes || [];
+
+            await imagenesDAO.actualizarImagenes(idSubasta, imagenes);
+
+
+            // 6. Recargar y retornar la subasta actualizada
+            await subasta.reload({ include: [{ model: Publicacion }] });
             return subasta.toJSON();
+
         } catch (error) {
+            console.error("Error al actualizar subasta:", error);
             throw error;
         }
     }

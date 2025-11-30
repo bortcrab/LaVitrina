@@ -76,7 +76,7 @@ export class UsuariosService {
 
             usuario.fechaCreacion = data.fechaCreacion;
             usuario.rating = data.calificacion || 0;
-            usuario.totalReseñas = data.totalReseñas || 0;
+            usuario.totalResenias = data.totalResenias || 0;
             usuario.avatar = data.fotoPerfil;
 
             return usuario;
