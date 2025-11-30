@@ -1,164 +1,183 @@
 import { PublicacionService } from '../../services/publicacion.service.js';
 
 export class HomePage extends HTMLElement {
+
     constructor() {
         super();
         this.publicaciones = [];
         this.categorias = [];
         this.activeCategory = 'Todo';
+        this.paginaActual = 1;
+        this.limitePorPaginaBackend = 20;
+        this.hayMasPaginas = true;
+        this.isLoading = false;
         this.cssUrl = new URL('./home.page.css', import.meta.url).href;
     }
 
     async connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-        document.addEventListener('realizar-busqueda', (e) => {
-            this.ejecutarBusqueda(e.detail.termino, shadow);
-        });
+        this.#renderBase(shadow);
+        this.#agregarEstilos(shadow);
 
-        try {
-            const [publicacionesData, categoriasData] = await Promise.all([
-                PublicacionService.getPublicaciones(),
-                PublicacionService.obtenerCategorias()
-            ]);
-
-            this.publicaciones = publicacionesData;
-            this.categorias = categoriasData;
-
-            this.#render(shadow);
-            this.#setupEventListeners(shadow);
-        } catch (error) {
-            console.error("Error cargando home:", error);
-            shadow.innerHTML = `<div class="error">Error al cargar datos</div>`;
-        }
-
+        this.categorias = await PublicacionService.obtenerCategorias();
+        this.#renderCategorias(shadow);
+        await this.#cargarPublicaciones(shadow);
+        this.#setupEventListeners(shadow);
     }
 
 
-    #render(shadow) {
-        const categoriasHTML = this.categorias.map(cat => `
-            <button class="filter-pill ${cat.id == this.activeCategory ? 'active' : ''}" 
-                    data-id="${cat.id}" 
-                    data-tipo="categoria">
-                ${cat.nombre}
-            </button>
-        `).join('');
+    async #cargarPublicaciones(shadow) {
+        this.isLoading = true;
+        this.#mostrarLoading(shadow, true);
+        try {
+            let respuesta = [];
+            if (this.activeCategory === 'Todo') {
+                respuesta = await PublicacionService.getPublicaciones(this.paginaActual);
+            } else {
+                respuesta = await PublicacionService.obtenerPublicacionesPorCategoria(this.activeCategory, this.paginaActual);
+            }
+            this.publicaciones = respuesta || [];
+            this.hayMasPaginas = this.publicaciones.length === this.limitePorPaginaBackend;
+            this.#renderProducts(shadow);
+            this.#renderPagination(shadow);
+        } catch (error) {
+            console.error("Error cargando:", error);
+            const grid = shadow.getElementById('productsGrid');
+            if(grid) grid.innerHTML = `<div class="error-msg">Error al cargar datos.</div>`;
+        } finally {
+            this.isLoading = false;
+            this.#mostrarLoading(shadow, false);
+        }
+    }
 
-        const botonTodo = `
-            <button class="filter-pill ${this.activeCategory === 'Todo' ? 'active' : ''}" 
-                    data-id="Todo" 
-                    data-tipo="todo">
-                Todo
-            </button>
-        `;
 
+   #renderBase(shadow) {
         shadow.innerHTML = `
             <section class="home-section">
                 <div class="section-header">
                     <h2>Inicio</h2>
                 </div>
-
-                <div class="categories-container">
-                    ${botonTodo}
-                    ${categoriasHTML}
+                <div class="categories-container" id="categoriesContainer">
+                    <button class="filter-pill active" data-tag="Todo">Todo</button>
                 </div>
-
-                <div class="products-grid" id="productsGrid">
-                    ${this.#renderProducts(this.publicaciones)}
-                </div>
+                <div class="products-grid" id="productsGrid"></div>
+                <div class="pagination-container" id="paginationContainer"></div>
             </section>
         `;
-
-        this.#agregarEstilos(shadow);
+    }
+    #renderCategorias(shadow) {
+        const container = shadow.getElementById('categoriesContainer');
+        const htmlCategorias = this.categorias.map(cat => `
+            <button class="filter-pill" data-tag="${cat.nombre}" data-id="${cat.id}">
+                ${cat.nombre}
+            </button>
+        `).join('');
+        container.insertAdjacentHTML('beforeend', htmlCategorias);
     }
 
-    #renderProducts(publicaciones) {
-        if (!publicaciones || publicaciones.length === 0) {
-            return `
-                <div class="no-results">
-                    <p>No se encontraron productos.</p>
-                </div>
-            `;
+    #renderProducts(shadow) {
+        const grid = shadow.getElementById('productsGrid');
+        if (this.publicaciones.length === 0) {
+            grid.innerHTML = `<div class="no-results"><p>No hay productos en esta página.</p></div>`;
+            return;
         }
-        return publicaciones.map(publicacion => `
-            <publicacion-info 
-                id="${publicacion.id}"
-                titulo="${publicacion.titulo}"
-                descripcion="${publicacion.descripcion}"
-                precio="${publicacion.precio}"
-                imagen="${publicacion.imagenes && publicacion.imagenes.length > 0 ? publicacion.imagenes[0] : ''}"
-                tipo="${publicacion.tipo || 'venta'}" 
-            ></publicacion-info>
-        `).join('');
+        grid.innerHTML = this.publicaciones.map(publicacion => {
+             const imagenSrc = publicacion.imagenes && publicacion.imagenes.length > 0 
+                ? publicacion.imagenes[0] : 'assets/no-image.png';
+             return `
+                <publicacion-info 
+                    id="${publicacion.id}"
+                    titulo="${publicacion.titulo}"
+                    descripcion="${publicacion.descripcion}"
+                    precio="${publicacion.precio}"
+                    imagen="${imagenSrc}"
+                    tipo="${publicacion.tipo || 'Venta'}" 
+                ></publicacion-info>
+            `;
+        }).join('');
+    }
+#renderPagination(shadow) {
+        const container = shadow.getElementById('paginationContainer');
+        
+        if (this.paginaActual === 1 && !this.hayMasPaginas) {
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = `
+            <button class="page-btn prev" ${this.paginaActual === 1 ? 'disabled' : ''} id="btnPrev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Anterior
+            </button>
+
+            <span class="page-info">Página ${this.paginaActual}</span>
+
+            <button class="page-btn next" ${!this.hayMasPaginas ? 'disabled' : ''} id="btnNext">
+                Siguiente 
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        `;
+        
+        const btnPrev = shadow.getElementById('btnPrev');
+        const btnNext = shadow.getElementById('btnNext');
+
+        if(btnPrev) btnPrev.addEventListener('click', () => this.#cambiarPagina(shadow, -1));
+        if(btnNext) btnNext.addEventListener('click', () => this.#cambiarPagina(shadow, 1));
+    }
+
+    #cambiarPagina(shadow, delta) {
+        if (this.isLoading) return;
+        const nuevaPagina = this.paginaActual + delta;
+        if (nuevaPagina < 1) return;
+        if (delta > 0 && !this.hayMasPaginas) return;
+
+        this.paginaActual = nuevaPagina;
+        shadow.querySelector('.home-section').scrollIntoView({ behavior: 'smooth' });
+        this.#cargarPublicaciones(shadow);
+    }
+
+    #mostrarLoading(shadow, mostrar) {
+        const grid = shadow.getElementById('productsGrid');
+        if (!grid) return;
+        grid.style.opacity = mostrar ? '0.5' : '1';
+        grid.style.pointerEvents = mostrar ? 'none' : 'auto';
     }
 
     #setupEventListeners(shadow) {
-        const categoriesContainer = shadow.querySelector('.categories-container');
         const productsGrid = shadow.getElementById('productsGrid');
         productsGrid.addEventListener('publicacionClick', (e) => {
             const idPublicacion = e.detail.publicacion.id;
-            if (window.page) page(`/detalle-publicacion/${idPublicacion}`);
+            if(window.page) page(`/detalle-publicacion/${idPublicacion}`);
         });
 
-        categoriesContainer.addEventListener('click', async (e) => {
+        const categoriesContainer = shadow.getElementById('categoriesContainer');
+        categoriesContainer.addEventListener('click', (e) => {
             const button = e.target.closest('.filter-pill');
-            if (button) {
-                const tipo = button.dataset.tipo;
-                const id = button.dataset.id;
-
-                const buttons = shadow.querySelectorAll('.filter-pill');
-                buttons.forEach(btn => btn.classList.remove('active'));
+            if (button && !this.isLoading) {
+                const currentActive = categoriesContainer.querySelector('.active');
+                if(currentActive) currentActive.classList.remove('active');
                 button.classList.add('active');
 
-                this.activeCategory = id;
+                this.activeCategory = button.dataset.id; 
+                if(button.dataset.tag === 'Todo') this.activeCategory = 'Todo';
 
-                if (tipo === 'todo') {
-                    await this.cargarTodas(shadow);
-                } else {
-                    await this.filtrarPorCategoria(id, shadow);
-                }
+                this.paginaActual = 1; 
+                this.#cargarPublicaciones(shadow);
             }
         });
     }
 
-    async cargarTodas(shadow) {
-        const grid = shadow.getElementById('productsGrid');
-        grid.innerHTML = '<div class="loading">Cargando...</div>';
-        
-        this.publicaciones = await PublicacionService.getPublicaciones();
-        grid.innerHTML = this.#renderProducts(this.publicaciones);
-    }
-
-    async filtrarPorCategoria(idCategoria, shadow) {
-        const grid = shadow.getElementById('productsGrid');
-        grid.innerHTML = '<div class="loading">Cargando...</div>';
-        
-        this.publicaciones = await PublicacionService.obtenerPublicacionesPorCategoria(idCategoria);
-        grid.innerHTML = this.#renderProducts(this.publicaciones);
-    }
-   
-    async ejecutarBusqueda(termino, shadow) {
-        const grid = shadow.getElementById('productsGrid');
-        
-        const buttons = shadow.querySelectorAll('.filter-pill');
-        buttons.forEach(btn => btn.classList.remove('active'));
-        this.activeCategory = null;
-
-        if (!termino || termino.trim() === '') {
-            await this.cargarTodas(shadow);
-            return;
-        }
-
-        grid.innerHTML = '<div class="loading">Buscando...</div>';
-        this.publicaciones = await PublicacionService.buscarPublicaciones(termino);
-        grid.innerHTML = this.#renderProducts(this.publicaciones);
-    }
-
     #agregarEstilos(shadow) {
-        if (!shadow.querySelector('link[href="./src/pages/home/home.page.css"]')) {
-            let link = document.createElement("link");
-            link.setAttribute("rel", "stylesheet");
-            link.setAttribute("href", this.cssUrl);
-            shadow.appendChild(link);
-        }
+        let link = document.createElement("link");
+        link.setAttribute("rel", "stylesheet");
+        link.setAttribute("href", this.cssUrl);
+        shadow.appendChild(link);
+        
     }
 }
