@@ -83,21 +83,34 @@ class MensajesController {
     static async obtenerMensajesDeChat(req, res, next){
         try {
             const { idChat } = req.params;
+            const idUsuarioActual = req.usuario.id || req.usuario.userId;
 
             const chatExists = await ChatDAO.obtenerChatPorId(idChat);
             if (!chatExists) {
                 return next(new AppError('No se encontró el chat.', 404));
             }
 
-            const limit = parseInt(req.query.limit, 10) || 30;
+            const limit = parseInt(req.query.limit, 10) || 50;
             const page = parseInt(req.query.page, 10) || 1;
             const offset = (page - 1) * limit;
 
-            const mensajes = await MensajesDAO.obtenerMensajesDeChat(idChat, limit, offset);
+            const mensajesRaw = await MensajesDAO.obtenerMensajesDeChat(idChat, limit, offset);
 
-            res.status(200).json(mensajes);
+            const mensajesFormateados = mensajesRaw.map(m => {
+                return {
+                    id: m.id,
+                    texto: m.MensajeTexto ? m.MensajeTexto.texto : null,
+                    imagenes: m.MensajeImagen ? [m.MensajeImagen.imagen] : [],
+                    fechaEnviado: m.fechaEnviado,
+                    enviado: m.idUsuario === idUsuarioActual, 
+                    idChat: m.idChat
+                };
+            });
+
+            res.status(200).json(mensajesFormateados);
 
         } catch (error) {
+            console.error(error);
             next(new AppError('Ocurrió un error al obtener los mensajes del chat.', 500));
         }
     }

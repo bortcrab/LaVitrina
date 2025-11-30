@@ -9,6 +9,7 @@ import { ChatsComponent } from './src/components/chats/chats.component.js';
 import { IniciarSesionComponent } from "./src/components/iniciarSesion/iniciarSesion.component.js";
 import { ReseniaCardComponent } from "./src/components/reseniaCard/reseniacard.component.js";
 import { SubastaCardComponent } from "./src/components/subastaCard/subastacard.component.js";
+import { ErrorMessageComponent } from "./src/components/errorMessage/errorMessage.component.js";
 
 //Pages
 import { HomePage } from './src/pages/home/home.page.js';
@@ -35,6 +36,7 @@ window.customElements.define('iniciar-sesion-info', IniciarSesionComponent);
 window.customElements.define('detalle-publicacion-info', DetallePublicacionPage);
 window.customElements.define('resenia-card-info', ReseniaCardComponent);
 window.customElements.define('subasta-card-info', SubastaCardComponent);
+window.customElements.define('error-message-info', ErrorMessageComponent);
 
 //definir pages
 window.customElements.define('home-page', HomePage);
@@ -47,16 +49,6 @@ window.customElements.define('editar-publicacion-page', EditarPublicacionPage);
 window.customElements.define('agregar-resenia-page', AgregarReseniaPage);
 window.customElements.define('mis-publicaciones-page', MisPublicacionesPage);
 window.customElements.define('resenias-info', ReseniasPage);
-
-function verificarSesion(ctx, next) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        console.warn("Acceso denegado: No hay sesión activa.");
-        page.redirect('/iniciar-sesion');
-    } else {
-        next();
-    }
-}
 
 function esTokenValido(token) {
     if (!token) return false;
