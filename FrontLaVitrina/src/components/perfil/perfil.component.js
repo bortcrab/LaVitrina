@@ -44,6 +44,15 @@ export class PerfilComponent extends HTMLElement {
         }
 
         shadow.innerHTML = `
+            <div class="modal-overlay" id="modalError">
+                <error-message-info 
+                    id="componenteError"
+                    titulo="Atención" 
+                    mensaje="" 
+                    accion="Entendido">
+                </error-message-info>
+            </div>
+
             <div class="perfil-container">
                 <div class="perfil-info">
                     <div class="usuario-avatar">
@@ -101,7 +110,7 @@ export class PerfilComponent extends HTMLElement {
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="contraseña">Contraseña</label>
-                                <input type="password" id="contraseña" value="****************" disabled>
+                                <input type="password" id="contraseña" disabled placeholder="••••••••">
                             </div>
                             <div class="form-group">
                                 <label for="telefono">Teléfono</label>
@@ -125,6 +134,23 @@ export class PerfilComponent extends HTMLElement {
         this.#attachEventListeners(shadow);
         
         if(this.editMode) this.#toggleEditMode(shadow);
+    }
+
+    #mostrarError(mensaje, inputAFocusear = null) {
+        const modal = this.shadowRoot.getElementById('modalError');
+        const componenteError = this.shadowRoot.getElementById('componenteError');
+        
+        componenteError.setAttribute('mensaje', mensaje);
+        
+        modal.classList.add('visible');
+
+        const cerrar = () => {
+            modal.classList.remove('visible');
+            componenteError.removeEventListener('retry-click', cerrar);
+            if(inputAFocusear) inputAFocusear.focus();
+        };
+
+        componenteError.addEventListener('retry-click', cerrar);
     }
 
     #attachEventListeners(shadow) {
@@ -157,63 +183,51 @@ export class PerfilComponent extends HTMLElement {
         if(formPerfil) {
             formPerfil.addEventListener('submit', (e) => {
                 e.preventDefault();
+                
                 const inputsRequeridos = ['nombres', 'apellidoPaterno', 'apellidoMaterno', 'correo', 'telefono', 'fechaNacimiento'];
                 for (const id of inputsRequeridos) {
                     const input = shadow.getElementById(id);
                     if (!input.value.trim()) {
-                        alert(`El campo "${id}" no puede estar vacío.`);
-                        input.focus();
+                        this.#mostrarError(`Llena todos los datos antes de continuar.`, input);
                         return;
                     }
                 }
 
                 const soloLetrasRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
                 const inputsTexto = ['nombres', 'apellidoPaterno', 'apellidoMaterno'];
-                
                 for (const id of inputsTexto) {
                     const input = shadow.getElementById(id);
                     if (!soloLetrasRegex.test(input.value.trim())) {
-                        alert(`El campo "${id}" solo debe contener letras y espacios.`);
-                        input.focus();
+                        this.#mostrarError(`Los nombres y apellidos solo deben contener letras y espacios.`, input);
                         return;
                     }
                 }
 
-                const correo = shadow.getElementById('correo').value.trim();
+                const correoInput = shadow.getElementById('correo');
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(correo)) {
-                    alert("El formato del correo electrónico no es válido.");
-                    shadow.getElementById('correo').focus();
+                if (!emailRegex.test(correoInput.value.trim())) {
+                    this.#mostrarError("El formato del correo electrónico no es válido.", correoInput);
                     return;
                 }
 
-                const telefono = shadow.getElementById('telefono').value.trim();
+                const telefonoInput = shadow.getElementById('telefono');
                 const phoneRegex = /^\d{10}$/;
-                if (!phoneRegex.test(telefono)) {
-                    alert("El teléfono debe tener exactamente 10 dígitos numéricos.");
-                    shadow.getElementById('telefono').focus();
+                if (!phoneRegex.test(telefonoInput.value.trim())) {
+                    this.#mostrarError("El teléfono debe tener exactamente 10 dígitos numéricos.", telefonoInput);
                     return;
                 }
 
                 const passInput = shadow.getElementById('contraseña');
                 const passValue = passInput.value;
                 
-                if (passValue !== '****************' && passValue.trim() !== '') {
+                if (passValue.trim() !== '') {
                     const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
                     if (!passRegex.test(passValue)) {
-                        alert("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.");
-                        passInput.focus();
+                        this.#mostrarError("La contraseña debe tener mínimo 8 caracteres, mayúsculas, minúsculas, números y un caracter especial.", passInput);
                         return;
                     }
                 }
 
-                this.#emitirGuardado(shadow);
-            });
-        }
-
-        if(formPerfil) {
-            formPerfil.addEventListener('submit', (e) => {
-                e.preventDefault();
                 this.#emitirGuardado(shadow);
             });
         }
