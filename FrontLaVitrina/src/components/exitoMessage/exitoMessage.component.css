@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+* {
+    font-family: "Bree Serif", serif;
+    box-sizing: border-box;
+}
+
+:host {
+    display: block;
+    width: 100%;
+}
+
+.exito-card {
+    background-color: #FFFFFF;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.icon-container {
+    width: 70px;
+    height: 70px;
+    background-color: #E8F5E9;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-container svg {
+    width: 35px;
+    height: 35px;
+    fill: #4CAF50;
+}
+
+.exito-title {
+    margin: 0;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.exito-message {
+    color: #666;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.btn-continuar {
+    background-color: #E62634;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 0.8rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background-color 0.3s;
+}
+
+.btn-continuar:hover {
+    background-color: #c40b14;
+}
