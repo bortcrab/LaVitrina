@@ -187,9 +187,22 @@ export class PublicacionService {
         }
     }
 
-    static getPublicacionesPorUsuario(nombreUsuario) {
-        const todas = this.getPublicaciones();
-        return todas.filter(p => p.usuario.nombres === nombreUsuario);
+    static async getPublicacionesPorUsuario(idUsuario) {
+        try {
+            const response = await fetch(`${API_URL}/usuario/${idUsuario}`, {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) throw new Error('Error al obtener mis publicaciones');
+            
+            const data = await response.json();
+            
+            return data.map(pub => new Publicacion(pub)); 
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
     }
 
     static async cambiarEstadoVenta(idPublicacion, nuevoEstado) {

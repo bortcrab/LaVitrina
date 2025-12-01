@@ -11,22 +11,43 @@ export class MisPublicacionesPage extends HTMLElement {
         this.cssUrl = new URL('./misPublicaciones.page.css', import.meta.url).href;
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
         this.shadow = shadow;
-        this.#cargarPublicaciones();
         this.#agregarEstilos(shadow);
         this.#render(shadow);
+        await this.#cargarPublicaciones(); 
         this.#setupEventListeners(shadow);
     }
 
-    #cargarPublicaciones() {
-        const usuarioActivo = IniciarSesionService.obtenerUsuarioActivo();
-        const nombreUsuario = usuarioActivo ? usuarioActivo.nombres : "Pedro";
+    async #cargarPublicaciones() {
+        try {
+            const usuarioStorage = localStorage.getItem('usuario');
+            if (!usuarioStorage) {
+                console.warn("No hay sesión activa");
+                return;
+            }
+            const usuario = JSON.parse(usuarioStorage);
 
-        this.misPublicaciones = PublicacionService.getPublicacionesPorUsuario(nombreUsuario);
-        this.filteredProducts = [...this.misPublicaciones];
-        this.#extractUniqueTags();
+            this.misPublicaciones = await PublicacionService.getPublicacionesPorUsuario(usuario.id);
+            
+            this.misPublicaciones.sort((a, b) => {
+                if (a.estado === 'Vendido' && b.estado !== 'Vendido') return 1;
+                if (a.estado !== 'Vendido' && b.estado === 'Vendido') return -1;
+                return 0;
+            });
+
+            this.filteredProducts = [...this.misPublicaciones]; 
+            this.#extractUniqueTags();
+            
+            if (this.shadow) {
+                this.#render(this.shadow);
+                this.#setupEventListeners(this.shadow);
+            }
+
+        } catch (error) {
+            console.error("Error cargando mis publicaciones:", error);
+        }
     }
 
     #extractUniqueTags() {
