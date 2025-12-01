@@ -1,5 +1,6 @@
 import { Usuario } from "../../models/usuario.js";
 import { ReseniasService } from "../../services/resenias.service.js";
+import { UsuariosService } from "../../services/usuario.service.js";
 
 export class ReseniasPage extends HTMLElement {
 
@@ -12,46 +13,55 @@ export class ReseniasPage extends HTMLElement {
     async connectedCallback() {
         const shadow = this.attachShadow({ mode: "open" });
 
-        await this.#cargarResenias();
+        try {
+            let usuarioStorage = localStorage.getItem('usuario');
+            usuarioStorage = JSON.parse(usuarioStorage);
+            const idUsuario = this.getAttribute('id');
 
-        const nombres = this.getAttribute('nombres') || 'Usuario';
-        const puntuacion = this.getAttribute('puntuacion') || '0.0';
-        const fotoPerfil = this.getAttribute('fotoPerfil') || 'https://i.pravatar.cc/150?img=default';
+            console.log(idUsuario)
+            console.log(usuarioStorage.id)
+            console.log(usuarioStorage.id == idUsuario)
 
-        const usuario = {
-            id: 1,
-            nombres: nombres,
-            fotoPerfil: fotoPerfil,
-            puntuacion: puntuacion
-        };
+            if (!idUsuario) {
+                throw new Error('Se debe proporcionar un usuario.');
+            }
 
-        this.#agregaEstilo(shadow);
-        this.#render(shadow, usuario);
-        this.#agregarEventListeners(shadow, usuario.id);
+            const usuario = await UsuariosService.obtenerUsuarioPorId(idUsuario);
+
+            await this.#cargarResenias(usuario.id);
+
+            this.#agregaEstilo(shadow);
+            this.#render(shadow, usuario, usuarioStorage);
+            this.#agregarEventListeners(shadow, usuario.id);
+
+        } catch (error) {
+            console.warn("Error de sesión:", error.message);
+            if (window.page) page('/iniciar-sesion');
+        }
     }
 
-    async #cargarResenias() {
+    async #cargarResenias(idUsuario) {
         try {
-            this.resenias = await ReseniasService.getResenias();
+            this.resenias = await ReseniasService.getReseniasUsuario(idUsuario);
         } catch (error) {
             console.error('Error al cargar las resenias:', error);
             this.resenias = [];
         }
     }
 
-    #render(shadow, usuario) {
+    #render(shadow, usuario, usuarioStorage) {
         shadow.innerHTML += `
             <div class="container">
                 <div class="top-info">
                     <div class="user">
                         <img src="${usuario.fotoPerfil}" alt="">
                         <div class="user-info">
-                            <h1 id="username">Reseñas de ${usuario.nombres}</h1>
-                            <p>Observa lo que dicen los demás de <span id="name">${usuario.nombres}</span></p>
+                            ${usuario.idUsuario === usuarioStorage.id ? '<h1 id="username">Tus reseñas</h1>' : `<h1 id="username">Reseñas de ${usuario.nombres}</h1>`}
+                            ${usuario.idUsuario === usuarioStorage.id ? '<p>Observa lo que dicen los demás de ti</p>' : `<p>Observa lo que dicen los demás de <span id="name">${usuario.nombres}</span></p>`}
                             <h5 id="calificacion"><span class="estrella">★</span>${usuario.puntuacion}</h5>
                         </div>
                     </div>
-                    <button id="btnAgregarResenia" class="btn-escribir-resenia">Escribir reseña<span class="pencil">✎</span></button>
+                    ${usuario.idUsuario !== usuarioStorage.id ? '<button id="btnAgregarResenia" class="btn-escribir-resenia">Escribir reseña<span class="pencil">✎</span></button>' : ''}
                 </div>
                 <div class="middle-info">
                     <h2>${this.resenias.length} Reseñas</h2>
@@ -73,9 +83,11 @@ export class ReseniasPage extends HTMLElement {
     #agregarEventListeners(shadow, id) {
         const btnAgregarResenia = shadow.getElementById('btnAgregarResenia');
 
-        btnAgregarResenia.addEventListener('click', () => {
-            page(`/agregar-resenia/${id}`);
-        });
+        if (btnAgregarResenia) {
+            btnAgregarResenia.addEventListener('click', () => {
+                page(`/agregar-resenia/${id}`);
+            });
+        }
     }
 
     #renderResenias() {

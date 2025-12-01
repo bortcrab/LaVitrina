@@ -12,19 +12,19 @@ export class DetallePublicacionPage extends HTMLElement {
         const shadow = this.attachShadow({ mode: "open" });
 
         const id = this.getAttribute('id');
-    
+
         const publicacion = await PublicacionService.obtenerPublicacion(id);
         const datosFecha = publicacion.fechaPublicacion.split('-');
         publicacion.fechaPublicacion = datosFecha[0] + '/' + datosFecha[1] + '/' + datosFecha[2];
 
         this.#agregaEstilo(shadow);
-        
+
         if (publicacion) {
             this.#render(shadow, publicacion);
         } else {
             shadow.innerHTML = "<h2>publicacion no encontrada.</h2>";
         }
-        this.#agregarEventListeners(shadow);
+        this.#agregarEventListeners(shadow, publicacion.usuario.id);
     }
 
     #render(shadow, publicacion) {
@@ -53,7 +53,7 @@ export class DetallePublicacionPage extends HTMLElement {
                         <div class="perfil-info">
                             <img class="profile-pic" src="${publicacion.usuario.fotoPerfil}" alt="">
                             <div class="user-data">
-                                <h3 id="nombre-perfil">${publicacion.usuario.nombres}</h3>
+                                <a id="link-perfil" href="#"><h3 id="nombre-perfil">${publicacion.usuario.nombres}</h3></a>
                                 <div class="resenias">
                                     <h5 id="calificacion"><span class="estrella">★</span>${publicacion.usuario.puntuacion} (1,204 reseñas)</h5>
                                 </div>
@@ -69,21 +69,22 @@ export class DetallePublicacionPage extends HTMLElement {
 		`;
     }
 
-    #agregarEventListeners(shadow) {
+    #agregarEventListeners(shadow, idUsuario) {
         const btnEnviarMensaje = shadow.getElementById('btn-enviar-mensaje');
         const idPublicacion = this.getAttribute('id');
+        const linkPerfil = shadow.getElementById('link-perfil');
 
-        if(btnEnviarMensaje){
+        if (btnEnviarMensaje) {
             btnEnviarMensaje.addEventListener('click', async (e) => {
                 e.preventDefault();
-                
+
                 btnEnviarMensaje.disabled = true;
                 btnEnviarMensaje.textContent = "Iniciando chat...";
 
                 try {
                     const chat = await ChatService.crearChat(idPublicacion);
-                    localStorage.setItem('chatAbiertoId', chat.id); 
-                    
+                    localStorage.setItem('chatAbiertoId', chat.id);
+
                     page("/chats");
                 } catch (error) {
                     console.error(error);
@@ -91,6 +92,12 @@ export class DetallePublicacionPage extends HTMLElement {
                     btnEnviarMensaje.disabled = false;
                     btnEnviarMensaje.textContent = "Enviar mensaje";
                 }
+            });
+        }
+
+        if (linkPerfil) {
+            linkPerfil.addEventListener('click', async (e) => {
+                if (window.page) page(`/resenias/${idUsuario}`);
             });
         }
     }
