@@ -12,6 +12,7 @@ router.get('/usuario/:id', publicacionesController.obtenerPublicacionesPorUsuari
 router.get('/categoria/:id', publicacionesController.obtenerPublicacionesPorCategoria);
 router.get('/:id', publicacionesController.obtenerPublicacionPorId);
 router.put('/:id', publicacionesController.actualizarPublicacion);
+router.patch('/:id/estado', publicacionesController.cambiarEstado);
 router.delete('/:id', publicacionesController.eliminarPublicacion);
 
 module.exports = router;

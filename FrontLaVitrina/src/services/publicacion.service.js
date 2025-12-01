@@ -192,15 +192,24 @@ export class PublicacionService {
         return todas.filter(p => p.usuario.nombres === nombreUsuario);
     }
 
-    static cambiarEstadoVenta(id) {
-        const publicaciones = this.getPublicaciones();
-        const publicacion = publicaciones.find(p => p.id === parseInt(id));
-        if (publicacion) {
-            publicacion.vendido = !publicacion.vendido;
-            console.log(`Publicación ${id} marcada como ${publicacion.vendido ? 'vendida' : 'disponible'}`);
-            return publicacion;
+    static async cambiarEstadoVenta(idPublicacion, nuevoEstado) {
+        try {
+            const response = await fetch(`${API_URL}/${idPublicacion}/estado`, {
+                method: 'PATCH',
+                headers: this.getHeaders(),
+                body: JSON.stringify({ estado: nuevoEstado })
+            });
+
+            if (!response.ok) throw new Error('Error al actualizar estado');
+            
+            const data = await response.json();
+            
+            return new Publicacion(data.publicacion);
+
+        } catch (error) {
+            console.error("Error cambiando estado:", error);
+            throw error;
         }
-        return null;
     }
 
     static eliminarPublicacion(id) {

@@ -6,9 +6,9 @@ export class MisPublicacionesPage extends HTMLElement {
         super();
         this.misPublicaciones = [];
         this.filteredProducts = [];
-        this.uniqueTags = [];     
+        this.uniqueTags = [];
         this.activeTag = 'Todo';
-        this.cssUrl = new URL('./misPublicaciones.page.css', import.meta.url).href;  
+        this.cssUrl = new URL('./misPublicaciones.page.css', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -22,16 +22,16 @@ export class MisPublicacionesPage extends HTMLElement {
 
     #cargarPublicaciones() {
         const usuarioActivo = IniciarSesionService.obtenerUsuarioActivo();
-        const nombreUsuario = usuarioActivo ? usuarioActivo.nombres : "Pedro"; 
+        const nombreUsuario = usuarioActivo ? usuarioActivo.nombres : "Pedro";
 
         this.misPublicaciones = PublicacionService.getPublicacionesPorUsuario(nombreUsuario);
-        this.filteredProducts = [...this.misPublicaciones]; 
+        this.filteredProducts = [...this.misPublicaciones];
         this.#extractUniqueTags();
     }
 
     #extractUniqueTags() {
         const allTags = this.misPublicaciones.flatMap(product => product.etiquetas);
-        this.uniqueTags = ['Todo', ...new Set(allTags)]; 
+        this.uniqueTags = ['Todo', ...new Set(allTags)];
     }
 
     #render(shadow) {
@@ -55,7 +55,7 @@ export class MisPublicacionesPage extends HTMLElement {
                 </div>
             </section>
         `;
-        
+
         this.#agregarEstilos(shadow);
     }
 
@@ -94,10 +94,10 @@ export class MisPublicacionesPage extends HTMLElement {
             const { action, publicacion } = e.detail;
             this.#handleAction(action, publicacion);
         });
-        
+
         categoriesContainer.addEventListener('click', (e) => {
             const button = e.target.closest('.filter-pill');
-            
+
             if (button) {
                 const tag = button.dataset.tag;
                 this.#filterBy(tag, shadow);
@@ -105,22 +105,24 @@ export class MisPublicacionesPage extends HTMLElement {
         });
     }
 
-    #handleAction(action, publicacion) {
-        switch(action) {
+    async #handleAction(action, publicacion) {
+        switch (action) {
             case 'editar':
                 page(`/editar-publicacion/${publicacion.id}`);
                 break;
-                
+
             case 'marcar':
-                const publicacionActualizada = PublicacionService.cambiarEstadoVenta(publicacion.id);
-                if (publicacionActualizada) {
-                    alert(`Publicación marcada como ${publicacionActualizada.vendido ? 'vendida' : 'disponible'}`);
-                    this.#cargarPublicaciones();
-                    this.#render(this.shadow);
-                    this.#setupEventListeners(this.shadow);
+                const nuevoEstado = publicacion.vendido ? 'Disponible' : 'Vendido';
+                const confirmacion = confirm(`¿Cambiar estado a "${nuevoEstado}"?`);
+
+                if (confirmacion) {
+                    await PublicacionService.cambiarEstadoVenta(publicacion.id, nuevoEstado);
+
+                    alert(`Publicación marcada como ${nuevoEstado}`);
+                    this.#cargarPublicaciones(this.shadow);
                 }
                 break;
-                
+
             case 'eliminar':
                 if (confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
                     const eliminada = PublicacionService.eliminarPublicacion(publicacion.id);
@@ -141,7 +143,7 @@ export class MisPublicacionesPage extends HTMLElement {
         if (tag === 'Todo') {
             this.filteredProducts = this.misPublicaciones;
         } else {
-            this.filteredProducts = this.misPublicaciones.filter(product => 
+            this.filteredProducts = this.misPublicaciones.filter(product =>
                 product.etiquetas.includes(tag)
             );
         }

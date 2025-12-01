@@ -473,6 +473,24 @@ class PublicacionesDAO {
         }
     }
 
+    async actualizarEstado(idPublicacion, nuevoEstado) {
+        try {
+            const publicacion = await Publicacion.findByPk(idPublicacion);
+            
+            if (!publicacion) {
+                throw new Error('La publicación no existe.');
+            }
+
+            publicacion.estado = nuevoEstado;
+            
+            await publicacion.save();
+            return publicacion;
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }
 
 //Se exporta la clase PublicacionesDAO
