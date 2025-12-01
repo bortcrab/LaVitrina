@@ -42,24 +42,20 @@ export class RegistrarPage extends HTMLElement {
             } catch (error) {
                 console.error('Error en registro:', error);
 
-                let mensajeUsuario = "Ocurrió un problema al registrarte.";
+                let tituloError = "Error de Registro";
+                let mensajeUsuario = error.message; 
 
                 if (error.message === "IMAGEN_GRANDE") {
-                    mensajeUsuario = "La imagen es muy pesada (Max 5MB).";
-                    registroComponent.mostrarError(mensajeUsuario);
-                } else if (error.message.includes("correo")) {
-                    mensajeUsuario = "El correo ya está registrado.";
-                    registroComponent.mostrarError(mensajeUsuario);
-                } else if (error.message.includes("telefono")) {
-                    mensajeUsuario = "Este número de teléfono ya está en uso.";
-                    registroComponent.mostrarError(mensajeUsuario);
-                } else if (error.message.includes("fetch") || error.message.includes("Network")) {
-                    this.#mostrarPantallaError(shadow, "Sin conexión", "No pudimos conectar con el servidor.");
-                }
-                else {
-                    registroComponent.mostrarError(mensajeUsuario);
+                    registroComponent.mostrarError("La imagen es muy pesada (Max 5MB).");
+                    return;
                 }
 
+                if (error.message.includes("correo") || error.message.includes("registrado")) {
+                    registroComponent.mostrarError(mensajeUsuario);
+                    return;
+                }
+
+                this.#mostrarPantallaError(shadow, tituloError, mensajeUsuario);
             } finally {
                 const comp = shadow.getElementById("registroComponent");
                 if (comp && comp.toggleCarga) comp.toggleCarga(false);

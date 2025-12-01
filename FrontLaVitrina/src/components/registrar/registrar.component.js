@@ -15,7 +15,7 @@ export class RegistrarUsuarioComponent extends HTMLElement {
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
         this.#render(shadow);
-        this.#agregarEstilosExternos(shadow); 
+        this.#agregarEstilosExternos(shadow);
         this.#agregarEventListeners(shadow);
     }
 
@@ -102,12 +102,12 @@ export class RegistrarUsuarioComponent extends HTMLElement {
 
                         <div class="input-group">
                             <label>Contraseña</label>
-                            <input type="password" id="contrasenia" maxlength="30"  placeholder="********" required>
+                            <input type="password" id="contrasenia" maxlength="50"  placeholder="*******" required>
                         </div>
 
                         <div class="input-group">
                             <label>Confirmar contraseña</label>
-                            <input type="password" id="confirmarContrasenia" maxlength="30" placeholder="********" required>
+                            <input type="password" id="confirmarContrasenia" maxlength="50" placeholder="********" required>
                         </div>
 
                         <div class="error-message" id="errorMessage"></div>
@@ -209,7 +209,7 @@ export class RegistrarUsuarioComponent extends HTMLElement {
     }
 
     #mostrarSugerencias(ciudades, listaUl) {
-        listaUl.innerHTML = ''; 
+        listaUl.innerHTML = '';
         if (!ciudades || ciudades.length === 0) {
             listaUl.style.display = 'none';
             return;
@@ -218,11 +218,11 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         ciudades.forEach(nombreCiudad => {
             const li = document.createElement('li');
             li.textContent = nombreCiudad;
-            
+
             li.addEventListener('click', () => {
                 const inputCiudad = this.shadowRoot.getElementById('ciudad');
-                inputCiudad.value = nombreCiudad; 
-                listaUl.style.display = 'none'; 
+                inputCiudad.value = nombreCiudad;
+                listaUl.style.display = 'none';
             });
 
             listaUl.appendChild(li);
@@ -272,6 +272,8 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         }
     }
 
+
+
     #registrarUsuario(shadow) {
         const correo = shadow.getElementById('correo').value.trim();
         const contrasenia = shadow.getElementById('contrasenia').value;
@@ -282,12 +284,22 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         errorMessage.style.display = 'none';
 
         if (contrasenia !== confirmarContrasenia) {
-            this.#mostrarError(shadow, 'Las contraseñas no coinciden');
+            this.mostrarError('Las contraseñas no coinciden');
             return;
         }
 
-        if (contrasenia.length < 6) {
-            this.#mostrarError(shadow, 'La contraseña debe tener al menos 6 caracteres');
+        if (contrasenia.length < 8) {
+            this.mostrarError( 'La contraseña debe tener al menos 8 caracteres');
+            return;
+        }
+
+        const validatePassword = (contrasenia) => {
+            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+            return regex.test(contrasenia);
+        };
+
+        if (!validatePassword(contrasenia)) {
+            this.mostrarError('La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial. ');
             return;
         }
 
@@ -306,12 +318,23 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         }));
     }
 
-    #mostrarError(shadow, mensaje) {
+    // Método público para ser llamado desde registrar.page.js
+    mostrarError(mensaje) {
+        const shadow = this.shadowRoot; // Accedemos al shadowRoot guardado o 'this.shadowRoot'
+        if (!shadow) return;
+
         const errorMessage = shadow.getElementById('errorMessage');
         const successMessage = shadow.getElementById('successMessage');
-        errorMessage.textContent = mensaje;
-        errorMessage.style.display = 'block';
-        successMessage.style.display = 'none';
+
+        console.log(mensaje);
+        if (mensaje) {
+            errorMessage.textContent = mensaje;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        } else {
+            // Si mensaje está vacío, ocultamos
+            errorMessage.style.display = 'none';
+        }
     }
 
     #mostrarPreviewFoto(e, shadow) {

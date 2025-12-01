@@ -45,6 +45,12 @@ export class PerfilComponent extends HTMLElement {
             return;
         }
 
+        const DEFAULT_AVATAR = './src/assets/imagenDefault.png';
+
+        const avatarUrl = (this.#usuario.avatar && this.#usuario.avatar.trim() !== "") 
+            ? this.#usuario.avatar 
+            : DEFAULT_AVATAR;
+
         shadow.innerHTML = `
             <div class="modal-overlay" id="modalError" style="display: none;">
                 <error-message-info 
@@ -58,7 +64,7 @@ export class PerfilComponent extends HTMLElement {
             <div class="perfil-container">
                 <div class="perfil-info">
                     <div class="usuario-avatar">
-                        <img src="${this.#usuario.avatar}" alt="Avatar" class="avatar-img" id="avatarImg">
+                        <img src="${avatarUrl}" alt="Avatar" class="avatar-img" id="avatarImg">
                         
                         <button class="editar-avatar" id="btnEditarAvatar">
                             <img src="${this.editarRojoIconUrl}" alt="Editar foto">
