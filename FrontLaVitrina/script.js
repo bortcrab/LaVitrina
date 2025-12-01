@@ -58,8 +58,8 @@ function esTokenValido(token) {
     try {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        
-        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
 
@@ -68,10 +68,10 @@ function esTokenValido(token) {
         const ahora = Math.floor(Date.now() / 1000);
 
         if (payload.exp < ahora) {
-            return false; 
+            return false;
         }
-        
-        return true; 
+
+        return true;
 
     } catch (error) {
         console.error("Token corrupto o inválido");
@@ -81,13 +81,13 @@ function esTokenValido(token) {
 
 function verificarSesion(ctx, next) {
     const token = localStorage.getItem('token');
-    
+
     if (!token || !esTokenValido(token)) {
         console.warn("Acceso denegado: Sesión inexistente o expirada.");
-        
+
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
-        
+
         page.redirect('/iniciar-sesion');
     } else {
         next();
@@ -105,69 +105,69 @@ function redirigirSiEstaLogueado(ctx, next) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    page('/home-page',verificarSesion, () => {
+    page('/home-page', verificarSesion, () => {
         toggleNav(true);
         showContent('home-page');
     });
 
-    page('/perfil', verificarSesion,() => {
+    page('/perfil', verificarSesion, () => {
         toggleNav(true);
         showContent('perfil-page');
     });
 
-    page('/chats', verificarSesion,() => {
+    page('/chats', verificarSesion, () => {
         toggleNav(true);
         showContent('chats-page');
     });
 
-    page('/crear-publicacion',verificarSesion, () => {
+    page('/crear-publicacion', verificarSesion, () => {
         toggleNav(true);
         showContent('crear-publicacion-page');
     });
 
-    page('/editar-publicacion/:id', verificarSesion,(publicacion) => {
+    page('/editar-publicacion/:id', verificarSesion, (publicacion) => {
         toggleNav(true);
         const idPublicacion = publicacion.params.id;
         showContent('editar-publicacion-page', { id: idPublicacion });
     });
 
-    page('/agregar-resenia', verificarSesion,() => {
+    page('/agregar-resenia', verificarSesion, () => {
         toggleNav(true);
         showContent('agregar-resenia-page');
     });
 
 
-    page('/resenias',verificarSesion, (ctx) => {
+    page('/resenias/:id', verificarSesion, (req) => {
         toggleNav(true);
-        const datos = ctx.state || {};
-        showContent('resenias-info', datos);
+        const idUsuario = req.params.id;
+        showContent('resenias-info', { id: idUsuario });
     });
 
-    page('/mis-publicaciones', verificarSesion,() => {
+    page('/mis-publicaciones', verificarSesion, () => {
         toggleNav(true);
         showContent('mis-publicaciones-page');
     });
 
-    page('/detalle-publicacion/:id',verificarSesion, (publicacion) => {
+    page('/detalle-publicacion/:id', verificarSesion, (publicacion) => {
         toggleNav(true);
         const idPublicacion = publicacion.params.id;
         showContent('detalle-publicacion-info', { id: idPublicacion });
     });
 
-    page('/agregar-resenia/:id',verificarSesion, (resenia) => {
+    page('/agregar-resenia/:id', verificarSesion, (resenia) => {
         toggleNav(true);
         const idUsuario = resenia.params.id;
         showContent('agregar-resenia-page', { id: idUsuario });
     });
 
     //RUTAS PUBLICAAAAS
-    
-    page('/iniciar-sesion',redirigirSiEstaLogueado, () => {
+
+    page('/iniciar-sesion', redirigirSiEstaLogueado, () => {
         toggleNav(false);
         showContent('iniciar-sesion-page');
     });
 
-    page('/registrar',redirigirSiEstaLogueado, () => {
+    page('/registrar', redirigirSiEstaLogueado, () => {
         toggleNav(false);
         showContent('registrar-page');
     });

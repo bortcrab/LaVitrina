@@ -153,9 +153,7 @@ export class PerfilPage extends HTMLElement {
         });
 
         perfilComponent.addEventListener('ver-resenias', (e) => {
-            const datosUsuario = e.detail;
-            datosUsuario.id = this.usuarioId;
-            if(window.page) page('/resenias', datosUsuario);
+            if(window.page) page(`/resenias/${this.usuarioId}`);
         });
     }
 }
