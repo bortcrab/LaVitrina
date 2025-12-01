@@ -164,12 +164,22 @@ export class ChatsComponent extends HTMLElement {
     #renderConversacion() {
         return `
             <div class="conversacion-header">
-                <img src="${this.#chatActual.fotoPerfil}" class="conversacion-avatar">
+                <img src="${this.#chatActual.fotoPerfil}" 
+                     class="conversacion-avatar" 
+                     id="btnHeaderPerfil" 
+                     style="cursor: pointer; transition: opacity 0.2s;"
+                     title="Ver perfil de usuario">
+                     
                 <div class="conversacion-info">
                     <h3 class="conversacion-nombre">${this.#chatActual.nombre}</h3>
                     <p class="conversacion-servicio">${this.#chatActual.tituloPublicacion}</p>
                 </div>
-                <img src="${this.#chatActual.productoImg}" class="conversacion-producto-img">
+                
+                <img src="${this.#chatActual.productoImg}" 
+                     class="conversacion-producto-img" 
+                     id="btnHeaderProducto"
+                     style="cursor: pointer; transition: opacity 0.2s;"
+                     title="Ver publicación">
             </div>
             
             <div class="mensajes-container" id="mensajesContainer">
@@ -214,6 +224,28 @@ export class ChatsComponent extends HTMLElement {
         const inputTexto = shadow.getElementById('mensajeInput');
         const btnAdjunto = shadow.getElementById('btnAdjunto');
         const fileInput = shadow.getElementById('fileInput');
+        const btnHeaderPerfil = shadow.getElementById('btnHeaderPerfil');
+        const btnHeaderProducto = shadow.getElementById('btnHeaderProducto');
+
+        if (btnHeaderPerfil) {
+            btnHeaderPerfil.onclick = () => {
+                if (this.#chatActual && this.#chatActual.idOtroUsuario) {
+                    page(`/resenias/${this.#chatActual.idOtroUsuario}`);
+                }
+            };
+            btnHeaderPerfil.onmouseover = () => btnHeaderPerfil.style.opacity = '0.8';
+            btnHeaderPerfil.onmouseout = () => btnHeaderPerfil.style.opacity = '1';
+        }
+
+        if (btnHeaderProducto) {
+            btnHeaderProducto.onclick = () => {
+                if (this.#chatActual && this.#chatActual.idPublicacion) {
+                    page(`/detalle-publicacion/${this.#chatActual.idPublicacion}`);
+                }
+            };
+            btnHeaderProducto.onmouseover = () => btnHeaderProducto.style.opacity = '0.8';
+            btnHeaderProducto.onmouseout = () => btnHeaderProducto.style.opacity = '1';
+        }
         
         const previewContainer = shadow.getElementById('previewContainer');
         const previewImg = shadow.getElementById('previewImg');

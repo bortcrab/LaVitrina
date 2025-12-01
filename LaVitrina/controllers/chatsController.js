@@ -136,7 +136,9 @@ class ChatController {
                     fotoPerfil: avatar,
                     productoImg: productoImg,
                     noLeido: noLeido,
-                    fecha: fechaUltimoMensaje
+                    fecha: fechaUltimoMensaje,
+                    idOtroUsuario: otroUsuario ? otroUsuario.id : null,
+                    idPublicacion: chat.Publicacion ? chat.Publicacion.id : null
                 };
             });
 
