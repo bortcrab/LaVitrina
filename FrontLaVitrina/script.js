@@ -11,6 +11,7 @@ import { ReseniaCardComponent } from "./src/components/reseniaCard/reseniacard.c
 import { SubastaCardComponent } from "./src/components/subastaCard/subastacard.component.js";
 import { ErrorMessageComponent } from "./src/components/errorMessage/errorMessage.component.js";
 import { ExitoMessageComponent } from "./src/components/exitoMessage/exitoMessage.component.js";
+import { ConfirmationMessageComponent } from "./src/components/confirmationMessage/confirmationMessage.component.js";
 
 //Pages
 import { HomePage } from './src/pages/home/home.page.js';
@@ -39,6 +40,7 @@ window.customElements.define('resenia-card-info', ReseniaCardComponent);
 window.customElements.define('subasta-card-info', SubastaCardComponent);
 window.customElements.define('error-message-info', ErrorMessageComponent);
 window.customElements.define('exito-message-info', ExitoMessageComponent);
+window.customElements.define('confirmation-message-info', ConfirmationMessageComponent);
 
 //definir pages
 window.customElements.define('home-page', HomePage);
