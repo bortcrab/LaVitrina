@@ -10,6 +10,7 @@ const { Subasta } = require('../models')
 const { Categoria } = require('../models')
 // Importa el modelo de usuarios asociados a publicaciones
 const { Usuario } = require('../models')
+const { Puja } = require('../models')
 const etiquetasDAO = require('./etiquetasDAO');
 const imagenesDAO = require('./imagenesDAO');
 // Importa operadores de consulta de Sequelize para búsquedas avanzadas
@@ -125,7 +126,15 @@ class PublicacionesDAO {
                 },
                 include: [{
                     model: Subasta,
-                    as: "Subastum"
+                    as: "Subastum",
+                    include: [{
+                        model: Puja,
+                        as: "Pujas",
+                        separate: true,
+                        order: [
+                            ['monto', 'ASC']
+                        ]
+                    }]
                 },
                 {
                     model: Categoria,
