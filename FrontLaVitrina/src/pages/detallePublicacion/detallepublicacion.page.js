@@ -17,7 +17,7 @@ export class DetallePublicacionPage extends HTMLElement {
         const publicacion = await PublicacionService.obtenerPublicacion(id);
         const datosFecha = publicacion.fechaPublicacion.split('-');
         publicacion.fechaPublicacion = datosFecha[0] + '/' + datosFecha[1] + '/' + datosFecha[2];
-        console.log(publicacion);
+        console.log("PUBLICACION DETALLE: " + JSON.stringify(publicacion, null, 2));
 
         this.#agregaEstilo(shadow);
 
