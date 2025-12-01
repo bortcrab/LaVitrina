@@ -5,6 +5,11 @@ export class PublicacionOpcionesComponent extends HTMLElement {
         super();
         this.cssUrl = new URL('./publicacionCardOpciones.component.css', import.meta.url).href;
         this.menuAbierto = false;
+        this.editarIcon = new URL('../../assets/editarPublicacionNuevo.png', import.meta.url).href;
+        this.eliminarIcon = new URL('../../assets/eliminarPublicacionNuevo.png', import.meta.url).href;
+        this.vendidoIcon = new URL('../../assets/marcarVendidoNuevo.png', import.meta.url).href;
+        this.disponibleIcon = new URL('../../assets/marcarDisponible.png', import.meta.url).href;
+        this.noDisponible = new URL('../../assets/noimage.jpeg', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -49,9 +54,9 @@ export class PublicacionOpcionesComponent extends HTMLElement {
 
         const imagenSrc = publicacion.imagenes && publicacion.imagenes.length > 0 
             ? publicacion.imagenes[0] 
-            : 'assets/no-image.png';
+            : this.noDisponible;
 
-        shadow.innerHTML += `
+        shadow.innerHTML = `
         <style>
             .menu-opciones {
                 opacity: 0;
@@ -63,16 +68,29 @@ export class PublicacionOpcionesComponent extends HTMLElement {
             <div class="menu-container">
                 <button class="menu-button" id="menuButton">⋮</button>
                 <div class="menu-opciones" id="menuOpciones">
-                    <div class="menu-opcion" data-action="editar">✏️ Editar</div>
-                    <div class="menu-opcion" data-action="marcar">
-                        ${publicacion.vendido ? '↺ Marcar disponible' : '✓ Marcar vendido'}
+                    
+                    <div class="menu-opcion" data-action="editar">
+                        <img src="${this.editarIcon}" class="menu-icon" alt="Editar"> 
+                        Editar
                     </div>
-                    <div class="menu-opcion" data-action="eliminar">🗑️ Eliminar</div>
+
+                    <div class="menu-opcion" data-action="marcar">
+                        ${publicacion.vendido 
+                            ? `<img src="${this.disponibleIcon}" class="menu-icon" alt="Disponible"> Marcar disponible` 
+                            : `<img src="${this.vendidoIcon}" class="menu-icon" alt="Vendido"> Marcar vendido`
+                        }
+                    </div>
+
+                    <div class="menu-opcion" data-action="eliminar">
+                        <img src="${this.eliminarIcon}" class="menu-icon" alt="Eliminar"> 
+                        Eliminar
+                    </div>
+
                 </div>
             </div>
             
             <div class="card-image">
-                <img src="${imagenSrc}" alt="Imagen producto" onerror="this.src='./src/assets/imagendefault.png'">
+                <img src="${imagenSrc}" alt="Imagen producto" onerror="this.src='${this.noDisponible}'">
             </div>
 
             <div class="card-details">

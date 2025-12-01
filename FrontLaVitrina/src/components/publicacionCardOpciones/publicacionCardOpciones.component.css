@@ -91,6 +91,12 @@
     background-color: #ffebee;
 }
 
+.menu-icon {
+    width: 18px;
+    height: 18px; 
+    object-fit: contain;
+}
+
 .card-image {
     width: 100%;
     height: 220px; 
