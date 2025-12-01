@@ -21,6 +21,7 @@ export class HeaderComponent extends HTMLElement {
             ? usuario.fotoPerfil
             : DEFAULT_AVATAR;
 
+
         shadow.innerHTML += `
         <header class="main-header">
                 <div class="search-bar">
@@ -73,26 +74,6 @@ export class HeaderComponent extends HTMLElement {
         const searchInput = shadow.querySelector('.search-input');
         const searchIcon = shadow.querySelector('.search-icon');
 
-        userInfo.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('active');
-        });
-
-        btnPerfil.addEventListener('click', () => {
-            dropdownMenu.classList.remove('active');
-            if (window.page) page('/perfil');
-        });
-
-        btnLogout.addEventListener('click', () => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('usuario');
-            dropdownMenu.classList.remove('active');
-            console.log('Sesión cerrada correctamente');
-            if (window.page) page('/iniciar-sesion');
-            else window.location.href = '/iniciar-sesion';
-        });
-
-
         const dispararBusqueda = () => {
             const termino = searchInput.value;
             console.log('Buscando:', termino);
@@ -101,7 +82,7 @@ export class HeaderComponent extends HTMLElement {
 
             if (!enHomePage) {
                 if (window.page) {
-                    page('/home-page'); 
+                    page('/home-page');
 
                     setTimeout(() => {
                         document.dispatchEvent(new CustomEvent('realizar-busqueda', {
@@ -110,7 +91,7 @@ export class HeaderComponent extends HTMLElement {
                             composed: true
                         }));
                     }, 100);
-                    return; 
+                    return;
                 }
             }
 
@@ -122,17 +103,46 @@ export class HeaderComponent extends HTMLElement {
             document.dispatchEvent(eventoBusqueda);
         };
 
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
+
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    dispararBusqueda();
+                }
+            });
+        }
+
+        if (searchIcon) {
+            searchIcon.addEventListener('click', () => {
                 dispararBusqueda();
-            }
-        });
+            });
+        }
 
-        searchIcon.addEventListener('click', () => {
-            dispararBusqueda();
-        });
+        if (userInfo) {
+            userInfo.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('active');
+            });
+        }
 
+        if (btnPerfil) {
+            btnPerfil.addEventListener('click', () => {
+                dropdownMenu.classList.remove('active');
+                if (window.page) page('/perfil');
+            });
+        }
+
+        if (btnLogout) {
+            btnLogout.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                dropdownMenu.classList.remove('active');
+                console.log('Sesión cerrada correctamente');
+                if (window.page) page('/iniciar-sesion');
+                else window.location.href = '/iniciar-sesion';
+            });
+        }
 
         document.addEventListener('click', (e) => {
             if (e.target !== this) {
@@ -145,6 +155,7 @@ export class HeaderComponent extends HTMLElement {
                 dropdownMenu.classList.remove('active');
             }
         });
+
     }
 
     #agregarEstilos(shadow) {

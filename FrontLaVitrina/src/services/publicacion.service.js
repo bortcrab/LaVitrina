@@ -47,32 +47,39 @@ export class PublicacionService {
         }
     }
 
-    static async buscarPublicaciones(titulo) {
+    static async buscarPublicaciones(titulo, pagina = 1) {
         try {
-            const response = await fetch(`${API_URL}/buscar?titulo=${encodeURIComponent(titulo)}`, {
+            const response = await fetch(`${API_URL}/buscar?titulo=${titulo}&pagina=${pagina}`, {
                 method: 'GET',
                 headers: this.getHeaders()
             });
 
-            if (!response.ok) throw new Error('Error en la búsqueda');
+            if (!response.ok) return [];
+
             return await response.json();
         } catch (error) {
-            console.error(error);
+            console.error("Error buscando:", error);
+            return [];
+        }
+    }
+    static async obtenerPublicacionesPorCategoria(idCategoria, pagina = 1) {
+        try {
+            const response = await fetch(`${API_URL}/categoria/${idCategoria}?pagina=${pagina}`, {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) {
+                return [];
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error al filtrar por categoría:", error);
             return [];
         }
     }
 
-    static async obtenerPublicacionesPorCategoria(idCategoria, pagina = 1) {
-        try {
-            const response = await fetch(`${API_URL}/categoria/${idCategoria}?pagina=${pagina}`, {
-                headers: this.getHeaders()
-            });
-            if (!response.ok) return [];
-            return await response.json();
-        } catch (error) {
-            return [];
-        }
-    }
 
     static async obtenerSubasta(id) {
         try {
@@ -225,7 +232,7 @@ export class PublicacionService {
     static async obtenerCategorias() {
         try {
             const response = await fetch('http://localhost:3000/api/categorias', { headers: this.getHeaders() });
-            if(!response.ok) return [];
+            if (!response.ok) return [];
             return await response.json();
         } catch (error) {
             return [];
