@@ -29,8 +29,8 @@ export class PublicacionOpcionesComponent extends HTMLElement {
         const publicacion = new Publicacion(datosParaLaClase);
         publicacion.vendido = vendido;
         
-        this.#agregarEstilos(shadow);
         this.#render(shadow, publicacion);
+        this.#agregarEstilos(shadow);
         this.#agregarEventListeners(shadow, publicacion);
         
         document.addEventListener('click', (e) => this.#cerrarMenuExterno(e, shadow));
@@ -52,6 +52,13 @@ export class PublicacionOpcionesComponent extends HTMLElement {
             : 'assets/no-image.png';
 
         shadow.innerHTML += `
+        <style>
+            .menu-opciones {
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+            }
+        </style>
         <div class="card-container">
             <div class="menu-container">
                 <button class="menu-button" id="menuButton">⋮</button>
@@ -74,17 +81,13 @@ export class PublicacionOpcionesComponent extends HTMLElement {
                     <div class="footer-left">
                         <span class="price">${precioFormateado}</span>
                         
-                        <div class="estado-container">
-                            <span class="tag" style="color: #E62634; font-weight: bold; margin-right: 5px;">
-                                ${publicacion.tipo}
-                            </span>
-
-                            ${publicacion.vendido 
-                                ? `<span class="estado-venta vendido">Vendido</span>` 
-                                : `<span class="estado-venta disponible">Disponible</span>`
-                            }
-                        </div>
+                        ${publicacion.vendido 
+                            ? `<span class="estado-venta vendido">Vendido</span>` 
+                            : `<span class="estado-venta disponible">Disponible</span>`
+                        }
                     </div>
+
+                    <span class="tag">${publicacion.tipo}</span>
                 </div>
             </div>
         </div>
