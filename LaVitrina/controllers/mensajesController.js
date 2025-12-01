@@ -1,6 +1,7 @@
 const MensajesDAO = require('../dataAccess/mensajesDAO.js');
 const { AppError } = require('../utils/appError.js');
 const ChatDAO = require('../dataAccess/chatsDAO.js');
+const UsuarioChatsDAO = require('../dataAccess/usuarioChatsDAO.js');
 
 /**
  * Controlador para las operaciones relacionadas con mensajes.
@@ -28,6 +29,16 @@ class MensajesController {
             const { idChat } = req.params;
             const idUsuario = req.usuario.id || req.usuario.userId; 
             const tipoMensaje = req.body;
+
+            const chatExists = await ChatDAO.obtenerChatPorId(idChat);
+            if (!chatExists) {
+                return next(new AppError('El chat no existe.', 404));
+            }
+
+            const pertenece = await UsuarioChatsDAO.esUsuarioDelChat(idUsuario, idChat);
+            if (!pertenece) {
+                return next(new AppError('No tienes permiso para enviar mensajes en este chat.', 403));
+            }
 
             if (!tipoMensaje || (!tipoMensaje.texto && !tipoMensaje.imagen)) {
                 return next(new AppError('Un mensaje tipo texto o imagen es requerido.', 400));
@@ -102,6 +113,11 @@ class MensajesController {
             const chatExists = await ChatDAO.obtenerChatPorId(idChat);
             if (!chatExists) {
                 return next(new AppError('No se encontró el chat.', 404));
+            }
+
+            const pertenece = await UsuarioChatsDAO.esUsuarioDelChat(idUsuarioActual, idChat);
+            if (!pertenece) {
+                return next(new AppError('No tienes permiso para ver este chat.', 403));
             }
 
             const limit = parseInt(req.query.limit, 10) || 50;

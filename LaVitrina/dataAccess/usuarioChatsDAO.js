@@ -53,6 +53,26 @@ class UsuarioChatsDAO {
             throw error;
         }
     }
+
+    /**
+     * Verifica si un usuario pertenece a un chat.
+     * @param {number} idUsuario 
+     * @param {number} idChat 
+     * @returns {Promise<boolean>} True si existe la relación
+     */
+    async esUsuarioDelChat(idUsuario, idChat) {
+        try {
+            const relacion = await UsuarioChat.findOne({
+                where: {
+                    idUsuario: idUsuario,
+                    idChat: idChat
+                }
+            });
+            return !!relacion;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = new UsuarioChatsDAO();

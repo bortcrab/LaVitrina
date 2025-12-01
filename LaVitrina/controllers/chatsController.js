@@ -57,11 +57,18 @@ class ChatController {
 
     static async obtenerChatPorId(req, res, next) {
         try {
-            const id = req.params.idChat;
-            const chat = await ChatDAO.obtenerChatPorId(id);
+            const idChat = req.params.idChat;
+            const idUsuario = req.usuario.id;
+
+            const chat = await ChatDAO.obtenerChatPorId(idChat);
 
             if (!chat) {
                 return next(new AppError('Chat no encontrado.', 404))
+            }
+
+            const pertenece = await UsuarioChatsDAO.esUsuarioDelChat(idUsuario, idChat);
+            if (!pertenece) {
+                return next(new AppError('No tienes permiso para ver este chat.', 403));
             }
 
             res.status(200).json(chat);
