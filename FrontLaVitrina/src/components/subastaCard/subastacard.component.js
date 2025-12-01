@@ -164,7 +164,7 @@ export class SubastaCardComponent extends HTMLElement {
         ofertaActual.textContent = nuevaPuja.monto;
         montoMinimo.textContent = `$ ${parseInt(nuevaPuja.monto) + 10}.00`;
         puja.placeholder = `$ ${parseInt(nuevaPuja.monto) + 10}.00`;
-        btnRealizarPuja.enabled = true;
+        btnRealizarPuja.disabled = false;
         btnRealizarPuja.textContent = 'Realizar';
     }
 

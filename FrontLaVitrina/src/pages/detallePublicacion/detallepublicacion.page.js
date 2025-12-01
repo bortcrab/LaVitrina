@@ -170,6 +170,8 @@ export class DetallePublicacionPage extends HTMLElement {
                 const monto = parseInt(pujaField.value);
                 const fechaPuja = new Date();
 
+                pujaField.value = '';
+
                 const pujaData = {
                     monto,
                     fechaPuja,
