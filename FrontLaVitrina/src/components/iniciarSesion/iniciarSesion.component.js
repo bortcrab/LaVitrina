@@ -45,7 +45,7 @@ export class IniciarSesionComponent extends HTMLElement {
                                 <label>Contraseña</label>
                                 <a href="#" class="forgot-link" id="olvidoContrasenia">¿Olvidaste tu contraseña?</a>
                             </div>
-                            <input type="password" name="password" autocomplete="current-password" maxlength="30" id="contrasenia" placeholder="********">
+                            <input type="password" name="password" autocomplete="current-password" maxlength="50" id="contrasenia" placeholder="********">
                         </div>
 
                         <div class="error-message" id="errorMessage" style="display: none;"></div>

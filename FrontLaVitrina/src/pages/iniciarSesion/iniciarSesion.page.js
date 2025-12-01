@@ -31,16 +31,24 @@ export class IniciarSesionPage extends HTMLElement {
                 localStorage.setItem('token', datos.token);
                 localStorage.setItem('usuario', JSON.stringify(datos.usuario));
 
+                const eventoLogin = new CustomEvent('loginSuccess', {
+                    detail: { usuario: datos.usuario }, 
+                    bubbles: true,
+                    composed: true
+                });
+
+                
+                window.dispatchEvent(eventoLogin);
                 loginComponent.mostrarExito(`¡Bienvenido de nuevo, ${datos.usuario.nombres}!`);
 
                 setTimeout(() => {
-                    page('/home-page'); 
+                    page('/home-page');
                 }, 1000);
 
             } catch (error) {
                 console.error("Error login:", error);
                 loginComponent.mostrarError(error.message || 'Error al iniciar sesión');
-                loginComponent.toggleLoading(false); 
+                loginComponent.toggleLoading(false);
             }
         });
     }

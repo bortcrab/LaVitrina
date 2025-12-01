@@ -20,12 +20,12 @@ export class RegistrarService {
         }
         */
 
-        const{foto, ...restoDatos} = datosUsuario;
+        const { foto, ...restoDatos } = datosUsuario;
 
         let fotoURL = '';
         try {
 
-            if(foto && foto instanceof File){
+            if (foto && foto instanceof File) {
                 fotoURL = await UsuariosService.subirImagen(foto);
             }
 
@@ -34,16 +34,16 @@ export class RegistrarService {
                 fotoPerfil: fotoURL,
             };
 
-            const response = await fetch(`${API_URL}/`,{
-                method:'POST',
+            const response = await fetch(`${API_URL}`, {
+                method: 'POST',
                 headers: this.getHeaders(),
                 body: JSON.stringify(payload)
             });
 
-            if(!response.ok){
+            if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error('Credenciales inválidas');
-                
+                throw new Error(errorData.message || 'Error al registrar al usuario');
+
             }
 
             return await response.json();
@@ -52,23 +52,10 @@ export class RegistrarService {
         }
     }
 
-    static existeCorreo(correo) {
-        const usuariosMock = [
-            { correo: "abel@gmail.com" },
-            { correo: "maria@gmail.com" }
-        ];
-
-        const existeEnMock = usuariosMock.some(u => u.correo === correo);
-        const existeEnRegistrados = this.usuariosRegistrados.some(u => u.correo === correo);
-
-        return existeEnMock || existeEnRegistrados;
+    static async existeCorreo(correo) {
+        const responser = await fetch(`${API_URL}/`)
     }
 
-    static obtenerUsuariosRegistrados() {
-        return this.usuariosRegistrados;
-    }
 
-    static obtenerUsuarioPorCorreo(correo) {
-        return this.usuariosRegistrados.find(u => u.correo === correo);
-    }
+
 }
