@@ -187,7 +187,7 @@ export class ChatsComponent extends HTMLElement {
                         previewContainer.style.display = 'flex';
                         
                         inputTexto.disabled = true;
-                        inputTexto.placeholder = "Envía la imagen o cancélala...";
+                        inputTexto.placeholder = "Envía la imagen o cancélala";
                         inputTexto.value = ""; 
                     };
                     reader.readAsDataURL(file);
@@ -217,7 +217,13 @@ export class ChatsComponent extends HTMLElement {
                     detail: { chatId: this.#chatActual.id, texto },
                     bubbles: true, composed: true
                 }));
+                
                 inputTexto.value = '';
+
+                btnAdjunto.classList.remove('disabled');
+                btnAdjunto.disabled = false;
+                
+                inputTexto.focus();
             }
         };
 

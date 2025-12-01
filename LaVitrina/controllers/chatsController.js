@@ -93,7 +93,7 @@ class ChatController {
 
                 const tituloPublicacion = chat.Publicacion ? chat.Publicacion.titulo : 'Artículo';
 
-                const nombreMostrar = `${nombreOtroUsuario} - ${tituloPublicacion}`;
+                const nombreMostrar = nombreOtroUsuario;
 
                 const servicioMostrar = tituloPublicacion;
 

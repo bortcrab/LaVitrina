@@ -17,7 +17,7 @@
     width: 100%;
     background-color: #FFFFFF;
     height: 100%;
-    padding-top: 13vh;
+    padding-top: 10vh;
     overflow: hidden; 
 }
 
@@ -227,10 +227,6 @@
     object-fit: contain;
 }
 
-.mensaje-imagen:hover {
-    transform: scale(1.02);
-}
-
 .mensaje-input-container {
     background-color: #FFFFFF;
     padding: 1rem 1.5rem;
@@ -427,7 +423,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 1.2em;
+    height: auto;
+    line-height: 1.5;
+    padding-bottom: 4px;
 }
 
 @media (max-width: 1024px) {
