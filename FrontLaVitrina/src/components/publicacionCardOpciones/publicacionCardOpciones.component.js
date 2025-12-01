@@ -16,16 +16,14 @@ export class PublicacionOpcionesComponent extends HTMLElement {
         const precio = this.getAttribute('precio');
         const imagen = this.getAttribute('imagen');
         const estado = this.getAttribute('estado');
+        const tipo = this.getAttribute('tipo');
         const vendido = this.getAttribute('vendido') === 'true';
 
         const datosParaLaClase = {
-            id: id,
-            titulo: titulo,
-            descripcion: descripcion,
-            precio: precio,
+            id, titulo, descripcion, precio,
             imagenes: imagen ? [imagen] : [],
-            estado: estado,
-            tipo: 'Venta'
+            estado, 
+            tipo: tipo || 'Venta'
         };
 
         const publicacion = new Publicacion(datosParaLaClase);
@@ -43,6 +41,12 @@ export class PublicacionOpcionesComponent extends HTMLElement {
     }
 
     #render(shadow, publicacion) {
+        const precioFormateado = parseFloat(publicacion.precio).toLocaleString('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+            minimumFractionDigits: 0
+        });
+
         const imagenSrc = publicacion.imagenes && publicacion.imagenes.length > 0 
             ? publicacion.imagenes[0] 
             : 'assets/no-image.png';
@@ -54,26 +58,31 @@ export class PublicacionOpcionesComponent extends HTMLElement {
                 <div class="menu-opciones" id="menuOpciones">
                     <div class="menu-opcion" data-action="editar">✏️ Editar</div>
                     <div class="menu-opcion" data-action="marcar">
-                        ${publicacion.vendido ? '↺ Marcar como disponible' : '✓ Marcar como vendido'}
+                        ${publicacion.vendido ? '↺ Marcar disponible' : '✓ Marcar vendido'}
                     </div>
                     <div class="menu-opcion" data-action="eliminar">🗑️ Eliminar</div>
                 </div>
             </div>
             
             <div class="card-image">
-                <img src="${imagenSrc}" alt="Imagen no disponible">
+                <img src="${imagenSrc}" alt="Imagen producto" onerror="this.src='./src/assets/imagendefault.png'">
             </div>
 
             <div class="card-details">
                 <h4>${publicacion.titulo}</h4>
                 <div class="card-footer">
                     <div class="footer-left">
-                        <span class="price">${publicacion.precio}</span>
+                        <span class="price">${precioFormateado}</span>
+                        
                         <div class="estado-container">
-                            <span class="tag">${publicacion.estado}</span>
-                            <span class="estado-venta ${publicacion.vendido ? 'vendido' : 'disponible'}">
-                                ${publicacion.vendido ? 'Vendido' : 'Disponible'}
+                            <span class="tag" style="color: #E62634; font-weight: bold; margin-right: 5px;">
+                                ${publicacion.tipo}
                             </span>
+
+                            ${publicacion.vendido 
+                                ? `<span class="estado-venta vendido">Vendido</span>` 
+                                : `<span class="estado-venta disponible">Disponible</span>`
+                            }
                         </div>
                     </div>
                 </div>

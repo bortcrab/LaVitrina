@@ -6,8 +6,8 @@ export class MisPublicacionesPage extends HTMLElement {
         super();
         this.misPublicaciones = [];
         this.filteredProducts = [];
-        this.uniqueTags = [];
-        this.activeTag = 'Todo';
+        this.categorias = [];
+        this.activeCategory = 'Todo';
         this.cssUrl = new URL('./misPublicaciones.page.css', import.meta.url).href;
     }
 
@@ -15,18 +15,24 @@ export class MisPublicacionesPage extends HTMLElement {
         const shadow = this.attachShadow({ mode: 'open' });
         this.shadow = shadow;
         this.#agregarEstilos(shadow);
+
+        await Promise.all([
+            this.#cargarCategorias(),
+            this.#cargarPublicaciones()
+        ]);
+
         this.#render(shadow);
-        await this.#cargarPublicaciones(); 
         this.#setupEventListeners(shadow);
+    }
+
+    async #cargarCategorias() {
+        this.categorias = await PublicacionService.obtenerCategorias();
     }
 
     async #cargarPublicaciones() {
         try {
             const usuarioStorage = localStorage.getItem('usuario');
-            if (!usuarioStorage) {
-                console.warn("No hay sesión activa");
-                return;
-            }
+            if (!usuarioStorage) return;
             const usuario = JSON.parse(usuarioStorage);
 
             this.misPublicaciones = await PublicacionService.getPublicacionesPorUsuario(usuario.id);
@@ -37,14 +43,11 @@ export class MisPublicacionesPage extends HTMLElement {
                 return 0;
             });
 
-            this.filteredProducts = [...this.misPublicaciones]; 
-            this.#extractUniqueTags();
+            this.filteredProducts = [...this.misPublicaciones];
             
-            if (this.shadow) {
-                this.#render(this.shadow);
-                this.#setupEventListeners(this.shadow);
+            if (this.shadow && this.shadow.querySelector('#productsGrid')) {
+                this.#renderProducts(this.shadow, this.filteredProducts);
             }
-
         } catch (error) {
             console.error("Error cargando mis publicaciones:", error);
         }
@@ -62,11 +65,11 @@ export class MisPublicacionesPage extends HTMLElement {
                     <h2>Mis Publicaciones</h2>
                 </div>
 
-                <div class="categories-container">
-                    ${this.uniqueTags.map(tag => `
-                        <button class="filter-pill ${tag === this.activeTag ? 'active' : ''}" 
-                                data-tag="${tag}">
-                            ${tag}
+                <div class="categories-container" id="categoriesContainer">
+                    <button class="filter-pill active" data-category="Todo">Todo</button>
+                    ${this.categorias.map(cat => `
+                        <button class="filter-pill" data-category="${cat.nombre}">
+                            ${cat.nombre}
                         </button>
                     `).join('')}
                 </div>
@@ -111,90 +114,80 @@ export class MisPublicacionesPage extends HTMLElement {
                 precio="${product.precio}"
                 imagen="${imagenUrl}"
                 estado="${product.estado}"
-                tipo="${product.tipo || 'Venta'}" 
+                tipo="${product.tipo || 'Venta'}"
                 vendido="${esVendido}"
             ></publicacion-opciones-info>
         `}).join('');
     }
 
     #setupEventListeners(shadow) {
-        const categoriesContainer = shadow.querySelector('.categories-container');
+        const categoriesContainer = shadow.getElementById('categoriesContainer');
         const productsGrid = shadow.getElementById('productsGrid');
 
         productsGrid.addEventListener('publicacionClick', (e) => {
-            const idPublicacion = e.detail.publicacion.id;
-            page(`/detalle-publicacion/${idPublicacion}`);
+            page(`/detalle-publicacion/${e.detail.publicacion.id}`);
         });
 
         productsGrid.addEventListener('publicacionOpcionSeleccionada', (e) => {
-            const { action, publicacion } = e.detail;
-            this.#handleAction(action, publicacion);
+            this.#handleAction(e.detail.action, e.detail.publicacion);
         });
 
         categoriesContainer.addEventListener('click', (e) => {
             const button = e.target.closest('.filter-pill');
-
             if (button) {
-                const tag = button.dataset.tag;
-                this.#filterBy(tag, shadow);
+                const categoria = button.dataset.category;
+                this.#filterBy(categoria, shadow);
             }
         });
     }
 
     async #handleAction(action, publicacion) {
-        switch (action) {
-            case 'editar':
-                page(`/editar-publicacion/${publicacion.id}`);
-                break;
-
-            case 'marcar':
-                const nuevoEstado = publicacion.vendido ? 'Disponible' : 'Vendido';
-                const confirmacion = confirm(`¿Cambiar estado a "${nuevoEstado}"?`);
-
-                if (confirmacion) {
-                    await PublicacionService.cambiarEstadoVenta(publicacion.id, nuevoEstado);
-
-                    alert(`Publicación marcada como ${nuevoEstado}`);
-                    this.#cargarPublicaciones(this.shadow);
-                }
-                break;
-
-            case 'eliminar':
-                if (confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
-                    const eliminada = PublicacionService.eliminarPublicacion(publicacion.id);
-                    if (eliminada) {
-                        alert('Publicación eliminada correctamente');
-                        this.#cargarPublicaciones();
+        try {
+            switch (action) {
+                case 'editar':
+                    page(`/editar-publicacion/${publicacion.id}`);
+                    break;
+                case 'marcar':
+                    const nuevoEstado = publicacion.vendido ? 'Disponible' : 'Vendido';
+                    if (confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) {
+                        await PublicacionService.cambiarEstadoVenta(publicacion.id, nuevoEstado);
+                        alert(`Publicación marcada como ${nuevoEstado}`);
+                        await this.#cargarPublicaciones();
                         this.#render(this.shadow);
                         this.#setupEventListeners(this.shadow);
                     }
-                }
-                break;
-        }
+                    break;
+                case 'eliminar':
+                    if (confirm('¿Eliminar esta publicación permanentemente?')) {
+                        await PublicacionService.eliminarPublicacion(publicacion.id);
+                        alert('Eliminada correctamente');
+                        await this.#cargarPublicaciones();
+                        this.#render(this.shadow);
+                        this.#setupEventListeners(this.shadow);
+                    }
+                    break;
+            }
+        } catch(e) { console.error(e); }
     }
 
-    #filterBy(tag, shadow) {
-        this.activeTag = tag;
+    #filterBy(categoriaNombre, shadow) {
+        this.activeCategory = categoriaNombre;
 
-        if (tag === 'Todo') {
-            this.filteredProducts = this.misPublicaciones;
+        if (categoriaNombre === 'Todo') {
+            this.filteredProducts = [...this.misPublicaciones];
         } else {
-            this.filteredProducts = this.misPublicaciones.filter(product =>
-                product.etiquetas.includes(tag)
+            this.filteredProducts = this.misPublicaciones.filter(product => 
+                product.categoria && product.categoria.nombre === categoriaNombre
             );
         }
 
         const buttons = shadow.querySelectorAll('.filter-pill');
         buttons.forEach(btn => {
-            if (btn.dataset.tag === tag) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            if (btn.dataset.category === categoriaNombre) btn.classList.add('active');
+            else btn.classList.remove('active');
         });
 
-        const grid = shadow.getElementById('productsGrid');
-        grid.innerHTML = this.#renderProducts(this.filteredProducts);
+        this.#renderProducts(shadow, this.filteredProducts);
     }
 
     #agregarEstilos(shadow) {
