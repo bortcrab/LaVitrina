@@ -51,7 +51,13 @@ export class ChatsComponent extends HTMLElement {
                 <div class="mensaje-hora">${mensaje.hora}</div>
             `;
             container.appendChild(divMensaje);
+            
             this.#scrollToBottom();
+
+            const imagenes = divMensaje.querySelectorAll('img');
+            imagenes.forEach(img => {
+                img.onload = () => this.#scrollToBottom();
+            });
         }
     }
 
@@ -173,6 +179,12 @@ export class ChatsComponent extends HTMLElement {
             fileInput.onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
+                    if (!file.type.startsWith('image/')) {
+                        alert("Solo se permiten archivos de imagen.");
+                        fileInput.value = '';
+                        return;
+                    }
+
                     if(file.size > 5 * 1024 * 1024) {
                         alert("La imagen es muy pesada (máx 5MB)");
                         fileInput.value = '';
