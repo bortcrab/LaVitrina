@@ -6,11 +6,15 @@ export class HomePage extends HTMLElement {
         super();
         this.publicaciones = [];
         this.categorias = [];
+
         this.activeCategory = 'Todo';
+        this.currentSearchTerm = '';
+
         this.paginaActual = 1;
         this.limitePorPaginaBackend = 20;
         this.hayMasPaginas = true;
         this.isLoading = false;
+
         this.cssUrl = new URL('./home.page.css', import.meta.url).href;
     }
 
@@ -19,31 +23,62 @@ export class HomePage extends HTMLElement {
         this.#renderBase(shadow);
         this.#agregarEstilos(shadow);
 
+        document.addEventListener('realizar-busqueda', (e) => {
+            this.#handleBusqueda(e.detail.termino, shadow);
+        });
+
         this.categorias = await PublicacionService.obtenerCategorias();
         this.#renderCategorias(shadow);
+
         await this.#cargarPublicaciones(shadow);
         this.#setupEventListeners(shadow);
     }
 
+    #handleBusqueda(termino, shadow) {
+        console.log("HomePage recibió búsqueda:", termino);
+
+        this.currentSearchTerm = termino;
+        this.activeCategory = null;
+        this.paginaActual = 1;
+
+        const categoriesContainer = shadow.getElementById('categoriesContainer');
+        if (categoriesContainer) {
+            const activeBtn = categoriesContainer.querySelector('.active');
+            if (activeBtn) activeBtn.classList.remove('active');
+        }
+
+        this.#cargarPublicaciones(shadow);
+    }
 
     async #cargarPublicaciones(shadow) {
         this.isLoading = true;
         this.#mostrarLoading(shadow, true);
+
         try {
             let respuesta = [];
-            if (this.activeCategory === 'Todo') {
-                respuesta = await PublicacionService.getPublicaciones(this.paginaActual);
-            } else {
+
+            if (this.currentSearchTerm && this.currentSearchTerm.trim() !== '') {
+                console.log("Cargando búsqueda...");
+                respuesta = await PublicacionService.buscarPublicaciones(this.currentSearchTerm, this.paginaActual);
+
+            } else if (this.activeCategory && this.activeCategory !== 'Todo') {
+                console.log("Cargando categoría...");
                 respuesta = await PublicacionService.obtenerPublicacionesPorCategoria(this.activeCategory, this.paginaActual);
+
+            } else {
+                console.log("Cargando todo...");
+                respuesta = await PublicacionService.getPublicaciones(this.paginaActual);
             }
+
             this.publicaciones = respuesta || [];
             this.hayMasPaginas = this.publicaciones.length === this.limitePorPaginaBackend;
+
             this.#renderProducts(shadow);
             this.#renderPagination(shadow);
         } catch (error) {
             console.error("Error cargando:", error);
             const grid = shadow.getElementById('productsGrid');
-            if(grid) grid.innerHTML = `<div class="error-msg">Error al cargar datos.</div>`;
+            if (grid) grid.innerHTML = `<div class="error-msg">Error al cargar datos.</div>`;
         } finally {
             this.isLoading = false;
             this.#mostrarLoading(shadow, false);
@@ -51,7 +86,7 @@ export class HomePage extends HTMLElement {
     }
 
 
-   #renderBase(shadow) {
+    #renderBase(shadow) {
         shadow.innerHTML = `
             <section class="home-section">
                 <div class="section-header">
@@ -82,9 +117,9 @@ export class HomePage extends HTMLElement {
             return;
         }
         grid.innerHTML = this.publicaciones.map(publicacion => {
-             const imagenSrc = publicacion.imagenes && publicacion.imagenes.length > 0 
+            const imagenSrc = publicacion.imagenes && publicacion.imagenes.length > 0
                 ? publicacion.imagenes[0] : 'assets/no-image.png';
-             return `
+            return `
                 <publicacion-info 
                     id="${publicacion.id}"
                     titulo="${publicacion.titulo}"
@@ -96,9 +131,9 @@ export class HomePage extends HTMLElement {
             `;
         }).join('');
     }
-#renderPagination(shadow) {
+    #renderPagination(shadow) {
         const container = shadow.getElementById('paginationContainer');
-        
+
         if (this.paginaActual === 1 && !this.hayMasPaginas) {
             container.innerHTML = '';
             return;
@@ -123,12 +158,12 @@ export class HomePage extends HTMLElement {
                 </svg>
             </button>
         `;
-        
+
         const btnPrev = shadow.getElementById('btnPrev');
         const btnNext = shadow.getElementById('btnNext');
 
-        if(btnPrev) btnPrev.addEventListener('click', () => this.#cambiarPagina(shadow, -1));
-        if(btnNext) btnNext.addEventListener('click', () => this.#cambiarPagina(shadow, 1));
+        if (btnPrev) btnPrev.addEventListener('click', () => this.#cambiarPagina(shadow, -1));
+        if (btnNext) btnNext.addEventListener('click', () => this.#cambiarPagina(shadow, 1));
     }
 
     #cambiarPagina(shadow, delta) {
@@ -153,7 +188,7 @@ export class HomePage extends HTMLElement {
         const productsGrid = shadow.getElementById('productsGrid');
         productsGrid.addEventListener('publicacionClick', (e) => {
             const idPublicacion = e.detail.publicacion.id;
-            if(window.page) page(`/detalle-publicacion/${idPublicacion}`);
+            if (window.page) page(`/detalle-publicacion/${idPublicacion}`);
         });
 
         const categoriesContainer = shadow.getElementById('categoriesContainer');
@@ -161,13 +196,14 @@ export class HomePage extends HTMLElement {
             const button = e.target.closest('.filter-pill');
             if (button && !this.isLoading) {
                 const currentActive = categoriesContainer.querySelector('.active');
-                if(currentActive) currentActive.classList.remove('active');
+                if (currentActive) currentActive.classList.remove('active');
                 button.classList.add('active');
 
-                this.activeCategory = button.dataset.id; 
-                if(button.dataset.tag === 'Todo') this.activeCategory = 'Todo';
+                this.currentSearchTerm = '';
+                this.activeCategory = button.dataset.id;
+                if (button.dataset.tag === 'Todo') this.activeCategory = 'Todo';
 
-                this.paginaActual = 1; 
+                this.paginaActual = 1;
                 this.#cargarPublicaciones(shadow);
             }
         });
@@ -178,6 +214,6 @@ export class HomePage extends HTMLElement {
         link.setAttribute("rel", "stylesheet");
         link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
-        
+
     }
 }
