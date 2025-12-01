@@ -31,4 +31,6 @@ export class IniciarSesionService {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
     }
+
+    
 }
