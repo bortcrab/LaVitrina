@@ -14,7 +14,7 @@ export class ReseniasService {
 
     static async getReseniasUsuario(idUsuario) {
         try {
-            const response = await fetch(API_URL, {
+            const response = await fetch(`${API_URL}/usuarioReseniado/${idUsuario}`, {
                 method: 'GET',
                 headers: this.getHeaders()
             });

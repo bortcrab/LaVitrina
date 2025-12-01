@@ -339,7 +339,7 @@ export class CrearPublicacionPage extends HTMLElement {
                 etiquetas,
                 imagenes: this.urlsImagenesPublicacion,
                 idCategoria: categoriaValue,
-                idUsuario: 1
+                idUsuario: JSON.parse(localStorage.getItem("usuario")).id
             };
 
             // 3. Agregar datos de subasta si aplica

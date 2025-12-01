@@ -28,11 +28,11 @@ export class ReseniasPage extends HTMLElement {
 
             const usuario = await UsuariosService.obtenerUsuarioPorId(idUsuario);
 
-            await this.#cargarResenias(usuario.id);
+            await this.#cargarResenias(usuario.idUsuario);
 
             this.#agregaEstilo(shadow);
             this.#render(shadow, usuario, usuarioStorage);
-            this.#agregarEventListeners(shadow, usuario.id);
+            this.#agregarEventListeners(shadow, usuario.idUsuario);
 
         } catch (error) {
             console.warn("Error de sesión:", error.message);
@@ -58,7 +58,7 @@ export class ReseniasPage extends HTMLElement {
                         <div class="user-info">
                             ${usuario.idUsuario === usuarioStorage.id ? '<h1 id="username">Tus reseñas</h1>' : `<h1 id="username">Reseñas de ${usuario.nombres}</h1>`}
                             ${usuario.idUsuario === usuarioStorage.id ? '<p>Observa lo que dicen los demás de ti</p>' : `<p>Observa lo que dicen los demás de <span id="name">${usuario.nombres}</span></p>`}
-                            <h5 id="calificacion"><span class="estrella">★</span>${usuario.puntuacion}</h5>
+                            <h5 id="calificacion"><span class="estrella">★</span>${usuario.rating}</h5>
                         </div>
                     </div>
                     ${usuario.idUsuario !== usuarioStorage.id ? '<button id="btnAgregarResenia" class="btn-escribir-resenia">Escribir reseña<span class="pencil">✎</span></button>' : ''}
@@ -103,11 +103,11 @@ export class ReseniasPage extends HTMLElement {
             <resenia-card-info 
                 id="${resenia.id}"
                 titulo="${resenia.titulo}"
-                usuario="${resenia.usuario}"
-                imgPerfilUsuario="${resenia.imgPerfilUsuario}"
+                usuario="${resenia.UsuarioCreador.nombres + " " + resenia.UsuarioCreador.apellidoPaterno}"
+                imgPerfilUsuario="${resenia.UsuarioCreador.fotoPerfil}"
                 descripcion="${resenia.descripcion}"
                 calificacion="${resenia.calificacion}"
-                fecha="${resenia.fecha}"
+                fecha="${resenia.fechaResenia}"
             ></resenia-card-info>
         `).join('');
     }
