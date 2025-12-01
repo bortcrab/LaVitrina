@@ -16,6 +16,7 @@ export class DetallePublicacionPage extends HTMLElement {
         const publicacion = await PublicacionService.obtenerPublicacion(id);
         const datosFecha = publicacion.fechaPublicacion.split('-');
         publicacion.fechaPublicacion = datosFecha[0] + '/' + datosFecha[1] + '/' + datosFecha[2];
+        console.log(publicacion);
 
         this.#agregaEstilo(shadow);
 
@@ -57,7 +58,12 @@ export class DetallePublicacionPage extends HTMLElement {
                     </div>
                 </div>
                 <div class="derecha">
-                    ${publicacion.estado === 'Subasta' ? '<subasta-card-info></subasta-card-info>' : ''}
+                    ${publicacion.tipo === 'Subasta' ? `<subasta-card-info 
+                        fechaInicio="${publicacion.subastaData.fechaInicio}"
+                        fechaFin="${publicacion.subastaData.fechaFin}"
+                        precio="${publicacion.precio}"
+                        pujaMayor="${publicacion.subastaData.pujaMayor}"
+                        cantidadPujas="${publicacion.subastaData.cantidadPujas}"></subasta-card-info>` : ''}
                     <div class="mensaje-container">
                         <div class="perfil-info">
                             <img class="profile-pic" src="${publicacion.usuario.fotoPerfil}" alt="">
