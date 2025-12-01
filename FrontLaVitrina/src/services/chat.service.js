@@ -99,41 +99,49 @@ export class ChatService {
 
     static async crearChat(idPublicacion) {
         const token = localStorage.getItem('token');
-        const res = await fetch(`${this.apiUrl}/chats`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
-            },
-            body: JSON.stringify({ idPublicacion })
-        });
-        if (!res.ok) throw new Error('Error al crear chat');
-        return await res.json();
+        try {
+            const res = await fetch(`${this.apiUrl}/chats`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ idPublicacion })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Error al crear chat');
+            }
+            return data;
+        } catch (error) {
+            throw error;
+        }
     }
 
     static async obtenerChats() {
         const usuarioData = JSON.parse(localStorage.getItem('usuario'));
         const token = localStorage.getItem('token');
-        if (!usuarioData || !token) return [];
+        if (!usuarioData || !token) throw new Error("Sesión no válida");
 
         try {
             const res = await fetch(`${this.apiUrl}/chats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
+            if(!res.ok) throw new Error("Error al obtener chats");
+
             const data = await res.json();
             
             const chatsMapeados = data.map(c => ({
                 id: c.id,
                 nombre: c.nombre,
                 tituloPublicacion: c.tituloPublicacion,
-                
                 ultimoMensaje: c.ultimoMensaje, 
-                
                 fotoPerfil: c.fotoPerfil,
                 productoImg: c.productoImg,
                 noLeido: c.noLeido,
-                
                 fechaOrden: new Date(c.fecha) 
             }));
 
@@ -141,19 +149,22 @@ export class ChatService {
 
         } catch (e) {
             console.error("Error obteniendo chats:", e);
-            return [];
+            throw e;
         }
     }
 
     static async obtenerMensajes(idChat) {
-        const usuarioData = JSON.parse(localStorage.getItem('usuario'));
         const token = localStorage.getItem('token');
-        
         const res = await fetch(`${this.apiUrl}/chats/${idChat}/mensajes`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const data = await res.json();
+        
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Error al cargar mensajes");
+        }
 
+        const data = await res.json();
         return data.map(m => ({
             id: m.id,
             texto: m.texto,

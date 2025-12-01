@@ -40,7 +40,7 @@ export class ChatsComponent extends HTMLElement {
             
             let contenidoBubble = '';
             if (mensaje.texto) {
-                contenidoBubble += `<div>${mensaje.texto}</div>`;
+                contenidoBubble += `<div class="mensaje-texto">${mensaje.texto}</div>`;
             }
             if (mensaje.imagenes && mensaje.imagenes.length > 0) {
                 contenidoBubble += `<div class="mensaje-imagenes"><img src="${mensaje.imagenes[0]}" class="mensaje-imagen"></div>`;
@@ -51,7 +51,13 @@ export class ChatsComponent extends HTMLElement {
                 <div class="mensaje-hora">${mensaje.hora}</div>
             `;
             container.appendChild(divMensaje);
+            
             this.#scrollToBottom();
+
+            const imagenes = divMensaje.querySelectorAll('img');
+            imagenes.forEach(img => {
+                img.onload = () => this.#scrollToBottom();
+            });
         }
     }
 
@@ -73,9 +79,41 @@ export class ChatsComponent extends HTMLElement {
         }
     }
 
+    mostrarError(titulo, mensaje) {
+        const modal = this.shadowRoot.getElementById('modalError');
+        const componenteError = this.shadowRoot.getElementById('componenteError');
+        
+        if (componenteError) {
+            componenteError.setAttribute('titulo', titulo);
+            componenteError.setAttribute('mensaje', mensaje);
+        }
+        
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('visible'), 10);
+        }
+
+        const cerrar = () => {
+            modal.classList.remove('visible');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+            componenteError.removeEventListener('retry-click', cerrar);
+        };
+
+        componenteError.addEventListener('retry-click', cerrar);
+    }
+
     render() {
         const shadow = this.shadowRoot;
         shadow.innerHTML = `
+            <div class="modal-overlay" id="modalError" style="display: none;">
+                <error-message-info 
+                    id="componenteError"
+                    titulo="Atención" 
+                    mensaje="" 
+                    accion="Entendido">
+                </error-message-info>
+            </div>
+
             <div class="chats-container">
                 <div class="chats-lista">
                     <div class="chats-header"><h2>Chats</h2></div>
@@ -89,7 +127,21 @@ export class ChatsComponent extends HTMLElement {
         this.#agregarEstilos(shadow);
         this.#attachEventListeners(shadow);
         this.#attachItemListeners(shadow);
-        if(this.#chatActual) this.#scrollToBottom();
+        
+        if(this.#chatActual) {
+            this.#scrollToBottom();
+            
+            const imagenesHistorial = shadow.querySelectorAll('#mensajesContainer img');
+            if (imagenesHistorial.length > 0) {
+                imagenesHistorial.forEach(img => {
+                    if (img.complete) {
+                        this.#scrollToBottom();
+                    } else {
+                        img.addEventListener('load', () => this.#scrollToBottom());
+                    }
+                });
+            }
+        }
     }
 
     #renderChatsLista() {
@@ -124,7 +176,7 @@ export class ChatsComponent extends HTMLElement {
                 ${this.#mensajes.map(m => `
                     <div class="mensaje ${m.enviado ? 'enviado' : 'recibido'}">
                         <div class="mensaje-bubble">
-                            ${m.texto ? `<div>${m.texto}</div>` : ''}
+                            ${m.texto ? `<div class="mensaje-texto">${m.texto}</div>` : ''}
                             ${m.imagenes && m.imagenes.length > 0 ? 
                                 `<div class="mensaje-imagenes"><img src="${m.imagenes[0]}" class="mensaje-imagen"></div>` : ''}
                         </div>
@@ -144,7 +196,7 @@ export class ChatsComponent extends HTMLElement {
                 </button>
                 <input type="file" id="fileInput" accept="image/*" style="display: none;">
                 
-                <textarea class="mensaje-input" id="mensajeInput" placeholder="Escribe aquí..." rows="1"></textarea>
+                <textarea class="mensaje-input" id="mensajeInput" placeholder="Escribe aquí..." rows="1" maxlength="255"></textarea>
                 
                 <button class="btn-enviar" id="btnEnviar">
                     <img src="${this.enviarIconUrl}" alt="Enviar">
@@ -173,21 +225,24 @@ export class ChatsComponent extends HTMLElement {
             fileInput.onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
+                    if (!file.type.startsWith('image/')) {
+                        this.mostrarError("Archivo no válido", "Solo se permiten archivos de imagen (JPG, PNG, etc).");
+                        fileInput.value = '';
+                        return;
+                    }
                     if(file.size > 5 * 1024 * 1024) {
-                        alert("La imagen es muy pesada (máx 5MB)");
+                        this.mostrarError("Imagen muy grande", "La imagen pesa más de 5MB. Por favor intenta con una más ligera.");
                         fileInput.value = '';
                         return;
                     }
 
                     this.#imagenSeleccionada = file;
-
                     const reader = new FileReader();
                     reader.onload = (evt) => {
                         previewImg.src = evt.target.result;
                         previewContainer.style.display = 'flex';
-                        
                         inputTexto.disabled = true;
-                        inputTexto.placeholder = "Envía la imagen o cancélala...";
+                        inputTexto.placeholder = "Envía la imagen o cancélala";
                         inputTexto.value = ""; 
                     };
                     reader.readAsDataURL(file);
@@ -217,7 +272,13 @@ export class ChatsComponent extends HTMLElement {
                     detail: { chatId: this.#chatActual.id, texto },
                     bubbles: true, composed: true
                 }));
+                
                 inputTexto.value = '';
+
+                btnAdjunto.classList.remove('disabled');
+                btnAdjunto.disabled = false;
+                
+                inputTexto.focus();
             }
         };
 
@@ -281,10 +342,18 @@ export class ChatsComponent extends HTMLElement {
     }
 
     #scrollToBottom() {
-        setTimeout(() => {
-            const container = this.shadowRoot.getElementById('mensajesContainer');
-            if (container) container.scrollTop = container.scrollHeight;
-        }, 50);
+        const container = this.shadowRoot.getElementById('mensajesContainer');
+        if (!container) return;
+
+        container.scrollTop = container.scrollHeight;
+
+        window.requestAnimationFrame(() => {
+            container.scrollTop = container.scrollHeight;
+            
+            window.requestAnimationFrame(() => {
+                container.scrollTop = container.scrollHeight;
+            });
+        });
     }
 
     #agregarEstilos(shadow) {

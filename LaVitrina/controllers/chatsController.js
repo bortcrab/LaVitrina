@@ -26,6 +26,12 @@ class ChatController {
                  return next(new AppError('No puedes crear un chat contigo mismo.', 400));
             }
 
+            const chatExistente = await ChatDAO.buscarChatExistente(idPublicacion, idCliente, idVendedor);
+            
+            if (chatExistente) {
+                return res.status(200).json(chatExistente);
+            }
+
             const cliente = await UsuarioDAO.obtenerUsuarioPorId(idCliente);
             const vendedor = await UsuarioDAO.obtenerUsuarioPorId(idVendedor);
 
@@ -51,11 +57,18 @@ class ChatController {
 
     static async obtenerChatPorId(req, res, next) {
         try {
-            const id = req.params.idChat;
-            const chat = await ChatDAO.obtenerChatPorId(id);
+            const idChat = req.params.idChat;
+            const idUsuario = req.usuario.id;
+
+            const chat = await ChatDAO.obtenerChatPorId(idChat);
 
             if (!chat) {
                 return next(new AppError('Chat no encontrado.', 404))
+            }
+
+            const pertenece = await UsuarioChatsDAO.esUsuarioDelChat(idUsuario, idChat);
+            if (!pertenece) {
+                return next(new AppError('No tienes permiso para ver este chat.', 403));
             }
 
             res.status(200).json(chat);
@@ -87,7 +100,7 @@ class ChatController {
 
                 const tituloPublicacion = chat.Publicacion ? chat.Publicacion.titulo : 'Artículo';
 
-                const nombreMostrar = `${nombreOtroUsuario} - ${tituloPublicacion}`;
+                const nombreMostrar = nombreOtroUsuario;
 
                 const servicioMostrar = tituloPublicacion;
 

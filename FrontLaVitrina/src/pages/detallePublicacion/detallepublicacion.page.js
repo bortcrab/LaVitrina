@@ -29,6 +29,15 @@ export class DetallePublicacionPage extends HTMLElement {
 
     #render(shadow, publicacion) {
         shadow.innerHTML += `
+            <div class="modal-overlay" id="modalError" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+                <error-message-info 
+                    id="componenteError"
+                    titulo="Atención" 
+                    mensaje="" 
+                    accion="Entendido">
+                </error-message-info>
+            </div>
+
             <div class="container">
                 <div class="izquierda">
                     <div class="publicacion-container">
@@ -69,6 +78,23 @@ export class DetallePublicacionPage extends HTMLElement {
 		`;
     }
 
+    #mostrarError(shadow, titulo, mensaje) {
+        const modal = shadow.getElementById('modalError');
+        const componenteError = shadow.getElementById('componenteError');
+        
+        if (componenteError) {
+            componenteError.setAttribute('titulo', titulo);
+            componenteError.setAttribute('mensaje', mensaje);
+        }
+        if (modal) modal.style.display = 'flex';
+
+        const cerrar = () => {
+            modal.style.display = 'none';
+            componenteError.removeEventListener('retry-click', cerrar);
+        };
+        componenteError.addEventListener('retry-click', cerrar);
+    }
+
     #agregarEventListeners(shadow, idUsuario) {
         const btnEnviarMensaje = shadow.getElementById('btn-enviar-mensaje');
         const idPublicacion = this.getAttribute('id');
@@ -88,7 +114,7 @@ export class DetallePublicacionPage extends HTMLElement {
                     page("/chats");
                 } catch (error) {
                     console.error(error);
-                    alert("No se pudo iniciar el chat. Intenta iniciar sesión nuevamente.");
+                    this.#mostrarError(shadow, "No se pudo iniciar el chat", error.message);
                     btnEnviarMensaje.disabled = false;
                     btnEnviarMensaje.textContent = "Enviar mensaje";
                 }

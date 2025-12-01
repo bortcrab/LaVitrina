@@ -90,6 +90,30 @@ class ChatsDAO {
             throw error;
         }
     }
+
+    async buscarChatExistente(idPublicacion, idUsuario1, idUsuario2) {
+        try {
+            const chats = await Chat.findAll({
+                where: { idPublicacion },
+                include: [{
+                    model: Usuario,
+                    attributes: ['id']
+                }]
+            });
+
+            const chatExistente = chats.find(chat => {
+                const usuariosDelChat = chat.Usuarios.map(u => u.id);
+                const incluyeUsuario1 = usuariosDelChat.includes(parseInt(idUsuario1));
+                const incluyeUsuario2 = usuariosDelChat.includes(parseInt(idUsuario2));
+                return incluyeUsuario1 && incluyeUsuario2;
+            });
+
+            return chatExistente || null;
+
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = new ChatsDAO();

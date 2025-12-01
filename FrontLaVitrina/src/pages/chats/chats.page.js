@@ -38,6 +38,9 @@ export class ChatsPage extends HTMLElement {
 
         } catch (error) {
             console.error(error);
+            if (component && component.mostrarError) {
+                component.mostrarError("Error de conexión", "No pudimos cargar tus chats. Verifica tu internet.");
+            }
         }
     }
 
@@ -49,6 +52,9 @@ export class ChatsPage extends HTMLElement {
             component.setChatActivo(this.chatActual, mensajes);
         } catch (error) {
             console.error(error);
+            if (component && component.mostrarError) {
+                component.mostrarError("Error al cargar conversación", error.message);
+            }
         }
     }
 
@@ -94,8 +100,10 @@ export class ChatsPage extends HTMLElement {
                 this.#manejarNuevoMensaje(mensajeEnviado, component);
                 
             } catch (error) {
-                alert("Error al enviar la imagen.");
                 console.error(error);
+                if (component && component.mostrarError) {
+                    component.mostrarError("Error al enviar", "No pudimos enviar la imagen. Inténtalo de nuevo.");
+                }
             }
         });
     }
