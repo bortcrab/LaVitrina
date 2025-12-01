@@ -7,6 +7,8 @@ export class MisPublicacionesPage extends HTMLElement {
         this.filteredProducts = [];
         this.categorias = [];
         this.activeCategory = 'Todo';
+        this.accionPendiente = null; 
+        this.datosPendientes = null;
         this.cssUrl = new URL('./misPublicaciones.page.css', import.meta.url).href;
     }
 
@@ -30,14 +32,16 @@ export class MisPublicacionesPage extends HTMLElement {
             this.categorias = await PublicacionService.obtenerCategorias();
             this.#renderCategorias(shadow);
         } catch (error) {
-            console.error("Error cargando categorías:", error);
+            console.error("Error cargando categorías:", error);an
         }
     }
 
     async #cargarPublicaciones(shadow) {
         try {
             const usuarioStorage = localStorage.getItem('usuario');
-            if (!usuarioStorage) return;
+            if (!usuarioStorage) {
+                throw new Error("No has iniciado sesión.");
+            }
             const usuario = JSON.parse(usuarioStorage);
 
             this.misPublicaciones = await PublicacionService.getPublicacionesPorUsuario(usuario.id);
@@ -49,18 +53,67 @@ export class MisPublicacionesPage extends HTMLElement {
             });
 
             this.filteredProducts = [...this.misPublicaciones];
-            
             this.#actualizarGrid(shadow);
 
         } catch (error) {
             console.error("Error cargando mis publicaciones:", error);
+            
+            this.#mostrarModalError(
+                "Error de Carga", 
+                "No pudimos obtener tus publicaciones. Por favor, verifica tu conexión e inténtalo de nuevo.",
+                () => location.reload()
+            );
+            
             const grid = shadow.getElementById('productsGrid');
-            if (grid) grid.innerHTML = '<p class="no-results">Ocurrió un error al cargar tus publicaciones.</p>';
+            if (grid) grid.innerHTML = '<div class="no-results">No se pudo cargar la información.</div>';
         }
     }
 
     #renderBase(shadow) {
         shadow.innerHTML = `
+            <style>
+                .modal-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    opacity: 0;
+                    visibility: hidden;
+                    z-index: -1; 
+                    transition: opacity 0.3s ease, visibility 0.3s ease;
+                }
+
+                .modal-overlay.visible {
+                    opacity: 1;
+                    visibility: visible;
+                    z-index: 1000;
+                }
+            </style>
+
+            <div class="modal-overlay" id="modalError">
+                <error-message-info 
+                    id="componenteError"
+                    titulo="Atención" 
+                    mensaje="Ha habido un problema, inténtalo nuevamente" 
+                    accion="Cerrar">
+                </error-message-info>
+            </div>
+
+            <div class="modal-overlay" id="modalConfirm">
+                <confirmation-message-info 
+                    id="componenteConfirm"
+                    titulo="¿Estás seguro de continuar?" 
+                    mensaje="" 
+                    accion-aceptar="Sí, continuar"
+                    accion-cancelar="Cancelar">
+                </confirmation-message-info>
+            </div>
+
             <section class="home-section">
                 <div class="section-header">
                     <h2>Mis Publicaciones</h2>
@@ -80,6 +133,8 @@ export class MisPublicacionesPage extends HTMLElement {
 
     #renderCategorias(shadow) {
         const container = shadow.getElementById('categoriesContainer');
+        if(!container) return;
+        
         const botonesHtml = this.categorias.map(cat => `
             <button class="filter-pill" data-category="${cat.nombre}">
                 ${cat.nombre}
@@ -156,38 +211,107 @@ export class MisPublicacionesPage extends HTMLElement {
     }
 
     async #handleAction(action, publicacion) {
-        try {
-            switch (action) {
-                case 'editar':
-                    page(`/editar-publicacion/${publicacion.id}`);
-                    break;
-                case 'marcar':
-                    const nuevoEstado = publicacion.vendido ? 'Disponible' : 'Vendido';
-                    if (confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) {
-                        await PublicacionService.cambiarEstadoVenta(publicacion.id, nuevoEstado);
-                        
-                        await this.#cargarPublicaciones(this.shadow);
-                        this.#filterBy(this.activeCategory, this.shadow);
-                    }
-                    break;
-                case 'eliminar':
-                    if (confirm('¿Eliminar esta publicación permanentemente?')) {
-                        await PublicacionService.eliminarPublicacion(publicacion.id);
-                        
-                        await this.#cargarPublicaciones(this.shadow);
-                        this.#filterBy(this.activeCategory, this.shadow);
-                    }
-                    break;
-            }
-        } catch(e) { 
-            console.error(e); 
-            alert('Ocurrió un error al procesar la acción');
+        this.datosPendientes = publicacion;
+        this.accionPendiente = action;
+
+        if (action === 'editar') {
+            page(`/editar-publicacion/${publicacion.id}`);
+            return;
         }
+
+        if (action === 'marcar') {
+            const nuevoEstado = publicacion.vendido ? 'Disponible' : 'Vendido';
+            this.#mostrarModalConfirmacion(
+                "Actualizar Estado",
+                `¿Deseas marcar esta publicación como "${nuevoEstado}"?`,
+                "Sí, actualizar"
+            );
+        }
+
+        if (action === 'eliminar') {
+            this.#mostrarModalConfirmacion(
+                "Eliminar Publicación",
+                "¿Estás seguro de que quieres eliminar la publicación permanentemente? Esta acción no se puede deshacer.",
+                "Sí, eliminar"
+            );
+        }
+    }
+
+    async #ejecutarAccionConfirmada() {
+        this.#ocultarModales();
+        const publicacion = this.datosPendientes;
+
+        try {
+            if (this.accionPendiente === 'marcar') {
+                const nuevoEstado = publicacion.vendido ? 'Disponible' : 'Vendido';
+                await PublicacionService.cambiarEstadoVenta(publicacion.id, nuevoEstado);
+            } 
+            else if (this.accionPendiente === 'eliminar') {
+                await PublicacionService.eliminarPublicacion(publicacion.id);
+            }
+
+            await this.#cargarPublicaciones(this.shadow);
+            
+            this.#filterBy(this.activeCategory, this.shadow);
+
+        } catch (error) {
+            console.error(error);
+            this.#mostrarModalError(
+                "Hubo un problema", "No pudimos completar la acción. Inténtalo más tarde."
+            );
+        } finally {
+            this.accionPendiente = null;
+            this.datosPendientes = null;
+        }
+    }
+
+    #mostrarModalConfirmacion(titulo, mensaje, textoBoton) {
+        const modal = this.shadow.getElementById('modalConfirm');
+        const componente = this.shadow.getElementById('componenteConfirm');
+        
+        if (componente) {
+            componente.setAttribute('titulo', titulo);
+            componente.setAttribute('mensaje', mensaje);
+            componente.setAttribute('accion-aceptar', textoBoton);
+        }
+        
+        modal.classList.add('visible');
+    }
+
+    #mostrarModalError(titulo, mensaje, accionCallback = null) {
+        const modal = this.shadow.getElementById('modalError');
+        const componente = this.shadow.getElementById('componenteError');
+        
+        if (componente) {
+            componente.setAttribute('titulo', titulo);
+            componente.setAttribute('mensaje', mensaje);
+            
+            const nuevoComponente = componente.cloneNode(true);
+            componente.parentNode.replaceChild(nuevoComponente, componente);
+            
+            nuevoComponente.addEventListener('retry-click', () => {
+                if (accionCallback) accionCallback();
+                this.#ocultarModales();
+            });
+        }
+        
+        modal.classList.add('visible');
+    }
+
+    #ocultarModales() {
+        const modales = this.shadow.querySelectorAll('.modal-overlay');
+        modales.forEach(m => m.classList.remove('visible'));
     }
 
     #setupEventListeners(shadow) {
         const categoriesContainer = shadow.getElementById('categoriesContainer');
         const productsGrid = shadow.getElementById('productsGrid');
+        
+        const componenteConfirm = shadow.getElementById('componenteConfirm');
+        if (componenteConfirm) {
+            componenteConfirm.addEventListener('cancel-click', () => this.#ocultarModales());
+            componenteConfirm.addEventListener('confirm-click', () => this.#ejecutarAccionConfirmada());
+        }
 
         productsGrid.addEventListener('publicacionClick', (e) => {
             page(`/detalle-publicacion/${e.detail.publicacion.id}`);
