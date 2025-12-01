@@ -225,9 +225,23 @@ export class PublicacionService {
         }
     }
 
-    static eliminarPublicacion(id) {
-        console.log(`Eliminando publicación ${id} (simulado)`);
-        return { success: true, id };
+    static async eliminarPublicacion(id) {
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE',
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al eliminar la publicación');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error eliminando publicación:", error);
+            throw error;
+        }
     }
 
     static filtrarPorEtiqueta(etiqueta) {
