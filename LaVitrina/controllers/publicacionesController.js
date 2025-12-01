@@ -549,6 +549,24 @@ function formatearRespuestaJSON(publicacionData) {
         etiquetas: publicacionData.EtiquetasPublicacions.map(etiqueta => etiqueta.etiqueta)
     }
 
+    if (publicacionData.Subastum) {
+        let pujaMayor = 0;
+        let cantidadPujas = 0;
+
+        if (publicacionData.Subastum.pujas) {
+            const pujas = Array.of(publicacionData.Subastum.pujas);
+            pujaMayor = pujas[0];
+            cantidadPujas = pujas.length
+        }
+        
+        respuestaJSON.subastaData = {
+            fechaInicio: publicacionData.Subastum.fechaInicio,
+            fechaFin:publicacionData.Subastum.fechaFin,
+            pujaMayor: pujaMayor,
+            cantidadPujas: cantidadPujas
+        }
+    }
+
     return respuestaJSON;
 }
 
