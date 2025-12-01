@@ -127,7 +127,21 @@ export class ChatsComponent extends HTMLElement {
         this.#agregarEstilos(shadow);
         this.#attachEventListeners(shadow);
         this.#attachItemListeners(shadow);
-        if(this.#chatActual) this.#scrollToBottom();
+        
+        if(this.#chatActual) {
+            this.#scrollToBottom();
+            
+            const imagenesHistorial = shadow.querySelectorAll('#mensajesContainer img');
+            if (imagenesHistorial.length > 0) {
+                imagenesHistorial.forEach(img => {
+                    if (img.complete) {
+                        this.#scrollToBottom();
+                    } else {
+                        img.addEventListener('load', () => this.#scrollToBottom());
+                    }
+                });
+            }
+        }
     }
 
     #renderChatsLista() {
@@ -328,10 +342,18 @@ export class ChatsComponent extends HTMLElement {
     }
 
     #scrollToBottom() {
-        setTimeout(() => {
-            const container = this.shadowRoot.getElementById('mensajesContainer');
-            if (container) container.scrollTop = container.scrollHeight;
-        }, 50);
+        const container = this.shadowRoot.getElementById('mensajesContainer');
+        if (!container) return;
+
+        container.scrollTop = container.scrollHeight;
+
+        window.requestAnimationFrame(() => {
+            container.scrollTop = container.scrollHeight;
+            
+            window.requestAnimationFrame(() => {
+                container.scrollTop = container.scrollHeight;
+            });
+        });
     }
 
     #agregarEstilos(shadow) {
