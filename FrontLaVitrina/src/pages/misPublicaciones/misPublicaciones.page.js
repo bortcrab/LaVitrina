@@ -81,7 +81,7 @@ export class MisPublicacionesPage extends HTMLElement {
     }
 
     #renderProducts(products) {
-        if (products.length === 0) {
+        if (!products || products.length === 0) {
             return `
                 <div class="no-results">
                     <p>No tienes publicaciones en esta categoría.</p>
@@ -89,17 +89,32 @@ export class MisPublicacionesPage extends HTMLElement {
             `;
         }
 
-        return products.map(product => `
+        return products.map(product => {
+            let imagenUrl = './src/assets/imagendefault.png';
+            
+            if (product.imagenes && product.imagenes.length > 0) {
+                const primeraImg = product.imagenes[0];
+                if (typeof primeraImg === 'object' && primeraImg.url) {
+                    imagenUrl = primeraImg.url;
+                } else if (typeof primeraImg === 'string') {
+                    imagenUrl = primeraImg;
+                }
+            }
+
+            const esVendido = product.estado === 'Vendido';
+
+            return `
             <publicacion-opciones-info 
                 id="${product.id}"
                 titulo="${product.titulo}"
                 descripcion="${product.descripcion}"
                 precio="${product.precio}"
-                imagen="${product.imagen}"
+                imagen="${imagenUrl}"
                 estado="${product.estado}"
-                vendido="${product.vendido || false}"
+                tipo="${product.tipo || 'Venta'}" 
+                vendido="${esVendido}"
             ></publicacion-opciones-info>
-        `).join('');
+        `}).join('');
     }
 
     #setupEventListeners(shadow) {

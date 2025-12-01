@@ -18,7 +18,17 @@ export class PublicacionOpcionesComponent extends HTMLElement {
         const estado = this.getAttribute('estado');
         const vendido = this.getAttribute('vendido') === 'true';
 
-        const publicacion = new Publicacion(id, titulo, descripcion, precio, imagen, [], estado);
+        const datosParaLaClase = {
+            id: id,
+            titulo: titulo,
+            descripcion: descripcion,
+            precio: precio,
+            imagenes: imagen ? [imagen] : [],
+            estado: estado,
+            tipo: 'Venta'
+        };
+
+        const publicacion = new Publicacion(datosParaLaClase);
         publicacion.vendido = vendido;
         
         this.#agregarEstilos(shadow);
@@ -33,6 +43,10 @@ export class PublicacionOpcionesComponent extends HTMLElement {
     }
 
     #render(shadow, publicacion) {
+        const imagenSrc = publicacion.imagenes && publicacion.imagenes.length > 0 
+            ? publicacion.imagenes[0] 
+            : 'assets/no-image.png';
+
         shadow.innerHTML += `
         <div class="card-container">
             <div class="menu-container">
@@ -47,7 +61,7 @@ export class PublicacionOpcionesComponent extends HTMLElement {
             </div>
             
             <div class="card-image">
-                <img src="${publicacion.imagen}" alt="Imagen no disponible">
+                <img src="${imagenSrc}" alt="Imagen no disponible">
             </div>
 
             <div class="card-details">
