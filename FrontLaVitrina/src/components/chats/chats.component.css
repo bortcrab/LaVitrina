@@ -439,6 +439,35 @@
     border-color: #CECECE; 
 }
 
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-overlay error-message-info {
+    max-width: 400px;
+    width: 90%;
+    height: auto;
+    display: block;
+}
+
 @media (max-width: 1024px) {
     .chats-lista {
         width: 320px;

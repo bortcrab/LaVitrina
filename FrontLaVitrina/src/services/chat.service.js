@@ -117,7 +117,7 @@ export class ChatService {
             return data;
         } catch (error) {
             throw error;
-        } 
+        }
     }
 
     static async obtenerChats() {
@@ -154,14 +154,17 @@ export class ChatService {
     }
 
     static async obtenerMensajes(idChat) {
-        const usuarioData = JSON.parse(localStorage.getItem('usuario'));
         const token = localStorage.getItem('token');
-        
         const res = await fetch(`${this.apiUrl}/chats/${idChat}/mensajes`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const data = await res.json();
+        
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Error al cargar mensajes");
+        }
 
+        const data = await res.json();
         return data.map(m => ({
             id: m.id,
             texto: m.texto,
