@@ -92,19 +92,23 @@ class ChatController {
                 const usuarios = chat.Usuarios || [];
                 const otroUsuario = usuarios.find(u => u.id !== idUsuarioActual);
                 
-                const avatar = otroUsuario ? otroUsuario.fotoPerfil : 'https://i.pravatar.cc/150?img=default';
+                const avatar = otroUsuario && otroUsuario.fotoPerfil 
+                    ? otroUsuario.fotoPerfil 
+                    : '/src/assets/imagendefault.png';
                 
                 const nombreOtroUsuario = otroUsuario 
                     ? `${otroUsuario.nombres} ${otroUsuario.apellidoPaterno || ''}`.trim()
                     : 'Usuario Desconocido';
 
-                const tituloPublicacion = chat.Publicacion ? chat.Publicacion.titulo : 'Artículo';
+                const tituloPublicacion = chat.Publicacion 
+                    ? chat.Publicacion.titulo 
+                    : 'Publicación eliminada';
 
                 const nombreMostrar = nombreOtroUsuario;
-
                 const servicioMostrar = tituloPublicacion;
 
-                let productoImg = "https://via.placeholder.com/150?text=Sin+Foto";
+                let productoImg = '/src/assets/noimage.jpeg';
+                
                 if (chat.Publicacion && chat.Publicacion.ImagenesPublicacions && chat.Publicacion.ImagenesPublicacions.length > 0) {
                     productoImg = chat.Publicacion.ImagenesPublicacions[0].url;
                 }
