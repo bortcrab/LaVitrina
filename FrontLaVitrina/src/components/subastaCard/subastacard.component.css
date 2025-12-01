@@ -164,3 +164,8 @@
     background-color: #e25e66;
     cursor: pointer;
 }
+
+#btn-realizar-puja:disabled {
+    background-color: #e25e66;
+    cursor: wait;
+}

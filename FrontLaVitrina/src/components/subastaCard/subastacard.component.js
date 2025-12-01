@@ -40,6 +40,15 @@ export class SubastaCardComponent extends HTMLElement {
 
     #render(shadow) {
         shadow.innerHTML += `
+        <div class="modal-overlay" id="modalError" style="display: none;">
+            <error-message-info 
+                id="componenteError"
+                titulo="Atención" 
+                mensaje="" 
+                accion="Entendido">
+            </error-message-info>
+        </div>
+
         <div class="subasta-container">
             <div class="contador-container">
                 <h2>Subasta termina en:</h2>
@@ -69,8 +78,8 @@ export class SubastaCardComponent extends HTMLElement {
             </div>
             <div class="puja-container">
                 <h2>Realizar puja</h2>
-                <h4>El monto mínimo es de $ ${(this.precio > this.pujaMayor) ? this.precio + 10 : this.pujaMayor + 10}.00</h4>
-                <input type="number" name="" id="puja" placeholder="$ ${(this.precio > this.pujaMayor) ? this.precio + 10 : this.pujaMayor + 10}.00">
+                <h4 id="monto-minimo">El monto mínimo es de $ ${(this.precio > this.pujaMayor) ? this.precio + 10 : this.pujaMayor + 10}.00</h4>
+                <input type="number" id="puja" placeholder="$ ${(this.precio > this.pujaMayor) ? this.precio + 10 : this.pujaMayor + 10}.00">
                 <button id="btn-realizar-puja">Realizar</button>
             </div>
         </div>
@@ -121,5 +130,42 @@ export class SubastaCardComponent extends HTMLElement {
         }, 1000);
     }
 
+    mostrarError(titulo, mensaje) {
+        const modal = this.shadowRoot.getElementById('modalError');
+        const componenteError = this.shadowRoot.getElementById('componenteError');
+
+        if (componenteError) {
+            componenteError.setAttribute('titulo', titulo);
+            componenteError.setAttribute('mensaje', mensaje);
+        }
+
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('visible'), 10);
+        }
+
+        const cerrar = () => {
+            modal.classList.remove('visible');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+            componenteError.removeEventListener('retry-click', cerrar);
+        };
+
+        componenteError.addEventListener('retry-click', cerrar);
+    }
+
+    actualizarOferta(nuevaPuja) {
+        const shadow = this.shadowRoot;
+
+        const ofertaActual = shadow.getElementById('oferta-actual');
+        const montoMinimo = shadow.getElementById('monto-minimo');
+        const puja = shadow.getElementById('puja');
+        const btnRealizarPuja = shadow.getElementById('btn-realizar-puja');
+
+        ofertaActual.textContent = nuevaPuja.monto;
+        montoMinimo.textContent = `$ ${parseInt(nuevaPuja.monto) + 10}.00`;
+        puja.placeholder = `$ ${parseInt(nuevaPuja.monto) + 10}.00`;
+        btnRealizarPuja.disabled = false;
+        btnRealizarPuja.textContent = 'Realizar';
+    }
 
 }
