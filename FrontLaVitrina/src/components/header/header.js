@@ -7,10 +7,19 @@ export class HeaderComponent extends HTMLElement {
         const shadow = this.attachShadow({ mode: 'open' });
         this.#agregarEstilos(shadow);
         this.#render(shadow);
+
+        window.addEventListener('loginSuccess', (e) => {
+            console.log("Header detectó login, actualizando...");
+            this.#actualizarDatosUsuario(shadow, e.detail.usuario);
+        });
+        
+        window.addEventListener('logout', () => {
+             this.#actualizarDatosUsuario(shadow, null);
+        });
     }
 
     #render(shadow) {
-        const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?img=12';
+        const DEFAULT_AVATAR = './src/assets/imagenDefault.png';
 
         const usuarioStorage = localStorage.getItem('usuario');
         const usuario = usuarioStorage
@@ -65,6 +74,21 @@ export class HeaderComponent extends HTMLElement {
         this.#setupEventListeners(shadow);
     }
 
+    #actualizarDatosUsuario(shadow, usuarioDatos) {
+        const userNameText = shadow.getElementById('userNameText');
+        const userAvatarImg = shadow.getElementById('userAvatarImg');
+        const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?img=12';
+
+        if (usuarioDatos) {
+            // Si hay usuario (Login)
+            if(userNameText) userNameText.textContent = usuarioDatos.nombres;
+            if(userAvatarImg) userAvatarImg.src = usuarioDatos.fotoPerfil || DEFAULT_AVATAR;
+        } else {
+            // Si es null (Logout)
+            if(userNameText) userNameText.textContent = 'Invitado';
+            if(userAvatarImg) userAvatarImg.src = DEFAULT_AVATAR;
+        }
+    }
     #setupEventListeners(shadow) {
         const userInfo = shadow.getElementById('userInfo');
         const dropdownMenu = shadow.getElementById('dropdownMenu');
@@ -73,6 +97,21 @@ export class HeaderComponent extends HTMLElement {
 
         const searchInput = shadow.querySelector('.search-input');
         const searchIcon = shadow.querySelector('.search-icon');
+
+        if (btnLogout) {
+            btnLogout.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                dropdownMenu.classList.remove('active');
+                
+                console.log('Sesión cerrada correctamente');
+                
+                window.dispatchEvent(new CustomEvent('logout')); 
+
+                if (window.page) page('/iniciar-sesion');
+                else window.location.href = '/iniciar-sesion';
+            });
+        }
 
         const dispararBusqueda = () => {
             const termino = searchInput.value;
