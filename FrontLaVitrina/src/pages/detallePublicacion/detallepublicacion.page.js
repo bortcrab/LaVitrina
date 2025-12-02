@@ -1,5 +1,6 @@
 import { PublicacionService } from "../../services/publicacion.service.js";
 import { ChatService } from "../../services/chat.service.js";
+import { SubastasService } from "../../services/subastas.service.js";
 
 export class DetallePublicacionPage extends HTMLElement {
 
@@ -16,19 +17,46 @@ export class DetallePublicacionPage extends HTMLElement {
         const publicacion = await PublicacionService.obtenerPublicacion(id);
         const datosFecha = publicacion.fechaPublicacion.split('-');
         publicacion.fechaPublicacion = datosFecha[0] + '/' + datosFecha[1] + '/' + datosFecha[2];
-        console.log(publicacion);
+        publicacion.precioMostrar = publicacion.precio;
+
+        if (publicacion.tipo === 'Subasta') {
+            SubastasService.initSocket();
+            SubastasService.unirseSubasta(id);
+
+            (parseInt(publicacion.precio) < parseInt(publicacion.subastaData.pujaMayor)) ? publicacion.precioMostrar = publicacion.subastaData.pujaMayor : publicacion.precioMostrar = publicacion.precio;
+        }
 
         this.#agregaEstilo(shadow);
 
         if (publicacion) {
-            this.#render(shadow, publicacion);
+            let usuarioStorage = localStorage.getItem('usuario');
+            usuarioStorage = JSON.parse(usuarioStorage);
+            this.#render(shadow, publicacion, usuarioStorage);
         } else {
             shadow.innerHTML = "<h2>publicacion no encontrada.</h2>";
         }
-        this.#agregarEventListeners(shadow, publicacion.usuario.id);
+
+
+        this.#inicializar(shadow);
+        this.#agregarEventListeners(shadow, publicacion);
     }
 
-    #render(shadow, publicacion) {
+    async #inicializar(shadow) {
+        const subastaComponent = shadow.getElementById('subastaInfo');
+        try {
+            SubastasService.escucharNuevasPujas((nuevaPuja) => {
+                this.#manejarNuevaPuja(shadow, nuevaPuja);
+            });
+
+        } catch (error) {
+            console.error(error);
+            if (subastaComponent && subastaComponent.mostrarError) {
+                subastaComponent.mostrarError("Error de conexión", "No pudimos cargar las pujas. Verifica tu internet.");
+            }
+        }
+    }
+
+    #render(shadow, publicacion, usuarioStorage) {
         shadow.innerHTML += `
             <div class="modal-overlay" id="modalError" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
                 <error-message-info 
@@ -50,7 +78,7 @@ export class DetallePublicacionPage extends HTMLElement {
                         <img src="${publicacion.imagen}" alt="">
                         <div class="descripcion-info">
                             <h3>Descripción</h3>
-                            <h3 id="precio">$ ${publicacion.precio}.00</h3>
+                            <h3 id="precio">${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(publicacion.precioMostrar)}</h3>
                         </div>
                         <p id="descripcion">
                             ${publicacion.descripcion}
@@ -58,7 +86,7 @@ export class DetallePublicacionPage extends HTMLElement {
                     </div>
                 </div>
                 <div class="derecha">
-                    ${publicacion.tipo === 'Subasta' ? `<subasta-card-info 
+                    ${publicacion.tipo === 'Subasta' ? `<subasta-card-info id="subastaInfo" 
                         fechaInicio="${publicacion.subastaData.fechaInicio}"
                         fechaFin="${publicacion.subastaData.fechaFin}"
                         precio="${publicacion.precio}"
@@ -82,12 +110,21 @@ export class DetallePublicacionPage extends HTMLElement {
                 </div>
             </div>
 		`;
+
+        const subastaComponent = shadow.getElementById('subastaInfo');
+        if (subastaComponent) {
+            const pujaCard = subastaComponent.shadowRoot.getElementById('puja-card');
+            
+            if (publicacion.usuario.id == usuarioStorage.id) {
+                pujaCard.style.display = 'none';
+            }
+        }
     }
 
     #mostrarError(shadow, titulo, mensaje) {
         const modal = shadow.getElementById('modalError');
         const componenteError = shadow.getElementById('componenteError');
-        
+
         if (componenteError) {
             componenteError.setAttribute('titulo', titulo);
             componenteError.setAttribute('mensaje', mensaje);
@@ -101,7 +138,7 @@ export class DetallePublicacionPage extends HTMLElement {
         componenteError.addEventListener('retry-click', cerrar);
     }
 
-    #agregarEventListeners(shadow, idUsuario) {
+    #agregarEventListeners(shadow, publicacion) {
         const btnEnviarMensaje = shadow.getElementById('btn-enviar-mensaje');
         const idPublicacion = this.getAttribute('id');
         const linkPerfil = shadow.getElementById('link-perfil');
@@ -129,7 +166,81 @@ export class DetallePublicacionPage extends HTMLElement {
 
         if (linkPerfil) {
             linkPerfil.addEventListener('click', async (e) => {
-                if (window.page) page(`/resenias/${idUsuario}`);
+                if (window.page) page(`/resenias/${publicacion.usuario.id}`);
+            });
+        }
+
+        const subastaComponent = shadow.getElementById('subastaInfo');
+
+        if (subastaComponent) {
+            const btnRealizarPuja = subastaComponent.shadowRoot.getElementById('btn-realizar-puja');
+
+            btnRealizarPuja.addEventListener('click', async (e) => {
+                const puja = subastaComponent.shadowRoot.getElementById('puja');
+
+                e.preventDefault();
+
+                if (publicacion.subastaData.pujaMayor) {
+                    if (parseInt(puja.value) >= (parseInt(publicacion.subastaData.pujaMayor) + 10)) {
+                        btnRealizarPuja.disabled = true;
+                        btnRealizarPuja.textContent = 'Realizando puja...';
+
+                        try {
+                            const usuarioStorage = localStorage.getItem('usuario');
+                            const usuario = JSON.parse(usuarioStorage);
+
+                            const monto = parseInt(puja.value);
+                            const fechaPuja = new Date();
+
+                            puja.value = '';
+
+                            const pujaData = {
+                                monto,
+                                fechaPuja,
+                                idUsuario: usuario.id
+                            }
+
+                            await SubastasService.realizarPuja(idPublicacion, pujaData);
+                        } catch (error) {
+                            console.error(error);
+                            this.#mostrarError(shadow, "No se pudo realizar la puja", error.message);
+                            btnRealizarPuja.disabled = false;
+                            btnRealizarPuja.textContent = "Realizar";
+                        }
+                    } else {
+                        subastaComponent.mostrarError('Debes cumplir con el monto mínimo.');
+                    }
+                } else {
+                    if (parseInt(puja.value) >= (parseInt(publicacion.precio) + 10)) {
+                        btnRealizarPuja.disabled = true;
+                        btnRealizarPuja.textContent = 'Realizando puja...';
+
+                        try {
+                            const usuarioStorage = localStorage.getItem('usuario');
+                            const usuario = JSON.parse(usuarioStorage);
+
+                            const monto = parseInt(puja.value);
+                            const fechaPuja = new Date();
+
+                            puja.value = '';
+
+                            const pujaData = {
+                                monto,
+                                fechaPuja,
+                                idUsuario: usuario.id
+                            }
+
+                            await SubastasService.realizarPuja(idPublicacion, pujaData);
+                        } catch (error) {
+                            console.error(error);
+                            this.#mostrarError(shadow, "No se pudo realizar la puja", error.message);
+                            btnRealizarPuja.disabled = false;
+                            btnRealizarPuja.textContent = "Realizar";
+                        }
+                    } else {
+                        subastaComponent.mostrarError('Debes cumplir con el monto mínimo.');
+                    }
+                }
             });
         }
     }
@@ -139,5 +250,13 @@ export class DetallePublicacionPage extends HTMLElement {
         link.setAttribute("rel", "stylesheet");
         link.setAttribute("href", this.cssUrl);
         shadow.appendChild(link);
+    }
+
+    #manejarNuevaPuja(shadow, nuevaPuja) {
+        const precio = shadow.getElementById('precio');
+        const subastaComponent = shadow.getElementById('subastaInfo');
+
+        precio.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(nuevaPuja.pujaMayor);
+        subastaComponent.actualizarOferta(nuevaPuja);
     }
 }

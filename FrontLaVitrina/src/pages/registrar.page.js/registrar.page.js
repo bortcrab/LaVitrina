@@ -105,6 +105,7 @@ export class RegistrarPage extends HTMLElement {
             page('/iniciar-sesion');
         });
     }
+    
     #mostrarPantallaError(shadow, titulo, mensaje) {
         shadow.innerHTML = `
              <style>

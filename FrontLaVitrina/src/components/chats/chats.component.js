@@ -162,14 +162,35 @@ export class ChatsComponent extends HTMLElement {
     }
 
     #renderConversacion() {
+        const existePerfil = this.#chatActual && this.#chatActual.idOtroUsuario;
+        const existeProducto = this.#chatActual && this.#chatActual.idPublicacion;
+
+        const estiloPerfil = existePerfil 
+            ? 'cursor: pointer; opacity: 1; transition: opacity 0.2s;' 
+            : 'cursor: default; opacity: 1;';
+
+        const estiloProducto = existeProducto 
+            ? 'cursor: pointer; opacity: 1; transition: opacity 0.2s;' 
+            : 'cursor: default; opacity: 0.5; filter: grayscale(100%);';
+
         return `
             <div class="conversacion-header">
-                <img src="${this.#chatActual.fotoPerfil}" class="conversacion-avatar">
+                <img src="${this.#chatActual.fotoPerfil}" 
+                     class="conversacion-avatar" 
+                     id="btnHeaderPerfil" 
+                     style="${estiloPerfil}"
+                     title="${existePerfil ? 'Ver perfil de usuario' : 'Usuario no disponible'}">
+                     
                 <div class="conversacion-info">
                     <h3 class="conversacion-nombre">${this.#chatActual.nombre}</h3>
                     <p class="conversacion-servicio">${this.#chatActual.tituloPublicacion}</p>
                 </div>
-                <img src="${this.#chatActual.productoImg}" class="conversacion-producto-img">
+                
+                <img src="${this.#chatActual.productoImg}" 
+                     class="conversacion-producto-img" 
+                     id="btnHeaderProducto"
+                     style="${estiloProducto}"
+                     title="${existeProducto ? 'Ver publicación' : 'Publicación no disponible'}">
             </div>
             
             <div class="mensajes-container" id="mensajesContainer">
@@ -214,10 +235,41 @@ export class ChatsComponent extends HTMLElement {
         const inputTexto = shadow.getElementById('mensajeInput');
         const btnAdjunto = shadow.getElementById('btnAdjunto');
         const fileInput = shadow.getElementById('fileInput');
-        
+        const btnHeaderPerfil = shadow.getElementById('btnHeaderPerfil');
+        const btnHeaderProducto = shadow.getElementById('btnHeaderProducto');
         const previewContainer = shadow.getElementById('previewContainer');
         const previewImg = shadow.getElementById('previewImg');
         const btnCancelPreview = shadow.getElementById('btnCancelPreview');
+
+        if (btnHeaderPerfil) {
+            btnHeaderPerfil.onclick = () => {
+                if (this.#chatActual && this.#chatActual.idOtroUsuario) {
+                    page(`/resenias/${this.#chatActual.idOtroUsuario}`);
+                } else {
+                    this.mostrarError("Usuario no disponible", "Este usuario ya no existe o su perfil no está accesible.");
+                }
+            };
+            
+            if(this.#chatActual && this.#chatActual.idOtroUsuario) {
+                btnHeaderPerfil.onmouseover = () => btnHeaderPerfil.style.opacity = '0.8';
+                btnHeaderPerfil.onmouseout = () => btnHeaderPerfil.style.opacity = '1';
+            }
+        }
+
+        if (btnHeaderProducto) {
+            btnHeaderProducto.onclick = () => {
+                if (this.#chatActual && this.#chatActual.idPublicacion) {
+                    page(`/detalle-publicacion/${this.#chatActual.idPublicacion}`);
+                } else {
+                    this.mostrarError("Publicación no disponible", "Esta publicación ya no está disponible.");
+                }
+            };
+
+            if(this.#chatActual && this.#chatActual.idPublicacion) {
+                btnHeaderProducto.onmouseover = () => btnHeaderProducto.style.opacity = '0.8';
+                btnHeaderProducto.onmouseout = () => btnHeaderProducto.style.opacity = '1';
+            }
+        }
 
         if (fileInput) {
             btnAdjunto.onclick = () => fileInput.click();

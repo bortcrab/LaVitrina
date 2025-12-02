@@ -5,6 +5,11 @@ export class PublicacionOpcionesComponent extends HTMLElement {
         super();
         this.cssUrl = new URL('./publicacionCardOpciones.component.css', import.meta.url).href;
         this.menuAbierto = false;
+        this.editarIcon = new URL('../../assets/editarPublicacionNuevo.png', import.meta.url).href;
+        this.eliminarIcon = new URL('../../assets/eliminarPublicacionNuevo.png', import.meta.url).href;
+        this.vendidoIcon = new URL('../../assets/marcarVendidoNuevo.png', import.meta.url).href;
+        this.disponibleIcon = new URL('../../assets/marcarDisponible.png', import.meta.url).href;
+        this.noDisponible = new URL('../../assets/noimage.jpeg', import.meta.url).href;
     }
 
     connectedCallback() {
@@ -16,13 +21,21 @@ export class PublicacionOpcionesComponent extends HTMLElement {
         const precio = this.getAttribute('precio');
         const imagen = this.getAttribute('imagen');
         const estado = this.getAttribute('estado');
+        const tipo = this.getAttribute('tipo');
         const vendido = this.getAttribute('vendido') === 'true';
 
-        const publicacion = new Publicacion(id, titulo, descripcion, precio, imagen, [], estado);
+        const datosParaLaClase = {
+            id, titulo, descripcion, precio,
+            imagenes: imagen ? [imagen] : [],
+            estado, 
+            tipo: tipo || 'Venta'
+        };
+
+        const publicacion = new Publicacion(datosParaLaClase);
         publicacion.vendido = vendido;
         
-        this.#agregarEstilos(shadow);
         this.#render(shadow, publicacion);
+        this.#agregarEstilos(shadow);
         this.#agregarEventListeners(shadow, publicacion);
         
         document.addEventListener('click', (e) => this.#cerrarMenuExterno(e, shadow));
@@ -33,35 +46,66 @@ export class PublicacionOpcionesComponent extends HTMLElement {
     }
 
     #render(shadow, publicacion) {
-        shadow.innerHTML += `
+        const precioFormateado = parseFloat(publicacion.precio).toLocaleString('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+            minimumFractionDigits: 0
+        });
+
+        const imagenSrc = publicacion.imagenes && publicacion.imagenes.length > 0 
+            ? publicacion.imagenes[0] 
+            : this.noDisponible;
+
+        shadow.innerHTML = `
+        <style>
+            .menu-opciones {
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+            }
+        </style>
         <div class="card-container">
             <div class="menu-container">
                 <button class="menu-button" id="menuButton">⋮</button>
                 <div class="menu-opciones" id="menuOpciones">
-                    <div class="menu-opcion" data-action="editar">✏️ Editar</div>
-                    <div class="menu-opcion" data-action="marcar">
-                        ${publicacion.vendido ? '↺ Marcar como disponible' : '✓ Marcar como vendido'}
+                    
+                    <div class="menu-opcion" data-action="editar">
+                        <img src="${this.editarIcon}" class="menu-icon" alt="Editar"> 
+                        Editar
                     </div>
-                    <div class="menu-opcion" data-action="eliminar">🗑️ Eliminar</div>
+
+                    <div class="menu-opcion" data-action="marcar">
+                        ${publicacion.vendido 
+                            ? `<img src="${this.disponibleIcon}" class="menu-icon" alt="Disponible"> Marcar disponible` 
+                            : `<img src="${this.vendidoIcon}" class="menu-icon" alt="Vendido"> Marcar vendido`
+                        }
+                    </div>
+
+                    <div class="menu-opcion" data-action="eliminar">
+                        <img src="${this.eliminarIcon}" class="menu-icon" alt="Eliminar"> 
+                        Eliminar
+                    </div>
+
                 </div>
             </div>
             
             <div class="card-image">
-                <img src="${publicacion.imagen}" alt="Imagen no disponible">
+                <img src="${imagenSrc}" alt="Imagen producto" onerror="this.src='${this.noDisponible}'">
             </div>
 
             <div class="card-details">
                 <h4>${publicacion.titulo}</h4>
                 <div class="card-footer">
                     <div class="footer-left">
-                        <span class="price">${publicacion.precio}</span>
-                        <div class="estado-container">
-                            <span class="tag">${publicacion.estado}</span>
-                            <span class="estado-venta ${publicacion.vendido ? 'vendido' : 'disponible'}">
-                                ${publicacion.vendido ? 'Vendido' : 'Disponible'}
-                            </span>
-                        </div>
+                        <span class="price">${precioFormateado}</span>
+                        
+                        ${publicacion.vendido 
+                            ? `<span class="estado-venta vendido">Vendido</span>` 
+                            : `<span class="estado-venta disponible">Disponible</span>`
+                        }
                     </div>
+
+                    <span class="tag">${publicacion.tipo}</span>
                 </div>
             </div>
         </div>

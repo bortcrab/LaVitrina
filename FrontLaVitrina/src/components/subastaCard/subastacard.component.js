@@ -21,10 +21,10 @@ export class SubastaCardComponent extends HTMLElement {
         const fechaActual = new Date().getTime();
         if (fechaInicioSubasta > fechaActual) {
             cuentaAtras.fecha = fechaInicioSubasta;
-            cuentaAtras.tipo = "Inicio";
+            cuentaAtras.tipo = "INICIO";
         } else {
             cuentaAtras.fecha = fechaFinSubasta;
-            cuentaAtras.tipo = "Fin";
+            cuentaAtras.tipo = "FIN";
         }
 
         this.#agregaEstilo(shadow);
@@ -40,9 +40,18 @@ export class SubastaCardComponent extends HTMLElement {
 
     #render(shadow) {
         shadow.innerHTML += `
+        <div class="modal-overlay" id="modalError" style="display: none;">
+            <error-message-info 
+                id="componenteError"
+                titulo="Atención" 
+                mensaje="" 
+                accion="Entendido">
+            </error-message-info>
+        </div>
+
         <div class="subasta-container">
             <div class="contador-container">
-                <h2>Subasta termina en:</h2>
+                <h2 id="titulo-cuenta-atras">Subasta termina en:</h2>
                 <div class="cuenta-atras">
                     <div class="tiempo">
                         <h3 id="dias">00</h3>
@@ -62,15 +71,16 @@ export class SubastaCardComponent extends HTMLElement {
                     </div>
                 </div>
                 <div class="contador-info">
-                    <h4>Oferta actual:</h4>
+                    <h4 id="oferta">Oferta actual:</h4>
                     <h4 id="cantidad-pujas">${this.cantidadPujas} pujas</h4>
                 </div>
-                <h2 id="oferta-actual">$ ${(this.precio > this.pujaMayor) ? this.precio : this.pujaMayor}.00</h2>
+                <h2 id="oferta-actual">${(this.precio > this.pujaMayor) ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(this.precio) : new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(this.pujaMayor)}</h2>
             </div>
-            <div class="puja-container">
+            <div class="puja-container" id="puja-card">
                 <h2>Realizar puja</h2>
-                <h4>El monto mínimo es de $ ${(this.precio > this.pujaMayor) ? this.precio + 10 : this.pujaMayor + 10}.00</h4>
-                <input type="number" name="" id="puja" placeholder="$ ${(this.precio > this.pujaMayor) ? this.precio + 10 : this.pujaMayor + 10}.00">
+                <h4 id="monto-minimo">El monto mínimo es de ${(this.precio > this.pujaMayor) ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseInt(this.precio) + 10) : new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseInt(this.pujaMayor) + 10)}</h4>
+                <input type="number" id="puja" placeholder="${(this.precio > this.pujaMayor) ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseInt(this.precio) + 10) : new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseInt(this.pujaMayor) + 10)}">
+                <div class="error-message" id="errorMessage"></div>
                 <button id="btn-realizar-puja">Realizar</button>
             </div>
         </div>
@@ -90,6 +100,9 @@ export class SubastaCardComponent extends HTMLElement {
         const minutos = shadow.getElementById('minutos');
         const segundos = shadow.getElementById('segundos');
         const btnRealizarPuja = shadow.getElementById('btn-realizar-puja');
+        const pujaCard = shadow.getElementById('puja-card');
+        const oferta = shadow.getElementById('oferta');
+        const tituloCuentaAtras = shadow.getElementById('titulo-cuenta-atras');
 
         this.intervalId = setInterval(() => {
 
@@ -106,20 +119,79 @@ export class SubastaCardComponent extends HTMLElement {
             minutos.innerHTML = minutes < 10 ? '0' + minutes : minutes;
             segundos.innerHTML = seconds < 10 ? '0' + seconds : seconds;
 
+            if (cuentaAtras.tipo === 'INICIO') {
+                tituloCuentaAtras.textContent = 'Subasta inicia en:'
+                pujaCard.style.display = 'none';
+            }
+
             if (distance < 0) {
                 clearInterval(this.intervalId);
-                dias.innerHTML = "0";
-                horas.innerHTML = "0";
-                minutos.innerHTML = "0";
-                segundos.innerHTML = "0";
+                dias.innerHTML = "00";
+                horas.innerHTML = "00";
+                minutos.innerHTML = "00";
+                segundos.innerHTML = "00";
 
                 if (btnRealizarPuja) {
-                    cuentaAtras.tipo === "inicio" ? btnRealizarPuja.disabled = false : btnRealizarPuja.disabled = true;
+                    if (cuentaAtras.tipo === "INICIO") {
+                        btnRealizarPuja.disabled = false;
+                        pujaCard.style.display = 'block';
+                        tituloCuentaAtras.textContent = 'Subasta termina en:'
+                    } else {
+                        btnRealizarPuja.disabled = true;
+
+                        const oferta = shadow.getElementById('oferta');
+
+                        pujaCard.style.display = 'none';
+                        oferta.textContent = 'Oferta final:';
+                    }
                 }
             }
 
         }, 1000);
     }
 
+    mostrarError(mensaje) {
+        const shadow = this.shadowRoot; // Accedemos al shadowRoot guardado o 'this.shadowRoot'
+        if (!shadow) return;
+
+        const errorMessage = shadow.getElementById('errorMessage');
+
+        console.log(mensaje);
+        if (mensaje) {
+            errorMessage.textContent = mensaje;
+            errorMessage.style.display = 'block';
+        } else {
+            // Si mensaje está vacío, ocultamos
+            errorMessage.style.display = 'none';
+        }
+    }
+
+    actualizarOferta(nuevaPuja) {
+        const shadow = this.shadowRoot;
+
+        const ofertaActual = shadow.getElementById('oferta-actual');
+        const montoMinimo = shadow.getElementById('monto-minimo');
+        const puja = shadow.getElementById('puja');
+        const btnRealizarPuja = shadow.getElementById('btn-realizar-puja');
+        const cantidadPujas = shadow.getElementById('cantidad-pujas');
+
+        let montoFormateado = new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+        }).format(nuevaPuja.monto);
+
+        ofertaActual.textContent = `${montoFormateado}`;
+        cantidadPujas.textContent = `${nuevaPuja.cantidadPujas} pujas`;
+
+        montoFormateado = new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+        }).format(parseInt(nuevaPuja.monto) + 10);
+
+        montoMinimo.textContent = `El monto mínimo es de ${montoFormateado}`;
+        puja.placeholder = `${montoFormateado}`;
+        btnRealizarPuja.disabled = false;
+        btnRealizarPuja.textContent = 'Realizar';
+    }
 
 }

@@ -187,25 +187,61 @@ export class PublicacionService {
         }
     }
 
-    static getPublicacionesPorUsuario(nombreUsuario) {
-        const todas = this.getPublicaciones();
-        return todas.filter(p => p.usuario.nombres === nombreUsuario);
-    }
+    static async getPublicacionesPorUsuario(idUsuario) {
+        try {
+            const response = await fetch(`${API_URL}/usuario/${idUsuario}`, {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
 
-    static cambiarEstadoVenta(id) {
-        const publicaciones = this.getPublicaciones();
-        const publicacion = publicaciones.find(p => p.id === parseInt(id));
-        if (publicacion) {
-            publicacion.vendido = !publicacion.vendido;
-            console.log(`Publicación ${id} marcada como ${publicacion.vendido ? 'vendida' : 'disponible'}`);
-            return publicacion;
+            if (!response.ok) throw new Error('Error al obtener mis publicaciones');
+            
+            const data = await response.json();
+            
+            return data.map(pub => new Publicacion(pub)); 
+        } catch (error) {
+            console.error(error);
+            return [];
         }
-        return null;
     }
 
-    static eliminarPublicacion(id) {
-        console.log(`Eliminando publicación ${id} (simulado)`);
-        return { success: true, id };
+    static async cambiarEstadoVenta(idPublicacion, nuevoEstado) {
+        try {
+            const response = await fetch(`${API_URL}/${idPublicacion}/estado`, {
+                method: 'PATCH',
+                headers: this.getHeaders(),
+                body: JSON.stringify({ estado: nuevoEstado })
+            });
+
+            if (!response.ok) throw new Error('Error al actualizar estado');
+            
+            const data = await response.json();
+            
+            return new Publicacion(data.publicacion);
+
+        } catch (error) {
+            console.error("Error cambiando estado:", error);
+            throw error;
+        }
+    }
+
+    static async eliminarPublicacion(id) {
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE',
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al eliminar la publicación');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error eliminando publicación:", error);
+            throw error;
+        }
     }
 
     static filtrarPorEtiqueta(etiqueta) {

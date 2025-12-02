@@ -38,6 +38,17 @@ export class PerfilComponent extends HTMLElement {
         this.render(); 
     }
 
+    #generarEstrellas(puntaje) {
+        const totalEstrellas = 5;
+        const estrellasLlenas = Math.round(puntaje || 0);
+        let estrellasHTML = '';
+
+        for (let i = 0; i < totalEstrellas; i++) {
+            estrellasHTML += (i < estrellasLlenas) ? '★ ' : '☆ ';
+        }
+        return estrellasHTML.trim();
+    }
+
     render() {
         const shadow = this.shadowRoot;
         if (!this.#usuario) {
@@ -78,8 +89,8 @@ export class PerfilComponent extends HTMLElement {
                     <div class="reseñas-card">
                         <h3>Mi puntaje de reseñas</h3>
                         <div class="rating">
-                            <span class="estrellas">★ ★ ★ ★ ★</span>
-                            <span class="rating-numero">${this.#usuario.rating}</span>
+                            <span class="estrellas">${this.#generarEstrellas(this.#usuario.rating)}</span>
+                            <span class="rating-numero">${this.#usuario.rating ? this.#usuario.rating.toFixed(1) : '0.0'}</span>
                         </div>
                         <p class="total-reseñas">Basado en ${this.#usuario.totalResenias} reseñas</p>
                         <a href="#" class="ver-reseñas" id="verResenias">Ver todas las reseñas</a>

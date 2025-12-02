@@ -7,7 +7,6 @@ class ReseniasController {
     constructor() { }
 
     async crearResenia(req, res, next) {
-        console.log("bro al menosllegamosalcontroller");
         try {
             const idUsuarioReseniado = req.params.id;
             const { idUsuarioCreador, titulo, descripcion, calificacion } = req.body;
@@ -22,7 +21,7 @@ class ReseniasController {
             if (!await usuariosDAO.obtenerUsuarioPorId(idUsuarioReseniado)) {
                 return next(new AppError('No se ha encontrado el usuario que quieres reseñar.', 500));
             }
-            if (idUsuarioCreador === idUsuarioReseniado) {
+            if (idUsuarioCreador == idUsuarioReseniado) {
                 return next(new AppError('No te puedes reseñar a ti mismo.', 400));
             }
 
@@ -112,27 +111,9 @@ class ReseniasController {
                 puntuacion = sumaCalificaciones / resenias.length;
 
                 puntuacion = parseFloat(puntuacion.toFixed(1));
-            } else {
-                return res.status(200).json({
-                    usuario: null,
-                    puntuacion: 0,
-                    resenias: []
-                });
             }
 
-            const respuesta = {
-                usuario: {
-                    id: datosUsuario.id,
-                    nombres: datosUsuario.nombres,
-                    apellidoPaterno: datosUsuario.apellidoPaterno,
-                    apellidoMaterno: datosUsuario.apellidoMaterno,
-                    fotoPerfil: datosUsuario.fotoPerfil,
-                    puntuacion: puntuacion
-                },
-                resenias: resenias
-            };
-
-            res.status(200).json(respuesta);
+            res.status(200).json(resenias);
         } catch (error) {
             next(new AppError('Ocurrió un error al obtener las reseñas', 500));
         }

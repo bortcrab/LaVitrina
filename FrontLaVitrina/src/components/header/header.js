@@ -47,8 +47,8 @@ export class HeaderComponent extends HTMLElement {
                 <div class="user-menu-container">
                     
                     <div class="user-info" id="userInfo">
-                        <span class="user-name">${nombreUsuarioImprimir}</span>
-                        <img src="${avatarUrl}" alt="Perfil" class="user-avatar">
+                        <span class="user-name" id="userNameText">${nombreUsuarioImprimir}</span>
+                        <img src="${avatarUrl}" alt="Perfil" class="user-avatar" id="userAvatarImg">
                     </div>
 
                     <div class="dropdown-menu" id="dropdownMenu">
@@ -83,18 +83,21 @@ export class HeaderComponent extends HTMLElement {
     #actualizarDatosUsuario(shadow, usuarioDatos) {
         const userNameText = shadow.getElementById('userNameText');
         const userAvatarImg = shadow.getElementById('userAvatarImg');
-        const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?img=12';
+        const DEFAULT_AVATAR = './src/assets/imagendefault.png';
 
         if (usuarioDatos) {
-            // Si hay usuario (Login)
-            if (userNameText) userNameText.textContent = usuarioDatos.nombres;
+            const nombreMostrar = usuarioDatos.nombres.length > 20
+                ? usuarioDatos.nombres.slice(0, 20) + "..."
+                : usuarioDatos.nombres;
+
+            if (userNameText) userNameText.textContent = nombreMostrar;
             if (userAvatarImg) userAvatarImg.src = usuarioDatos.fotoPerfil || DEFAULT_AVATAR;
         } else {
-            // Si es null (Logout)
             if (userNameText) userNameText.textContent = 'Invitado';
             if (userAvatarImg) userAvatarImg.src = DEFAULT_AVATAR;
         }
     }
+    
     #setupEventListeners(shadow) {
         const userInfo = shadow.getElementById('userInfo');
         const dropdownMenu = shadow.getElementById('dropdownMenu');

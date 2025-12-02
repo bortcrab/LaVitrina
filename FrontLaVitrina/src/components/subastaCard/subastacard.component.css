@@ -7,7 +7,6 @@
 .subasta-container {
     display: flex;
     flex-direction: column;
-    row-gap: 1rem;
 }
 
 .contador-container {
@@ -15,6 +14,7 @@
     border-radius: 2rem;
     padding: 1.5rem;
     height: fit-content;
+    margin-bottom: 1rem;
 }
 
 .contador-container h2 {
@@ -158,9 +158,28 @@
     padding: 0.5rem 0;
     border-radius: 1rem;
     font-size: 1.3rem;
+    width: 100%;
 }
 
 #btn-realizar-puja:hover {
     background-color: #e25e66;
     cursor: pointer;
+}
+
+#btn-realizar-puja:disabled {
+    background-color: #e25e66;
+    cursor: wait;
+}
+
+.error-message {
+    display: none;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    text-align: center;
+    animation: fadeIn 0.3s;
+    background-color: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
 }

@@ -523,6 +523,28 @@ class PublicacionesController {
         }
     }
 
+    async cambiarEstado(req, res, next) {
+        try {
+            const idPublicacion = req.params.id;
+            const { estado } = req.body;
+
+            if (!estado || !['Disponible', 'Vendido'].includes(estado)) {
+                return next(new AppError("El estado debe ser 'Disponible' o 'Vendido'.", 400));
+            }
+
+            const publicacion = await publicacionesDAO.actualizarEstado(idPublicacion, estado);
+
+            res.status(200).json({
+                status: 'success',
+                message: 'Estado actualizado correctamente',
+                publicacion
+            });
+
+        } catch (error) {
+            next(new AppError('No se pudo actualizar el estado.', 500));
+        }
+    }
+
 }
 
 function formatearRespuestaJSON(publicacionData) {
@@ -553,10 +575,12 @@ function formatearRespuestaJSON(publicacionData) {
         let pujaMayor = 0;
         let cantidadPujas = 0;
 
-        if (publicacionData.Subastum.pujas) {
-            const pujas = Array.of(publicacionData.Subastum.pujas);
-            pujaMayor = pujas[0];
-            cantidadPujas = pujas.length
+        if (publicacionData.Subastum.Pujas) {
+            if (publicacionData.Subastum.Pujas.length > 0) {
+                const pujas = publicacionData.Subastum.Pujas;
+                pujaMayor = pujas[0].monto;
+                cantidadPujas = pujas.length
+            }
         }
         
         respuestaJSON.subastaData = {
