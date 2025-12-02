@@ -70,7 +70,6 @@ body {
     border-radius: 2rem;
     padding: 1.5rem;
     height: fit-content;
-    width: 100%;
     overflow: hidden;
 }
 
@@ -267,5 +266,9 @@ body {
 #carruselImagenes img {
     flex: 0 0 100%; 
     scroll-snap-align: center; 
+    width: 100%;
+}
+
+#subastaInfo {
     width: 100%;
 }
