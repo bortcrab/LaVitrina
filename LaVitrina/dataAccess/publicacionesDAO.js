@@ -82,7 +82,15 @@ class PublicacionesDAO {
             const publicionesObtenidas = await Publicacion.findAll({
                 include: [{
                     model: Subasta,
-                    as: "Subastum"
+                    as: "Subastum",
+                    include: [{
+                        model: Puja,
+                        as: "Pujas",
+                        separate: true,
+                        order: [
+                            ['monto', 'DESC']
+                        ]
+                    }]
                 },
                 {
                     model: Categoria,
