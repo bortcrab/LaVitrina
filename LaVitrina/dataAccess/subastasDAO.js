@@ -1,4 +1,4 @@
-const { Subasta, Publicacion, EtiquetasPublicacion } = require('../models');
+const { Subasta, Publicacion, EtiquetasPublicacion, Puja } = require('../models');
 const publicacionesDAO = require('./publicacionesDAO');
 const etiquetasDAO = require('./etiquetasDAO');
 const imagenesDAO = require('./imagenesDAO');
@@ -110,6 +110,14 @@ class SubastasDAO {
                         model: EtiquetasPublicacion,
                         attributes: ['etiqueta']
                     }]
+                },
+                {
+                    model: Puja,
+                    as: "Pujas",
+                    separate: true,
+                    order: [
+                        ['monto', 'DESC']
+                    ]
                 }]
             });
             return subastaObtenida;

@@ -575,10 +575,12 @@ function formatearRespuestaJSON(publicacionData) {
         let pujaMayor = 0;
         let cantidadPujas = 0;
 
-        if (publicacionData.Subastum.pujas) {
-            const pujas = Array.of(publicacionData.Subastum.pujas);
-            pujaMayor = pujas[0];
-            cantidadPujas = pujas.length
+        if (publicacionData.Subastum.Pujas) {
+            if (publicacionData.Subastum.Pujas.length > 0) {
+                const pujas = publicacionData.Subastum.Pujas;
+                pujaMayor = pujas[0].monto;
+                cantidadPujas = pujas.length
+            }
         }
         
         respuestaJSON.subastaData = {

@@ -133,7 +133,7 @@ class PublicacionesDAO {
                         as: "Pujas",
                         separate: true,
                         order: [
-                            ['monto', 'ASC']
+                            ['monto', 'DESC']
                         ]
                     }]
                 },
