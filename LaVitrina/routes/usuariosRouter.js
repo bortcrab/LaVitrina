@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.post('/', UsuariosController.crearUsuario);
 router.post('/iniciar-sesion', UsuariosController.iniciarSesion);
+router.get('/verificar-telefono', UsuariosController.verificarExistenciaTelefono);
+
 
 router.use(validateJWT);
 
