@@ -146,8 +146,10 @@ export class EditarPublicacionPage extends HTMLElement {
             return;
         }
 
+        this.#actualizarEstadoAgregarImagenes(shadow)
+
         const imagenesContenedor = shadow.getElementById('imagenes-contenedor');
-        const agregarBoton = shadow.querySelector('.agregar');
+        const agregarBoton = shadow.getElementById('agregar-imagenes');
 
         for (const imagenUrl of this.publicacion.imagenes) {
             try {
@@ -173,11 +175,11 @@ export class EditarPublicacionPage extends HTMLElement {
                     if (urlIndex > -1) {
                         this.publicacion.imagenes.splice(urlIndex, 1);
                     }
-
                     imagenesContenedor.removeChild(nuevaImagen);
+                    this.#actualizarEstadoAgregarImagenes(shadow);
                 });
-
-                imagenesContenedor.insertBefore(nuevaImagen, agregarBoton);
+                imagenesContenedor.appendChild(nuevaImagen);
+                this.#actualizarEstadoAgregarImagenes(shadow)
             } catch (error) {
                 console.error("Error al cargar imagen:", error);
             }
@@ -225,7 +227,7 @@ export class EditarPublicacionPage extends HTMLElement {
         <div class="contenedor-main">
             <div class="contenedor">
                 <div class="imagenes" id="imagenes-contenedor">
-                    <label class="agregar">
+                    <label class="agregar" id="agregar-imagenes">
                         <input type="file" id="input-subir-imagen" accept="image/*" multiple hidden required>
                         <div class="contenido">
                             <img class="icono" src='${this.agregarImagenUrl}'>
@@ -235,7 +237,7 @@ export class EditarPublicacionPage extends HTMLElement {
                 </div>
                 <div class="datos">
                     <div class="contenedor-input">
-                        <h1>Crear publicación</h1>
+                        <h1>Editar publicación</h1>
                         <label for="titulo">Título</label>
                         <input type="text" name="titulo" id="titulo" placeholder='ej. "Playera vintage de algodón"' required />
                     </div>
@@ -321,12 +323,27 @@ export class EditarPublicacionPage extends HTMLElement {
         return decimal !== undefined ? `${enteroFormateado}.${decimal}` : enteroFormateado;
     };
 
-
+    #actualizarEstadoAgregarImagenes(shadow) {
+        const agregarImagenesDiv = shadow.getElementById('agregar-imagenes');
+        const cantidad = this.publicacion.imagenes.length;
+        console.log("CANTIDAD: " + cantidad);
+        if (agregarImagenesDiv) {
+            if (cantidad >= 10) {
+                agregarImagenesDiv.className = 'oculto';
+            } else {
+                agregarImagenesDiv.className = 'agregar';
+            }
+        }
+    };
 
     #agregarEventListeners(shadow) {
         const inputSubirImagen = shadow.getElementById('input-subir-imagen');
         const imagenesContenedor = shadow.getElementById('imagenes-contenedor');
-        const agregarBoton = shadow.querySelector('.agregar');
+        const agregarBoton = shadow.getElementById('agregar-imagenes');
+
+
+        // Inicializar estado al cargar el componente
+        this.#actualizarEstadoAgregarImagenes(shadow);
 
         inputSubirImagen.addEventListener('change', async (event) => {
             const files = event.target.files;
@@ -343,7 +360,7 @@ export class EditarPublicacionPage extends HTMLElement {
             }
 
             // Mostrar indicador de carga (opcional)
-            agregarBoton.classList.add('uploading'); // Puedes agregar estilos CSS para esto
+            //agregarBoton.classList.add('uploading'); // Puedes agregar estilos CSS para esto
 
             let imagesToLoad = files.length;
 
@@ -384,10 +401,13 @@ export class EditarPublicacionPage extends HTMLElement {
                         }
 
                         imagenesContenedor.removeChild(nuevaImagen);
+                        // Actualizar visibilidad del área de agregar imágenes
+                        this.#actualizarEstadoAgregarImagenes(shadow);
                     });
 
-                    imagenesContenedor.insertBefore(nuevaImagen, agregarBoton);
-
+                    imagenesContenedor.appendChild(nuevaImagen);
+                    // Actualizar visibilidad del área de agregar imágenes
+                    this.#actualizarEstadoAgregarImagenes(shadow);
                 } catch (error) {
                     console.error(`Error al subir imagen ${file.name}:`, error);
 
@@ -406,7 +426,7 @@ export class EditarPublicacionPage extends HTMLElement {
             }
 
             // Quitar indicador de carga
-            agregarBoton.classList.remove('uploading');
+            //agregarBoton.classList.remove('uploading');
 
             event.target.value = '';
         });

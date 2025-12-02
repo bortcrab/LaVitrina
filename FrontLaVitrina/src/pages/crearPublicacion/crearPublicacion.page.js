@@ -24,7 +24,7 @@ export class CrearPublicacionPage extends HTMLElement {
         <div class="contenedor-main">
             <div class="contenedor">
                 <div class="imagenes" id="imagenes-contenedor">
-                    <label class="agregar">
+                    <label class="agregar" id="agregar-imagenes">
                         <input type="file" id="input-subir-imagen" accept="image/*" multiple hidden required>
                         <div class="contenido">
                             <img class="icono" src='${this.agregarImagenUrl}'>
@@ -92,6 +92,22 @@ export class CrearPublicacionPage extends HTMLElement {
         const imagenesContenedor = shadow.getElementById('imagenes-contenedor');
         const agregarBoton = shadow.querySelector('.agregar');
 
+        const agregarImagenesDiv = shadow.getElementById('agregar-imagenes');
+
+        const actualizarEstadoAgregarImagenes = () => {
+            const cantidad = this.urlsImagenesPublicacion.length;
+            if (agregarImagenesDiv) {
+                if (cantidad >= 10) {
+                    agregarImagenesDiv.className = 'oculto';
+                } else {
+                    agregarImagenesDiv.className = 'agregar';
+                }
+            }
+        };
+
+        // Inicializar estado al cargar el componente
+        actualizarEstadoAgregarImagenes();
+
         inputSubirImagen.addEventListener('change', async (event) => {
             const files = event.target.files;
 
@@ -124,7 +140,7 @@ export class CrearPublicacionPage extends HTMLElement {
                     // Asegúrate de que PublicacionService.subirImagen(file) esté disponible aquí
                     const urlCloudinary = await PublicacionService.subirImagen(file);
 
-                    // 📢 CAMBIO CLAVE: Agregar a las variables locales definidas arriba
+                    // Agregar a las variables locales definidas arriba
                     this.archivosImagenes.push(file);
                     this.urlsImagenesPublicacion.push(urlCloudinary);
 
@@ -142,17 +158,21 @@ export class CrearPublicacionPage extends HTMLElement {
                             this.archivosImagenes.splice(fileIndex, 1);
                         }
 
-                        // 📢 CAMBIO CLAVE: Remover del array local de URLs
+                        // Remover del array local de URLs
                         const urlIndex = this.urlsImagenesPublicacion.indexOf(urlCloudinary);
                         if (urlIndex > -1) {
                             this.urlsImagenesPublicacion.splice(urlIndex, 1);
                         }
 
                         imagenesContenedor.removeChild(nuevaImagen);
+                        // Actualizar visibilidad del área de agregar imágenes
+                        actualizarEstadoAgregarImagenes();
                         console.log("URLs actuales:", this.urlsImagenesPublicacion);
                     });
 
                     imagenesContenedor.insertBefore(nuevaImagen, agregarBoton);
+                    // Actualizar visibilidad después de agregar la imagen
+                    actualizarEstadoAgregarImagenes();
 
                 } catch (error) {
                     console.error(`Error al subir imagen ${file.name}:`, error);
