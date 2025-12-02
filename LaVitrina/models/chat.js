@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.Mensaje, { foreignKey: 'idChat', onDelete: 'CASCADE' });
       this.belongsTo(models.Publicacion, { foreignKey: 'idPublicacion' });
       this.belongsToMany(models.Usuario, { through: models.UsuarioChat, foreignKey: 'idChat' });
-      Chat.belongsToMany(models.Usuario, { through: models.UsuarioChat, foreignKey: 'idChat' });
     }
   }
   Chat.init({

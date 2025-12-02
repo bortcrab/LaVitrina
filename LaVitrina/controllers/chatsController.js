@@ -21,13 +21,13 @@ class ChatController {
                 return next(new AppError('La publicación no existe.', 404));
             }
             const idVendedor = publicacion.idUsuario;
-            
+
             if (idCliente == idVendedor) {
-                 return next(new AppError('No puedes crear un chat contigo mismo.', 400));
+                return next(new AppError('No puedes crear un chat contigo mismo.', 400));
             }
 
             const chatExistente = await ChatDAO.buscarChatExistente(idPublicacion, idCliente, idVendedor);
-            
+
             if (chatExistente) {
                 return res.status(200).json(chatExistente);
             }
@@ -36,13 +36,21 @@ class ChatController {
             const vendedor = await UsuarioDAO.obtenerUsuarioPorId(idVendedor);
 
             if (!cliente || !vendedor) {
-                 return next(new AppError('No se pudo encontrar la información de los usuarios.', 404));
+                return next(new AppError('No se pudo encontrar la información de los usuarios.', 404));
             }
 
-            const nombreChat = `${vendedor.nombres} - ${cliente.nombres} - ${publicacion.titulo}`;
+            const tituloCorto = publicacion.titulo.length > 50
+                ? publicacion.titulo.substring(0, 50) + '...'
+                : publicacion.titulo;
+
+            const nombreChat = `${vendedor.nombres} - ${cliente.nombres} - ${tituloCorto}`;
             const fechaCreacion = new Date();
-            
-            const chat = await ChatDAO.crearChat(nombreChat, fechaCreacion, idPublicacion);
+
+            const nombreFinal = nombreChat.length > 255
+                ? nombreChat.substring(0, 255)
+                : nombreChat;
+
+            const chat = await ChatDAO.crearChat(nombreFinal, fechaCreacion, idPublicacion);
 
             await UsuarioChatsDAO.agregarUsuarioAChat(idCliente, chat.id);
             await UsuarioChatsDAO.agregarUsuarioAChat(idVendedor, chat.id);
@@ -88,27 +96,27 @@ class ChatController {
             const chatsRaw = await ChatDAO.obtenerChatsPorUsuario(idUsuarioActual, limit, offset);
 
             const chatsFormateados = chatsRaw.map(chat => {
-                
+
                 const usuarios = chat.Usuarios || [];
                 const otroUsuario = usuarios.find(u => u.id !== idUsuarioActual);
-                
-                const avatar = otroUsuario && otroUsuario.fotoPerfil 
-                    ? otroUsuario.fotoPerfil 
+
+                const avatar = otroUsuario && otroUsuario.fotoPerfil
+                    ? otroUsuario.fotoPerfil
                     : '/src/assets/imagendefault.png';
-                
-                const nombreOtroUsuario = otroUsuario 
+
+                const nombreOtroUsuario = otroUsuario
                     ? `${otroUsuario.nombres} ${otroUsuario.apellidoPaterno || ''}`.trim()
                     : 'Usuario Desconocido';
 
-                const tituloPublicacion = chat.Publicacion 
-                    ? chat.Publicacion.titulo 
+                const tituloPublicacion = chat.Publicacion
+                    ? chat.Publicacion.titulo
                     : 'Publicación eliminada';
 
                 const nombreMostrar = nombreOtroUsuario;
                 const servicioMostrar = tituloPublicacion;
 
                 let productoImg = '/src/assets/noimage.jpeg';
-                
+
                 if (chat.Publicacion && chat.Publicacion.ImagenesPublicacions && chat.Publicacion.ImagenesPublicacions.length > 0) {
                     productoImg = chat.Publicacion.ImagenesPublicacions[0].url;
                 }
@@ -128,7 +136,7 @@ class ChatController {
                     }
 
                     if (msg.idUsuario !== idUsuarioActual) {
-                        noLeido = true; 
+                        noLeido = true;
                     }
                 }
 
