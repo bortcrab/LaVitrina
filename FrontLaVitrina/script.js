@@ -30,8 +30,11 @@ const originalFetch = window.fetch;
 window.fetch = async function (...args) {
     const response = await originalFetch(...args);
 
-    if (response.status === 401) {
-        console.warn("Detectado 401 en fetch global. Cerrando sesión...");
+    const requestUrl = typeof args[0] === 'string' ? args[0] : args[0].url;
+
+    if (response.status === 401 && !requestUrl.includes('/iniciar-sesion')) {
+        
+        console.warn("Detectado 401 en fetch global (Token expirado). Cerrando sesión...");
         
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
