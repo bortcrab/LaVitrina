@@ -169,22 +169,21 @@ body {
     height: fit-content;
 }
 
-#contentItemCarrusel {
+#carruselImagenes {
     display: flex;              
     overflow-x: auto;           
     scroll-snap-type: x mandatory; 
     scroll-behavior: smooth;
-    margin-top: 1rem;
     height: 30rem;
     width: 100%;
     border-radius: 1rem;
 }
 
-#contentItemCarrusel::-webkit-scrollbar {
+#carruselImagenes::-webkit-scrollbar {
     display: none; 
 }
 
-imagen-item-info {
+#carruselImagenes img {
     flex: 0 0 100%; 
     scroll-snap-align: center; 
     width: 100%;

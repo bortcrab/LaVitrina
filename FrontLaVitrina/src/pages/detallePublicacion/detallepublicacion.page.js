@@ -76,7 +76,7 @@ export class DetallePublicacionPage extends HTMLElement {
                             <h3 id="disponibilidad">${publicacion.estado}</h3>
                             <h4 id="fechaPublicacion">${publicacion.fechaPublicacion}</h4>
                         </div>
-                        <div id="contentItemCarrusel">
+                        <div id="carruselImagenes">
                             ${this.#renderImagenes()}
                         </div>
                         <div class="descripcion-info">
@@ -272,30 +272,8 @@ export class DetallePublicacionPage extends HTMLElement {
             `;
         }
 
-        return this.imagenes.map((imagen, i) => {
-            const idActual = `itemCarrusel-${i}`;
-            const idSiguiente = `#itemCarrusel-${i + 1}`;
-            const idAnterior = `#itemCarrusel-${i - 1}`;
-
-            let atributosExtra = '';
-
-            if (i === 0) {
-                atributosExtra = `imagenSiguiente="${idSiguiente}"`;
-            }
-            else if (i === this.imagenes.length - 1) {
-                atributosExtra = `imagenAnterior="${idAnterior}"`;
-            }
-            else {
-                atributosExtra = `imagenAnterior="${idAnterior}" imagenSiguiente="${idSiguiente}"`;
-            }
-
-            return `
-                <imagen-item-info 
-                    id="${idActual}"
-                    rutaImagen="${imagen}"
-                    ${atributosExtra}
-                ></imagen-item-info>
-            `;
-        }).join('');
+        return this.imagenes.map((imagen) => `
+            <img src="${imagen}" alt="imagen">
+        `).join('');
     }
 }
