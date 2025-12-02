@@ -22,6 +22,24 @@ export class RegistrarPage extends HTMLElement {
 
         if (!registroComponent) return;
 
+        registroComponent.addEventListener('verificar-paso-1', async (e) => {
+            const telefono = e.detail.telefono;
+
+            registroComponent.mostrarError('', false);
+
+            try {
+                await RegistrarService.verificarTelefono(telefono)
+
+                registroComponent.confirmarAvancePaso2();
+
+            } catch (error) {
+                console.error('Teléfono duplicado:', error);
+
+                registroComponent.detenerCargaPaso1();
+
+                registroComponent.mostrarError(error.message, false);
+            }
+        });
         registroComponent.addEventListener('registro-submit', async (e) => {
             const datosRegistro = e.detail;
 
@@ -43,7 +61,7 @@ export class RegistrarPage extends HTMLElement {
                 console.error('Error en registro:', error);
 
                 let tituloError = "Error de Registro";
-                let mensajeUsuario = "Error en el servidor"; 
+                let mensajeUsuario = error.message;
 
                 if (error.message === "IMAGEN_GRANDE") {
                     registroComponent.mostrarError("La imagen es muy pesada (Max 5MB).");

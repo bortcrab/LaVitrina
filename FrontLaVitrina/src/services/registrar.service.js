@@ -52,6 +52,24 @@ export class RegistrarService {
         }
     }
 
+    static async verificarTelefono(telefono) {
+        const response = await fetch(`${API_URL}/verificar-telefono?telefono=${telefono}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status === 409) {
+            throw new Error("El número de teléfono ya se encuentra registrado.");
+        }
+
+        if (!response.ok) {
+            throw new Error("Error al verificar el teléfono. Intenta nuevamente.");
+        }
+        return true;
+    }
+
     static async existeCorreo(correo) {
         const responser = await fetch(`${API_URL}/`)
     }

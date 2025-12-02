@@ -10,6 +10,7 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         this.registrarURL = new URL('../../assets/registrar.png', import.meta.url).href;
         this.registrar2URL = new URL('../../assets/registrar2.png', import.meta.url).href;
         this.debounceTimer = null;
+        this.ciudadSeleccionada = false;
     }
 
     connectedCallback() {
@@ -156,7 +157,13 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         const listaSugerencias = shadow.getElementById('listaSugerencias');
 
         inputCiudad?.addEventListener('input', (e) => {
+            this.ciudadSeleccionada = false;
+
             const termino = e.target.value;
+
+            if (termino === '') {
+                this.mostrarError('', false);
+            }
             this.#manejarBusqueda(termino, listaSugerencias);
         });
 
@@ -222,6 +229,8 @@ export class RegistrarUsuarioComponent extends HTMLElement {
             li.addEventListener('click', () => {
                 const inputCiudad = this.shadowRoot.getElementById('ciudad');
                 inputCiudad.value = nombreCiudad;
+                this.ciudadSeleccionada = true;
+                this.mostrarError('', false)
                 listaUl.style.display = 'none';
             });
 
@@ -240,7 +249,15 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         const telefono = shadow.getElementById('telefono').value.trim();
 
 
+        if (ciudad.length > 0 && !this.ciudadSeleccionada) {
+            this.mostrarError("Debes seleccionar una ciudad válida de la lista sugerida.", false);
+            return;
+        }
 
+        if (!ciudad) {
+            this.mostrarError("El campo ciudad es obligatorio.", false);
+            return;
+        }
 
         const soloLetrasRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
 
@@ -285,15 +302,47 @@ export class RegistrarUsuarioComponent extends HTMLElement {
 
 
 
-
         this.datosRegistro = {
             nombres, apellidoPaterno, apellidoMaterno, ciudad, fechaNacimiento, telefono
         };
 
+        const btn = shadow.querySelector('#formPaso1 button[type="submit"]');
+        if (btn) {
+            btn.dataset.originalText = btn.textContent;
+            btn.textContent = "Verificando...";
+            btn.disabled = true;
+        }
+
+
+        this.dispatchEvent(new CustomEvent('verificar-paso-1', {
+            bubbles: true,
+            composed: true,
+            detail: { telefono: telefono }
+        }));
+
+    }
+
+    confirmarAvancePaso2() {
+        const shadow = this.shadowRoot;
+        this.#restaurarBoton(shadow);
+        this.mostrarError('', false);
         this.pasoActual = 2;
         this.#aplicarTransicion(shadow);
     }
 
+    detenerCargaPaso1() {
+        this.#restaurarBoton(this.shadowRoot);
+    }
+
+
+    #restaurarBoton(shadow) {
+        const btn = shadow.querySelector('#formPaso1 button[type="submit"]');
+        if(btn && btn.dataset.originalText) {
+            btn.textContent = btn.dataset.originalText;
+            btn.disabled = false;
+        }
+    }
+    
     #volverPaso1(shadow) {
         this.pasoActual = 1;
         this.#aplicarTransicion(shadow);
