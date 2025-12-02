@@ -18,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
   Chat.init({
     nombre: DataTypes.STRING,
     fechaCreacion: DataTypes.DATEONLY,
-    idPublicacion: DataTypes.INTEGER
+    idPublicacion: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    }
   }, {
     sequelize,
     modelName: 'Chat',
