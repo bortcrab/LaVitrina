@@ -142,7 +142,9 @@ export class ChatService {
                 fotoPerfil: c.fotoPerfil,
                 productoImg: c.productoImg,
                 noLeido: c.noLeido,
-                fechaOrden: new Date(c.fecha) 
+                fechaOrden: new Date(c.fecha),
+                idOtroUsuario: c.idOtroUsuario,
+                idPublicacion: c.idPublicacion
             }));
 
             return chatsMapeados.sort((a, b) => b.fechaOrden - a.fechaOrden);

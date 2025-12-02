@@ -19,11 +19,13 @@ module.exports = {
       },
       idPublicacion: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: { 
           model: 'Publicaciones',
           key: 'id'
-        }
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE'
       },
       createdAt: {
         allowNull: false,

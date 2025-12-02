@@ -224,7 +224,7 @@
 .form-group input:disabled {
     background-color: #FBFBFB;
     color: #666;
-    cursor: not-allowed;
+    cursor: default; 
 }
 
 .btn-guardar {

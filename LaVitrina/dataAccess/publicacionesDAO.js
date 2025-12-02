@@ -11,6 +11,7 @@ const { Categoria } = require('../models')
 // Importa el modelo de usuarios asociados a publicaciones
 const { Usuario } = require('../models')
 const { Puja } = require('../models')
+const { Chat } = require('../models');
 const etiquetasDAO = require('./etiquetasDAO');
 const imagenesDAO = require('./imagenesDAO');
 // Importa operadores de consulta de Sequelize para búsquedas avanzadas
@@ -452,32 +453,34 @@ class PublicacionesDAO {
      */
     async eliminarPublicacion(idPublicacion) {
         try {
-            //Busca la publicación para eliminarla
             const publicacionObtenida = await Publicacion.findByPk(idPublicacion);
 
-            //Si la publicación no existe, tira una excepción
             if (!publicacionObtenida) {
                 throw new Error('La publicacion no existe.');
             }
 
-            //Elimina las etiquetas asociadas a la publicación
             await EtiquetasPublicacion.destroy({
                 where: {
                     idPublicacion: idPublicacion
                 }
             });
 
-            //Elimina las imágenes asociadas a la publicación
             await ImagenesPublicacion.destroy({
                 where: {
                     idPublicacion: idPublicacion
                 }
             });
 
-            //Elimina la publicación
+            await Subasta.destroy({
+                where: {
+                    id: idPublicacion
+                }
+            });
+
             await publicacionObtenida.destroy();
             return 'Publicacion eliminada con exito.';
         } catch (error) {
+            console.error("Error en DAO eliminarPublicacion:", error); 
             throw error;
         }
     }

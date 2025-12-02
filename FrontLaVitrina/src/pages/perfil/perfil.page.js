@@ -9,21 +9,41 @@ export class PerfilPage extends HTMLElement {
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
         
+        const token = localStorage.getItem('token');
+        const usuarioStorage = localStorage.getItem('usuario');
+
+        if (!token || !usuarioStorage) {
+            console.warn("Acceso denegado: No hay sesión activa.");
+            this.#redirigirAlLogin();
+            return;
+        }
+
         try {
-            const usuarioStorage = localStorage.getItem('usuario');
-            if (!usuarioStorage) throw new Error("No hay sesión activa");
-            
             const usuarioSesion = JSON.parse(usuarioStorage);
-            if (!usuarioSesion || !usuarioSesion.id) throw new Error("Datos de sesión inválidos");
+            
+            if (!usuarioSesion || !usuarioSesion.id) {
+                throw new Error("Datos de sesión corruptos");
+            }
 
             this.usuarioId = usuarioSesion.id;
+
             this.#render(shadow);
             this.#inicializarDatos(shadow);
             this.#agregarEventListeners(shadow);
 
         } catch (error) {
-            console.warn("Error de sesión:", error.message);
-            if(window.page) page('/iniciar-sesion');
+            console.error("Error crítico en perfil:", error.message);
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            this.#redirigirAlLogin();
+        }
+    }
+
+    #redirigirAlLogin() {
+        if (window.page) {
+            page('/iniciar-sesion');
+        } else {
+            window.location.href = '/iniciar-sesion';
         }
     }
 
@@ -43,10 +63,13 @@ export class PerfilPage extends HTMLElement {
         } catch (error) {
             console.error('Error al cargar perfil:', error);
             
-            if(error.message === 'Sesión expirada') {
+            if(error.message === 'Sesión expirada' || error.message.includes('401')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                
                 this.#mostrarError(shadow, 
                     "Sesión expirada", 
-                    "Tu sesión ha caducado, por favor ingresa nuevamente.", 
+                    "Tu sesión ha caducado por seguridad. Por favor ingresa nuevamente.", 
                     "Ir a Iniciar Sesión",
                     () => page('/iniciar-sesion')
                 );
@@ -81,7 +104,9 @@ export class PerfilPage extends HTMLElement {
         `;
 
         const errorComp = shadow.getElementById('errorComp');
-        errorComp.addEventListener('retry-click', callback);
+        if(errorComp) {
+            errorComp.addEventListener('retry-click', callback);
+        }
     }
 
     #agregarEventListeners(shadow) {
@@ -118,31 +143,39 @@ export class PerfilPage extends HTMLElement {
                 const usuarioActualizado = await UsuariosService.actualizarUsuario(this.usuarioId, datosParaBackend);
                 
                 perfilComponent.usuario = usuarioActualizado;
-                
+
                 const usuarioSesion = JSON.parse(localStorage.getItem('usuario'));
                 if(usuarioSesion) {
                     usuarioSesion.nombres = usuarioActualizado.nombres;
+                    if(usuarioActualizado.fotoPerfil) usuarioSesion.fotoPerfil = usuarioActualizado.fotoPerfil;
+                    
                     localStorage.setItem('usuario', JSON.stringify(usuarioSesion));
                 }
 
                 perfilComponent.finalizarEdicion();
+                
+                window.dispatchEvent(new CustomEvent('loginSuccess', {
+                    detail: { usuario: usuarioActualizado }
+                }));
 
             } catch (error) {
                 console.error('Error al actualizar:', error);
                 
-                let titulo = "Ocurrió un problema inesperado. Por favor inténtalo de nuevo.";
+                let titulo = "Ocurrió un problema inesperado.";
                 let mensaje = "Por favor inténtalo nuevamente.";
 
                 if (error.message === "IMAGEN_GRANDE") {
-                    titulo = "La imagen seleccionada pesa más de 5MB. Por favor elige una más ligera.";
+                    titulo = "Imagen demasiado pesada";
+                    mensaje = "La imagen seleccionada pesa más de 5MB. Por favor elige una más ligera.";
                 } else if (error.message === "ERROR_SUBIDA_IMAGEN") {
-                    titulo = "No pudimos subir tu foto de perfil, inténtalo de nuevo.";
-                } else if (error.message.includes("fetch") || error.message.includes("Network")) {
-                    titulo = "Parece que no tienes internet o el servidor no responde, inténtalo de nuevo más tarde.";
+                    titulo = "Error de subida";
+                    mensaje = "No pudimos subir tu foto de perfil, verifica tu conexión.";
                 } else if (error.message.includes("correo")) {
-                    titulo = "Este correo electrónico se encuentra en uso, ingresa uno diferente o inicia sesión.";
+                    titulo = "Correo no disponible";
+                    mensaje = "Este correo electrónico ya se encuentra registrado por otro usuario.";
                 } else if (error.message.includes("telefono")) {
-                    titulo = "Este número de teléfono se encuentra en uso, ingresa uno diferente o inicia sesión.";
+                    titulo = "Teléfono no disponible";
+                    mensaje = "Este número de teléfono ya se encuentra registrado por otro usuario.";
                 }
 
                 perfilComponent.mostrarError(titulo, mensaje);
