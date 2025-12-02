@@ -17,20 +17,28 @@ export class DetallePublicacionPage extends HTMLElement {
         const publicacion = await PublicacionService.obtenerPublicacion(id);
         const datosFecha = publicacion.fechaPublicacion.split('-');
         publicacion.fechaPublicacion = datosFecha[0] + '/' + datosFecha[1] + '/' + datosFecha[2];
-        console.log("PUBLICACION DETALLE: " + JSON.stringify(publicacion, null, 2));
+        publicacion.precioMostrar = publicacion.precio;
+
+        if (publicacion.tipo === 'Subasta') {
+            SubastasService.initSocket();
+            SubastasService.unirseSubasta(id);
+
+            (parseInt(publicacion.precio) < parseInt(publicacion.subastaData.pujaMayor)) ? publicacion.precioMostrar = publicacion.subastaData.pujaMayor : publicacion.precioMostrar = publicacion.precio;
+        }
 
         this.#agregaEstilo(shadow);
 
         if (publicacion) {
-            this.#render(shadow, publicacion);
+            let usuarioStorage = localStorage.getItem('usuario');
+            usuarioStorage = JSON.parse(usuarioStorage);
+            this.#render(shadow, publicacion, usuarioStorage);
         } else {
             shadow.innerHTML = "<h2>publicacion no encontrada.</h2>";
         }
 
-        SubastasService.initSocket();
-        SubastasService.unirseSubasta(id);
+
         this.#inicializar(shadow);
-        this.#agregarEventListeners(shadow, publicacion.usuario.id);
+        this.#agregarEventListeners(shadow, publicacion);
     }
 
     async #inicializar(shadow) {
@@ -48,7 +56,7 @@ export class DetallePublicacionPage extends HTMLElement {
         }
     }
 
-    #render(shadow, publicacion) {
+    #render(shadow, publicacion, usuarioStorage) {
         shadow.innerHTML += `
             <div class="modal-overlay" id="modalError" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
                 <error-message-info 
@@ -70,7 +78,7 @@ export class DetallePublicacionPage extends HTMLElement {
                         <img src="${publicacion.imagen}" alt="">
                         <div class="descripcion-info">
                             <h3>Descripción</h3>
-                            <h3 id="precio">$ ${publicacion.precio}.00</h3>
+                            <h3 id="precio">${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(publicacion.precioMostrar)}</h3>
                         </div>
                         <p id="descripcion">
                             ${publicacion.descripcion}
@@ -102,6 +110,15 @@ export class DetallePublicacionPage extends HTMLElement {
                 </div>
             </div>
 		`;
+
+        const subastaComponent = shadow.getElementById('subastaInfo');
+        if (subastaComponent) {
+            const pujaCard = subastaComponent.shadowRoot.getElementById('puja-card');
+            
+            if (publicacion.usuario.id == usuarioStorage.id) {
+                pujaCard.style.display = 'none';
+            }
+        }
     }
 
     #mostrarError(shadow, titulo, mensaje) {
@@ -121,7 +138,7 @@ export class DetallePublicacionPage extends HTMLElement {
         componenteError.addEventListener('retry-click', cerrar);
     }
 
-    #agregarEventListeners(shadow, idUsuario) {
+    #agregarEventListeners(shadow, publicacion) {
         const btnEnviarMensaje = shadow.getElementById('btn-enviar-mensaje');
         const idPublicacion = this.getAttribute('id');
         const linkPerfil = shadow.getElementById('link-perfil');
@@ -149,45 +166,83 @@ export class DetallePublicacionPage extends HTMLElement {
 
         if (linkPerfil) {
             linkPerfil.addEventListener('click', async (e) => {
-                if (window.page) page(`/resenias/${idUsuario}`);
+                if (window.page) page(`/resenias/${publicacion.usuario.id}`);
             });
         }
+
         const subastaComponent = shadow.getElementById('subastaInfo');
 
-        const btnRealizarPuja = subastaComponent.shadowRoot.getElementById('btn-realizar-puja');
+        if (subastaComponent) {
+            const btnRealizarPuja = subastaComponent.shadowRoot.getElementById('btn-realizar-puja');
 
-        btnRealizarPuja.addEventListener('click', async (e) => {
-            e.preventDefault();
+            btnRealizarPuja.addEventListener('click', async (e) => {
+                const puja = subastaComponent.shadowRoot.getElementById('puja');
 
-            btnRealizarPuja.disabled = true;
-            btnRealizarPuja.textContent = 'Realizando puja...';
+                e.preventDefault();
 
-            try {
-                const usuarioStorage = localStorage.getItem('usuario');
-                const usuario = JSON.parse(usuarioStorage);
+                if (publicacion.subastaData.pujaMayor) {
+                    if (parseInt(puja.value) >= (parseInt(publicacion.subastaData.pujaMayor) + 10)) {
+                        btnRealizarPuja.disabled = true;
+                        btnRealizarPuja.textContent = 'Realizando puja...';
 
-                const pujaField = subastaComponent.shadowRoot.getElementById('puja');
-                const monto = parseInt(pujaField.value);
-                const fechaPuja = new Date();
+                        try {
+                            const usuarioStorage = localStorage.getItem('usuario');
+                            const usuario = JSON.parse(usuarioStorage);
 
-                pujaField.value = '';
+                            const monto = parseInt(puja.value);
+                            const fechaPuja = new Date();
 
-                const pujaData = {
-                    monto,
-                    fechaPuja,
-                    idUsuario: usuario.id
+                            puja.value = '';
+
+                            const pujaData = {
+                                monto,
+                                fechaPuja,
+                                idUsuario: usuario.id
+                            }
+
+                            await SubastasService.realizarPuja(idPublicacion, pujaData);
+                        } catch (error) {
+                            console.error(error);
+                            this.#mostrarError(shadow, "No se pudo realizar la puja", error.message);
+                            btnRealizarPuja.disabled = false;
+                            btnRealizarPuja.textContent = "Realizar";
+                        }
+                    } else {
+                        subastaComponent.mostrarError('Debes cumplir con el monto mínimo.');
+                    }
+                } else {
+                    if (parseInt(puja.value) >= (parseInt(publicacion.precio) + 10)) {
+                        btnRealizarPuja.disabled = true;
+                        btnRealizarPuja.textContent = 'Realizando puja...';
+
+                        try {
+                            const usuarioStorage = localStorage.getItem('usuario');
+                            const usuario = JSON.parse(usuarioStorage);
+
+                            const monto = parseInt(puja.value);
+                            const fechaPuja = new Date();
+
+                            puja.value = '';
+
+                            const pujaData = {
+                                monto,
+                                fechaPuja,
+                                idUsuario: usuario.id
+                            }
+
+                            await SubastasService.realizarPuja(idPublicacion, pujaData);
+                        } catch (error) {
+                            console.error(error);
+                            this.#mostrarError(shadow, "No se pudo realizar la puja", error.message);
+                            btnRealizarPuja.disabled = false;
+                            btnRealizarPuja.textContent = "Realizar";
+                        }
+                    } else {
+                        subastaComponent.mostrarError('Debes cumplir con el monto mínimo.');
+                    }
                 }
-
-                console.log(pujaData)
-
-                await SubastasService.realizarPuja(idPublicacion, pujaData);
-            } catch (error) {
-                console.error(error);
-                this.#mostrarError(shadow, "No se pudo realizar la puja", error.message);
-                btnRealizarPuja.disabled = false;
-                btnRealizarPuja.textContent = "Realizar";
-            }
-        });
+            });
+        }
     }
 
     #agregaEstilo(shadow) {
@@ -198,7 +253,10 @@ export class DetallePublicacionPage extends HTMLElement {
     }
 
     #manejarNuevaPuja(shadow, nuevaPuja) {
+        const precio = shadow.getElementById('precio');
         const subastaComponent = shadow.getElementById('subastaInfo');
+
+        precio.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(nuevaPuja.pujaMayor);
         subastaComponent.actualizarOferta(nuevaPuja);
     }
 }

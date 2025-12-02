@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const MensajesDAO = require('../dataAccess/mensajesDAO.js');
 const pujasDAO = require('../dataAccess/pujasDAO.js');
+const publicacionesDAO = require('../dataAccess/publicacionesDAO.js');
+const subastasDAO = require('../dataAccess/subastasDAO.js');
 
 class SocketController {
     constructor(io) {
@@ -77,7 +79,18 @@ class SocketController {
             pujaData.idSubasta = idSubasta;
 
             const puja = await pujasDAO.crearPuja(pujaData);
-            this.io.to(`subasta_${idSubasta}`).emit('nueva_puja', puja.toJSON());
+
+            const subasta = await subastasDAO.obtenerSubastaPorId(idSubasta);
+
+            console.log(subasta);
+
+            const datosPuja = {
+                monto: puja.monto,
+                cantidadPujas: subasta.Pujas.length,
+                pujaMayor: subasta.Pujas[0].monto
+            } 
+
+            this.io.to(`subasta_${idSubasta}`).emit('nueva_puja', datosPuja);
         } catch (error) {
             console.log('Error en socket controller:', error);
             socket.emit('error_mensaje', { error: 'No se pudo realizar la puja.' })

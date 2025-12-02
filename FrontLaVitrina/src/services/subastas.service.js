@@ -43,8 +43,13 @@ export class SubastasService {
         this.socket.on('nueva_puja', (pujaBackend) => {
             console.log('SI ESCUCHÉ LA PUJA BRO');
             const pujaFormateada = {
-                monto: pujaBackend.monto
+                monto: pujaBackend.monto,
+                cantidadPujas: pujaBackend.cantidadPujas,
+                pujaMayor: pujaBackend.pujaMayor
             };
+
+            console.log(pujaFormateada);
+
             callback(pujaFormateada);
         });
     }
