@@ -15,6 +15,7 @@ export class DetallePublicacionPage extends HTMLElement {
         const id = this.getAttribute('id');
 
         const publicacion = await PublicacionService.obtenerPublicacion(id);
+        this.imagenes = publicacion.imagenes;
         const datosFecha = publicacion.fechaPublicacion.split('-');
         publicacion.fechaPublicacion = datosFecha[0] + '/' + datosFecha[1] + '/' + datosFecha[2];
         publicacion.precioMostrar = publicacion.precio;
@@ -75,7 +76,9 @@ export class DetallePublicacionPage extends HTMLElement {
                             <h3 id="disponibilidad">${publicacion.estado}</h3>
                             <h4 id="fechaPublicacion">${publicacion.fechaPublicacion}</h4>
                         </div>
-                        <img src="${publicacion.imagen}" alt="">
+                        <div id="contentItemCarrusel">
+                            ${this.#renderImagenes()}
+                        </div>
                         <div class="descripcion-info">
                             <h3>Descripción</h3>
                             <h3 id="precio">${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(publicacion.precioMostrar)}</h3>
@@ -114,7 +117,7 @@ export class DetallePublicacionPage extends HTMLElement {
         const subastaComponent = shadow.getElementById('subastaInfo');
         if (subastaComponent) {
             const pujaCard = subastaComponent.shadowRoot.getElementById('puja-card');
-            
+
             if (publicacion.usuario.id == usuarioStorage.id) {
                 pujaCard.style.display = 'none';
             }
@@ -258,5 +261,41 @@ export class DetallePublicacionPage extends HTMLElement {
 
         precio.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(nuevaPuja.pujaMayor);
         subastaComponent.actualizarOferta(nuevaPuja);
+    }
+
+    #renderImagenes() {
+        if (this.imagenes.length === 0) {
+            return `
+                <div class="no-results">
+                    <p>No se encontraron imágenes.</p>
+                </div>
+            `;
+        }
+
+        return this.imagenes.map((imagen, i) => {
+            const idActual = `itemCarrusel-${i}`;
+            const idSiguiente = `#itemCarrusel-${i + 1}`;
+            const idAnterior = `#itemCarrusel-${i - 1}`;
+
+            let atributosExtra = '';
+
+            if (i === 0) {
+                atributosExtra = `imagenSiguiente="${idSiguiente}"`;
+            }
+            else if (i === this.imagenes.length - 1) {
+                atributosExtra = `imagenAnterior="${idAnterior}"`;
+            }
+            else {
+                atributosExtra = `imagenAnterior="${idAnterior}" imagenSiguiente="${idSiguiente}"`;
+            }
+
+            return `
+                <imagen-item-info 
+                    id="${idActual}"
+                    rutaImagen="${imagen}"
+                    ${atributosExtra}
+                ></imagen-item-info>
+            `;
+        }).join('');
     }
 }

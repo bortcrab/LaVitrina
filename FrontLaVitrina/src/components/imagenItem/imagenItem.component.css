@@ -5,7 +5,8 @@
 }
 
 .itemCarrusel {
-    height: 200px;
+    height: 100%;
+    width: 100%;
     position: relative;
 }
 
@@ -27,7 +28,9 @@
 }
 
 #contentItemCarrusel {
-    height: 200px;
+    height: 400px;
+    width: 400px;
+    border-radius: 1rem;
     overflow: hidden;
 }
 
