@@ -31,6 +31,7 @@ body {
     padding: 1.5rem;
     width: 100%;
     height: auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 .publicacion-container img {
@@ -70,6 +71,7 @@ body {
     padding: 1.5rem;
     height: fit-content;
     width: 100%;
+    overflow: hidden;
 }
 
 .resenias {
@@ -169,18 +171,97 @@ body {
     height: fit-content;
 }
 
-#carruselImagenes {
-    display: flex;              
-    overflow-x: auto;           
-    scroll-snap-type: x mandatory; 
-    scroll-behavior: smooth;
-    height: 30rem;
+.carousel-wrapper {
+    position: relative;
     width: 100%;
-    border-radius: 1rem;
+    height: 400px;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    background-color: #f4f4f4;
+    margin-bottom: 1rem;
 }
 
-#carruselImagenes::-webkit-scrollbar {
-    display: none; 
+.carousel-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 0;
+    margin: 0;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: #E62634;
+    transition: background-color 0.3s;
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.carousel-btn:hover {
+    background-color: white;
+}
+
+.carousel-btn.prev { left: 15px; }
+.carousel-btn.next { right: 15px; }
+
+.carousel-dots {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dot.active {
+    background-color: #E62634;
+    transform: scale(1.2);
 }
 
 #carruselImagenes img {

@@ -40,6 +40,7 @@ export class DetallePublicacionPage extends HTMLElement {
 
         this.#inicializar(shadow);
         this.#agregarEventListeners(shadow, publicacion);
+        this.#setupCarousel(shadow);
     }
 
     async #inicializar(shadow) {
@@ -76,8 +77,18 @@ export class DetallePublicacionPage extends HTMLElement {
                             <h3 id="disponibilidad">${publicacion.estado}</h3>
                             <h4 id="fechaPublicacion">${publicacion.fechaPublicacion}</h4>
                         </div>
-                        <div id="carruselImagenes">
-                            ${this.#renderImagenes()}
+                        <div class="carousel-wrapper">
+                            ${this.imagenes.length > 1 ? '<button class="carousel-btn prev" id="btnPrev">❮</button>' : ''}
+                            
+                            <div class="carousel-track" id="carouselTrack">
+                                ${this.#renderImagenes()}
+                            </div>
+                            
+                            ${this.imagenes.length > 1 ? '<button class="carousel-btn next" id="btnNext">❯</button>' : ''}
+                            
+                            ${this.imagenes.length > 1 ? `<div class="carousel-dots" id="carouselDots">
+                                ${this.imagenes.map((_, i) => `<span class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`).join('')}
+                            </div>` : ''}
                         </div>
                         <div class="descripcion-info">
                             <h3>Descripción</h3>
@@ -122,6 +133,62 @@ export class DetallePublicacionPage extends HTMLElement {
                 pujaCard.style.display = 'none';
             }
         }
+    }
+
+    #renderImagenes() {
+        if (this.imagenes.length === 0) {
+            return `
+                <div class="carousel-slide">
+                    <img src="./src/assets/noimage.jpeg" alt="Sin imagen">
+                </div>
+            `;
+        }
+        return this.imagenes.map(imgUrl => `
+            <div class="carousel-slide">
+                <img src="${imgUrl}" alt="Imagen producto">
+            </div>
+        `).join('');
+    }
+
+    #setupCarousel(shadow) {
+        if (this.imagenes.length <= 1) return;
+
+        const track = shadow.getElementById('carouselTrack');
+        const btnPrev = shadow.getElementById('btnPrev');
+        const btnNext = shadow.getElementById('btnNext');
+        const dots = shadow.querySelectorAll('.dot');
+
+        if (!track) return;
+
+        const scrollAmount = () => track.clientWidth;
+
+        if(btnNext) {
+            btnNext.onclick = () => {
+                track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+            };
+        }
+
+        if(btnPrev) {
+            btnPrev.onclick = () => {
+                track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+            };
+        }
+
+        dots.forEach((dot, index) => {
+            dot.onclick = () => {
+                const width = track.clientWidth;
+                track.scrollTo({ left: width * index, behavior: 'smooth' });
+            };
+        });
+
+        track.addEventListener('scroll', () => {
+            const width = track.clientWidth;
+            const scrollPos = track.scrollLeft;
+            const index = Math.round(scrollPos / width);
+
+            dots.forEach(d => d.classList.remove('active'));
+            if(dots[index]) dots[index].classList.add('active');
+        });
     }
 
     #mostrarError(shadow, titulo, mensaje) {
@@ -261,19 +328,5 @@ export class DetallePublicacionPage extends HTMLElement {
 
         precio.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(nuevaPuja.pujaMayor);
         subastaComponent.actualizarOferta(nuevaPuja);
-    }
-
-    #renderImagenes() {
-        if (this.imagenes.length === 0) {
-            return `
-                <div class="no-results">
-                    <p>No se encontraron imágenes.</p>
-                </div>
-            `;
-        }
-
-        return this.imagenes.map((imagen) => `
-            <img src="${imagen}" alt="imagen">
-        `).join('');
     }
 }
