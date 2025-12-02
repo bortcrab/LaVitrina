@@ -167,7 +167,6 @@ export class CrearPublicacionPage extends HTMLElement {
                         imagenesContenedor.removeChild(nuevaImagen);
                         // Actualizar visibilidad del área de agregar imágenes
                         actualizarEstadoAgregarImagenes();
-                        console.log("URLs actuales:", this.urlsImagenesPublicacion);
                     });
 
                     imagenesContenedor.insertBefore(nuevaImagen, agregarBoton);
