@@ -108,6 +108,9 @@ class PublicacionesDAO {
                     model: EtiquetasPublicacion,
                     as: "EtiquetasPublicacions"
                 }
+                ], 
+                order:[
+                    ["fechaPublicacion", "DESC"] 
                 ],
                 limit: 20,
                 offset
@@ -488,7 +491,7 @@ class PublicacionesDAO {
             await publicacionObtenida.destroy();
             return 'Publicacion eliminada con exito.';
         } catch (error) {
-            console.error("Error en DAO eliminarPublicacion:", error); 
+            console.error("Error en DAO eliminarPublicacion:", error);
             throw error;
         }
     }
@@ -496,13 +499,13 @@ class PublicacionesDAO {
     async actualizarEstado(idPublicacion, nuevoEstado) {
         try {
             const publicacion = await Publicacion.findByPk(idPublicacion);
-            
+
             if (!publicacion) {
                 throw new Error('La publicación no existe.');
             }
 
             publicacion.estado = nuevoEstado;
-            
+
             await publicacion.save();
             return publicacion;
 
