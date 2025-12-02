@@ -25,6 +25,24 @@ import { AgregarReseniaPage } from "./src/pages/agregarResenia/agregarResenia.pa
 import { MisPublicacionesPage } from './src/pages/misPublicaciones/misPublicaciones.page.js';
 import { ReseniasPage } from "./src/pages/resenias/resenias.page.js";
 import { DetallePublicacionPage } from "./src/pages/detallePublicacion/detallepublicacion.page.js";
+const originalFetch = window.fetch;
+
+window.fetch = async function (...args) {
+    const response = await originalFetch(...args);
+
+    if (response.status === 401) {
+        console.warn("Detectado 401 en fetch global. Cerrando sesión...");
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        
+        window.location.href = '/iniciar-sesion';
+        
+        return Promise.reject("Sesión expirada");
+    }
+
+    return response;
+};
 
 //definir componentes
 window.customElements.define('sidebar-info', SidebarComponent);
@@ -80,7 +98,6 @@ function esTokenValido(token) {
         return false;
     }
 }
-
 function verificarSesion(ctx, next) {
     const token = localStorage.getItem('token');
 
@@ -90,20 +107,23 @@ function verificarSesion(ctx, next) {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
 
-        page.redirect('/iniciar-sesion');
-    } else {
-        next();
+        return page.redirect('/iniciar-sesion'); 
     }
+
+    next();
 }
+
 
 function redirigirSiEstaLogueado(ctx, next) {
     const token = localStorage.getItem('token');
-    if (token) {
-        page.redirect('/home-page');
-    } else {
-        next();
+
+    if (token && esTokenValido(token)) {
+        return page.redirect('/home-page'); 
     }
+
+    next();
 }
+
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -174,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showContent('registrar-page');
     });
 
-    page('*', () => {
+    page('*', redirigirSiEstaLogueado, () => {
         toggleNav(false);
         showContent('iniciar-sesion-page');
     });

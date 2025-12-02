@@ -54,6 +54,28 @@ class UsuariosController {
         }
     }
 
+    static async verificarExistenciaTelefono(req, res, next) {
+        try {
+            const { telefono } = req.query; 
+
+            if (!telefono) {
+                return next(new AppError('El parámetro teléfono es requerido', 400));
+            }
+
+            const usuario = await UsuarioDAO.obtenerUsuarioPorTelefono(telefono);
+
+            if (usuario) {
+                return next(new AppError('El número de teléfono ya se encuentra registrado.', 409));
+            }
+
+            res.status(200).json({ message: 'El teléfono está disponible.' });
+
+        } catch (error) {
+            next(new AppError('Error al verificar el teléfono', 500));
+        }
+    }
+
+    
     static async obtenerUsuarioPorId(req, res, next) {
         try {
             const id = req.params.id;
