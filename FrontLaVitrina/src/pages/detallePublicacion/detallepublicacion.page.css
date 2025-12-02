@@ -30,6 +30,7 @@ body {
     border-radius: 2rem;
     padding: 1.5rem;
     width: 100%;
+    height: auto;
 }
 
 .publicacion-container img {
@@ -146,6 +147,7 @@ body {
 
 .user-data a {
     color: black;
+    text-decoration: none;
 }
 
 .user-data a:hover {
@@ -164,63 +166,26 @@ body {
     flex-direction: column;
     align-items: center;
     width: 56%;
-}
-
-/* CSS para el carrusel de imágenes */
-.itemCarrusel {
-    height: 200px;
-    position: relative;
-}
-
-.tarjetaCarrusel {
-    height: 100%;
-
-}
-
-.flechasCarrusel {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 30px 0px;
+    height: fit-content;
 }
 
 #contentItemCarrusel {
-    height: 200px;
-    overflow: hidden;
+    display: flex;              
+    overflow-x: auto;           
+    scroll-snap-type: x mandatory; 
+    scroll-behavior: smooth;
+    margin-top: 1rem;
+    height: 30rem;
+    width: 100%;
+    border-radius: 1rem;
 }
 
-#tarjetaCarrusel-1 {
-    background-color: purple;
+#contentItemCarrusel::-webkit-scrollbar {
+    display: none; 
 }
 
-#tarjetaCarrusel-2 {
-    background-color: purple;
-}
-
-#tarjetaCarrusel-3 {
-    background-color: purple;
-}
-
-a {
-    text-decoration: none;
-}
-
-i {
-    color: white;
-}
-
-#contePuntos {
-    background-color: white;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-#contePuntos a {
-    font-size: 1.5em;
-    font-style: none;
-    color: rgb(24, 24, 24);
+imagen-item-info {
+    flex: 0 0 100%; 
+    scroll-snap-align: center; 
+    width: 100%;
 }
