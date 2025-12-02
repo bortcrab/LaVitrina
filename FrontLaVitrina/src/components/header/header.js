@@ -12,9 +12,9 @@ export class HeaderComponent extends HTMLElement {
             console.log("Header detectó login, actualizando...");
             this.#actualizarDatosUsuario(shadow, e.detail.usuario);
         });
-        
+
         window.addEventListener('logout', () => {
-             this.#actualizarDatosUsuario(shadow, null);
+            this.#actualizarDatosUsuario(shadow, null);
         });
     }
 
@@ -31,6 +31,12 @@ export class HeaderComponent extends HTMLElement {
             : DEFAULT_AVATAR;
 
 
+
+        const nombreUsuarioImprimir = usuario.nombres.length > 20
+            ? usuario.nombres.slice(0, 20) + "..."
+            : usuario.nombres;
+
+
         shadow.innerHTML += `
         <header class="main-header">
                 <div class="search-bar">
@@ -41,7 +47,7 @@ export class HeaderComponent extends HTMLElement {
                 <div class="user-menu-container">
                     
                     <div class="user-info" id="userInfo">
-                        <span class="user-name">${usuario.nombres}</span>
+                        <span class="user-name">${nombreUsuarioImprimir}</span>
                         <img src="${avatarUrl}" alt="Perfil" class="user-avatar">
                     </div>
 
@@ -81,12 +87,12 @@ export class HeaderComponent extends HTMLElement {
 
         if (usuarioDatos) {
             // Si hay usuario (Login)
-            if(userNameText) userNameText.textContent = usuarioDatos.nombres;
-            if(userAvatarImg) userAvatarImg.src = usuarioDatos.fotoPerfil || DEFAULT_AVATAR;
+            if (userNameText) userNameText.textContent = usuarioDatos.nombres;
+            if (userAvatarImg) userAvatarImg.src = usuarioDatos.fotoPerfil || DEFAULT_AVATAR;
         } else {
             // Si es null (Logout)
-            if(userNameText) userNameText.textContent = 'Invitado';
-            if(userAvatarImg) userAvatarImg.src = DEFAULT_AVATAR;
+            if (userNameText) userNameText.textContent = 'Invitado';
+            if (userAvatarImg) userAvatarImg.src = DEFAULT_AVATAR;
         }
     }
     #setupEventListeners(shadow) {
@@ -103,10 +109,10 @@ export class HeaderComponent extends HTMLElement {
                 localStorage.removeItem('token');
                 localStorage.removeItem('usuario');
                 dropdownMenu.classList.remove('active');
-                
+
                 console.log('Sesión cerrada correctamente');
-                
-                window.dispatchEvent(new CustomEvent('logout')); 
+
+                window.dispatchEvent(new CustomEvent('logout'));
 
                 if (window.page) page('/iniciar-sesion');
                 else window.location.href = '/iniciar-sesion';

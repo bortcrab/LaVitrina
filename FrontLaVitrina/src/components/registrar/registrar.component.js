@@ -62,7 +62,7 @@ export class RegistrarUsuarioComponent extends HTMLElement {
                             <label>Número de celular</label>
                             <input type="tel" id="telefono" maxlength="10" placeholder="###-###-####" required>
                         </div>
-
+                        <div class="error-message" id="errorMessageDatos"></div>
                         <button type="submit">Siguiente</button>
                     </form>
 
@@ -232,14 +232,64 @@ export class RegistrarUsuarioComponent extends HTMLElement {
     }
 
     #avanzarPaso2(shadow) {
+        const nombres = shadow.getElementById('nombres').value.trim();
+        const apellidoPaterno = shadow.getElementById('apellidoPaterno').value.trim();
+        const apellidoMaterno = shadow.getElementById('apellidoMaterno').value.trim();
+        const ciudad = shadow.getElementById('ciudad').value;
+        const fechaNacimiento = shadow.getElementById('fechaNacimiento').value;
+        const telefono = shadow.getElementById('telefono').value.trim();
+
+
+
+
+        const soloLetrasRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
+        const inputsTexto = ['nombres', 'apellidoPaterno', 'apellidoMaterno'];
+        for (const id of inputsTexto) {
+            const input = shadow.getElementById(id);
+            if (!soloLetrasRegex.test(input.value.trim())) {
+                console.log("error en " + id)
+                this.mostrarError(`Los nombres y apellidos solo deben contener letras y espacios.`, false);
+                return;
+            }
+        }
+
+        if (!fechaNacimiento) {
+            this.mostrarError("La fecha de nacimiento es requerida.", false);
+            return;
+        }
+
+        const [anioNac, mesNac, diaNac] = fechaNacimiento.split('-').map(Number);
+        const hoy = new Date();
+        const anioActual = hoy.getFullYear();
+        const mesActual = hoy.getMonth() + 1;
+        const diaActual = hoy.getDate();
+
+        let edad = anioActual - anioNac;
+
+        if (mesActual < mesNac || (mesActual === mesNac && diaActual < diaNac)) {
+            edad--;
+        }
+
+        if (edad < 15) {
+            this.mostrarError("Debes tener al menos 15 años para registrarte.", false);
+            return;
+        }
+
+        console.log(fechaNacimiento)
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(telefono)) {
+            this.mostrarError("El teléfono debe tener exactamente 10 dígitos numéricos.", false);
+            return;
+        }
+
+
+
+
         this.datosRegistro = {
-            nombres: shadow.getElementById('nombres').value.trim(),
-            apellidoPaterno: shadow.getElementById('apellidoPaterno').value.trim(),
-            apellidoMaterno: shadow.getElementById('apellidoMaterno').value.trim(),
-            ciudad: shadow.getElementById('ciudad').value,
-            fechaNacimiento: shadow.getElementById('fechaNacimiento').value,
-            telefono: shadow.getElementById('telefono').value.trim()
+            nombres, apellidoPaterno, apellidoMaterno, ciudad, fechaNacimiento, telefono
         };
+
         this.pasoActual = 2;
         this.#aplicarTransicion(shadow);
     }
@@ -275,6 +325,8 @@ export class RegistrarUsuarioComponent extends HTMLElement {
 
 
     #registrarUsuario(shadow) {
+        const nombre = shadow.getElementById('nombres').value.trim();
+        const apellidoPaterno = shadow.getElementById('apellidoPaterno')
         const correo = shadow.getElementById('correo').value.trim();
         const contrasenia = shadow.getElementById('contrasenia').value;
         const confirmarContrasenia = shadow.getElementById('confirmarContrasenia').value;
@@ -289,7 +341,7 @@ export class RegistrarUsuarioComponent extends HTMLElement {
         }
 
         if (contrasenia.length < 8) {
-            this.mostrarError( 'La contraseña debe tener al menos 8 caracteres');
+            this.mostrarError('La contraseña debe tener al menos 8 caracteres');
             return;
         }
 
@@ -319,18 +371,26 @@ export class RegistrarUsuarioComponent extends HTMLElement {
     }
 
     // Método público para ser llamado desde registrar.page.js
-    mostrarError(mensaje) {
+    mostrarError(mensaje, ultimoPaso = true) {
         const shadow = this.shadowRoot; // Accedemos al shadowRoot guardado o 'this.shadowRoot'
         if (!shadow) return;
 
-        const errorMessage = shadow.getElementById('errorMessage');
-        const successMessage = shadow.getElementById('successMessage');
+
+        let errorMessage;
+
+        if (ultimoPaso === true) {
+            errorMessage = shadow.getElementById('errorMessage');
+        }
+        else {
+            errorMessage = shadow.getElementById('errorMessageDatos');
+        }
+        //const successMessage = shadow.getElementById('successMessage');
 
         console.log(mensaje);
-        if (mensaje) {
+        if (errorMessage) {
             errorMessage.textContent = mensaje;
             errorMessage.style.display = 'block';
-            successMessage.style.display = 'none';
+
         } else {
             // Si mensaje está vacío, ocultamos
             errorMessage.style.display = 'none';
